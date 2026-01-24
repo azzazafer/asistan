@@ -1,7 +1,7 @@
-import { OmnichannelBridge } from './src/lib/ai/omnichannel';
-import { HospitalAdapterFactory } from './src/lib/hbys-bridge';
-import { SlotMappingManager } from './src/lib/slot-mapping';
-import { supabase } from './src/lib/supabase-client';
+import { OmnichannelBridge } from '@/lib/ai/omnichannel';
+import { HospitalAdapterFactory } from '@/lib/hbys-bridge';
+import { SlotMappingManager } from '@/lib/slot-mapping';
+import { supabase } from '@/lib/supabase-client';
 
 async function ruthlessDeepTest() {
     console.log("\n🔥 AURA OS: RUTHLESS PRODUCTION DEEP TEST 🔥");

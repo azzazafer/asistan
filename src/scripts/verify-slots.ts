@@ -1,5 +1,5 @@
-import { HospitalAdapterFactory } from './src/lib/hbys-bridge';
-import { SlotMappingManager } from './src/lib/slot-mapping';
+import { HospitalAdapterFactory } from '@/lib/hbys-bridge';
+import { SlotMappingManager } from '@/lib/slot-mapping';
 
 async function verifySlotMapping() {
     console.log("--- AURA OS SLOT MAPPING VERIFICATION ---");

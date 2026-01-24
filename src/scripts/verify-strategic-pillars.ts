@@ -1,5 +1,5 @@
-import { AiOrchestrator } from './src/lib/ai/orchestrator';
-import { getMessageHistory } from './src/lib/messaging';
+import { AiOrchestrator } from '@/lib/ai/orchestrator';
+import { getMessageHistory } from '@/lib/messaging';
 
 async function verifyStrategicPillars() {
     console.log("\n🚀 AURA OS: STRATEGIC PILLAR VERIFICATION (RUTHLESS TEST) 🚀");

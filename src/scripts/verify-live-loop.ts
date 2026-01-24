@@ -1,4 +1,4 @@
-import { OmnichannelBridge } from './src/lib/ai/omnichannel';
+import { OmnichannelBridge } from '@/lib/ai/omnichannel';
 
 async function testLiveResponse() {
     console.log("--- AURA LIVE RESPONSE LOOP TEST ---");
