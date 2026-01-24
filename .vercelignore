@@ -1,0 +1,24 @@
+# AuraOS Vercel Ignore
+# Prevent large accidental uploads
+
+# Core
+node_modules
+.next
+.git
+.vercel
+out
+build
+
+# Project Specific Large Files
+*.sql
+*.zip
+*.rar
+*.mp4
+*.exe
+kurulum.bat
+kurulum.ps1
+package-lock.json
+
+# Hidden System Files
+.DS_Store
+Thumbs.db

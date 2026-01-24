@@ -1,0 +1,31 @@
+{
+    "version": 2,
+    "name": "aura-os-unicorn",
+    "builds": [
+        {
+            "src": "package.json",
+            "use": "@vercel/next"
+        }
+    ],
+    "env": {
+        "NODE_ENV": "production",
+        "NEXT_PUBLIC_SUPABASE_URL": "@supabase_url",
+        "SUPABASE_SERVICE_ROLE_KEY": "@supabase_role",
+        "STRIPE_SECRET_KEY": "@stripe_secret",
+        "TWILIO_ACCOUNT_SID": "@twilio_sid",
+        "TWILIO_AUTH_TOKEN": "@twilio_auth",
+        "OPENAI_API_KEY": "@openai_key",
+        "INSTAGRAM_ACCESS_TOKEN": "@insta_token",
+        "TELEGRAM_BOT_TOKEN": "@tg_token"
+    },
+    "routes": [
+        {
+            "src": "/api/webhooks/(.*)",
+            "dest": "/api/webhooks/$1"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/$1"
+        }
+    ]
+}
