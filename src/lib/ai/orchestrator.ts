@@ -340,4 +340,30 @@ ${godMode.god_mode_data}
             };
         }
     }
+
+    /**
+     * Generates a concise summary of the conversation history.
+     */
+    static async generateSummary(userId: string, history: any[]): Promise<string> {
+        try {
+            const historyText = history.map(h => `${h.role === 'user' ? 'User' : 'Aura'}: ${h.content}`).join('\n');
+
+            const response = await openai.chat.completions.create({
+                model: 'gpt-4o-mini',
+                messages: [
+                    {
+                        role: 'system',
+                        content: 'Sen Aura OS satış asistanısın. Aşağıdaki konuşma geçmişini 2-3 cümle ile özetle. Hastanın ana şikayetini ve Aura\'nın ona olan yaklaşımını vurgula.'
+                    },
+                    { role: 'user', content: `Konuşma Geçmişi:\n${historyText}` }
+                ],
+                temperature: 0.5
+            });
+
+            return response.choices[0].message.content || 'Summary failed.';
+        } catch (error) {
+            console.error('[AiOrchestrator Summary Error]', error);
+            return 'Özet oluşturulamadı.';
+        }
+    }
 }
