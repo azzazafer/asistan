@@ -1,4 +1,5 @@
 "use client";
+// Aura OS v2.0 Production Deployment - 2026.01.24.2344
 
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
