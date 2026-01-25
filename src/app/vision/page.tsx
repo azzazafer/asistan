@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import AuraLayout from "@/components/AuraLayout";
-import { Orbit, Compass, Target, Globe, ArrowUpRight, Award, Workflow } from "lucide-react";
+import { Compass, Target, Award, Workflow, ArrowUpRight, Globe } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function VisionPage() {
@@ -10,22 +10,22 @@ export default function VisionPage() {
 
     const CONTENT = {
         tr: {
-            title: "VİZYON 2026",
-            subtitle: "Yönetim Bilincinin Otonom Geleceği",
+            tag: "VISION 2026 • 9.0 ALPHA",
+            title: "Yönetim Bilinci.",
             mission: "Aura OS misyonu; sağlık teknolojilerini pasif birer 'araç' olmaktan çıkarıp, kurumların otonom 'yönetim bilinci' haline getirmektir.",
-            vision: "Dünyadaki her 3 başarılı sağlık operasyonundan birinin Aura OS sinir ağları tarafından yönetildiği bir ekosistem inşa ediyoruz."
+            vision: "Dünyadaki her 3 başarılı sağlık operasyonundan birinin Aura OS sinir ağları tarafından yönetildiği bir gelecek."
         },
         en: {
-            title: "VISION 2026",
-            subtitle: "The Autonomous Future of Management Consciousness",
-            mission: "Aura OS's mission is to move healthcare tech from passive 'tools' to an autonomous 'management consciousness' for institutions.",
-            vision: "Building an ecosystem where 1 out of every 3 global health operations is powered by Aura OS neural networks."
+            tag: "VISION 2026 • 9.0 ALPHA",
+            title: "Management Consciousness.",
+            mission: "Aura OS mission is to move healthcare tech from passive 'tools' into an autonomous 'management consciousness' for institutions.",
+            vision: "A future where 1 out of every 3 global healthcare operations is managed by Aura OS neural networks."
         },
         ar: {
-            title: "رؤية 2026",
-            subtitle: "المستقبل الذاتي لوعي الإدارة",
-            mission: "مهمة أورا أوس هي تحويل تكنولوجيا الرعاية الصحية من 'أدوات' سلبية إلى 'وعي إداري' ذاتي للمؤسسات.",
-            vision: "بناء نظام بيئي تدار فيه واحدة من كل 3 عمليات صحية عالمية عبر شبكات أورا أوس العصبية."
+            tag: "VISION 2026 • 9.0 ALPHA",
+            title: "وعي الإدارة.",
+            mission: "مهمة أورا أوس هي نقل تكنولوجيا الرعاية الصحية من 'أدوات' سلبية إلى 'وعي إداري' مستقل للمؤسسات.",
+            vision: "مستقبل تدار فيه واحدة من كل 3 عمليات رعاية صحية عالمية ناجحة بواسطة شبكات أورا أوس العصبية."
         }
     };
 
@@ -33,45 +33,35 @@ export default function VisionPage() {
 
     return (
         <AuraLayout lang={lang} setLang={setLang}>
-            <section className="pt-40 md:pt-60 pb-40 px-6 overflow-hidden">
+            <section className="pt-40 md:pt-60 pb-40 px-6 bg-[#050505]">
                 <div className="max-w-[1400px] mx-auto">
                     <div className="text-center mb-40 space-y-12">
-                        <h1 className="text-6xl md:text-[12rem] font-black tracking-tighter text-white leading-none uppercase italic">{t.title}</h1>
-                        <div className="flex justify-center flex-col lg:flex-row gap-10">
-                            <div className="p-16 rounded-[6rem] bg-indigo-950/10 border border-indigo-500/10 flex-1 space-y-12 hover:bg-indigo-900/10 transition-all group/card">
-                                <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl group-hover/card:scale-110 transition-transform"><Compass /></div>
-                                <p className="text-4xl font-black italic text-white leading-tight">"{t.mission}"</p>
-                            </div>
-                            <div className="p-16 rounded-[6rem] bg-emerald-950/10 border border-emerald-500/10 flex-1 space-y-12 hover:bg-emerald-900/10 transition-all group/card">
-                                <div className="w-16 h-16 bg-emerald-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl group-hover/card:scale-110 transition-transform"><Target /></div>
-                                <p className="text-4xl font-black italic text-emerald-400 leading-tight">"{t.vision}"</p>
-                            </div>
+                        <div className="inline-flex items-center gap-3 px-6 py-2 bg-indigo-500/10 text-indigo-400 rounded-full text-[11px] font-black uppercase tracking-[0.4em] border border-indigo-500/20 mx-auto">
+                            <Globe size={14} /> {t.tag}
+                        </div>
+                        <h1 className="text-6xl md:text-[10rem] font-black tracking-tighter text-white leading-none uppercase italic">{t.title}</h1>
+                    </div>
+
+                    <div className="grid lg:grid-cols-2 gap-12 mb-40">
+                        <div className="p-16 rounded-[6rem] bg-indigo-950/10 border border-indigo-500/10 space-y-12 hover:bg-indigo-900/10 transition-all group shadow-2xl">
+                            <div className="w-20 h-20 bg-indigo-600 rounded-3xl flex items-center justify-center text-white shadow-3xl"><Compass size={40} /></div>
+                            <h2 className="text-4xl font-black uppercase text-indigo-400">Misyon</h2>
+                            <p className="text-5xl font-black italic text-white leading-[1.1]">"{t.mission}"</p>
+                        </div>
+                        <div className="p-16 rounded-[6rem] bg-emerald-950/10 border border-emerald-500/10 space-y-12 hover:bg-emerald-900/10 transition-all group shadow-2xl mt-12 lg:mt-32">
+                            <div className="w-20 h-20 bg-emerald-600 rounded-3xl flex items-center justify-center text-white shadow-3xl"><Target size={40} /></div>
+                            <h2 className="text-4xl font-black uppercase text-emerald-400">Vizyon</h2>
+                            <p className="text-5xl font-black italic text-emerald-400 leading-[1.1]">"{t.vision}"</p>
                         </div>
                     </div>
 
-                    {/* Global Nexus Illustration with Depth */}
-                    <div className="relative group">
-                        <div className="absolute inset-0 bg-indigo-600/15 blur-[200px] rounded-full" />
-                        <img src="/images/global_nexus.png" alt="Global Network" className="w-full h-auto rounded-[6rem] border border-white/10 opacity-60 group-hover:opacity-100 transition-all duration-[2000ms] shadow-3xl" />
-                        <div className="absolute inset-0 z-20 flex items-center justify-center p-20 text-center">
-                            <div className="space-y-6">
-                                <h3 className="text-4xl md:text-6xl font-black uppercase text-white shadow-3xl">COGNITIVE DOMINANCE</h3>
-                                <p className="text-2xl text-slate-400 font-medium italic">Global Operations • Scaled Autonomously</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Core Values / Scale */}
-                    <div className="mt-40 grid md:grid-cols-2 gap-12">
-                        <div className="p-16 rounded-[5rem] bg-[#020202] border border-white/5 space-y-8">
-                            <Award className="text-indigo-500" size={60} />
-                            <h4 className="text-3xl font-black uppercase text-white">SİSTEMİK MÜKEMMELİYET</h4>
-                            <p className="text-xl text-slate-500 font-medium italic leading-relaxed">Hata payını teknolojiyle sıfırlayan, insani sınırları otonom zekayla aşan bir yapı.</p>
-                        </div>
-                        <div className="p-16 rounded-[5rem] bg-[#020202] border border-white/5 space-y-8">
-                            <Workflow className="text-emerald-500" size={60} />
-                            <h4 className="text-3xl font-black uppercase text-white">EVRENSEL ENTEGRASYON</h4>
-                            <p className="text-xl text-slate-500 font-medium italic leading-relaxed">Dünyadaki tüm dilleri, kültürleri ve ödeme sistemlerini tek bir sinir ağında birleştirme gücü.</p>
+                    {/* Global Scale Asset */}
+                    <div className="relative rounded-[5rem] overflow-hidden border border-white/5 group">
+                        <div className="absolute inset-0 bg-black/60 z-10" />
+                        <img src="/images/global_nexus.png" alt="Global Network" className="w-full h-[500px] object-cover opacity-60 group-hover:scale-105 transition-transform duration-[4000ms]" />
+                        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center p-20">
+                            <h3 className="text-6xl font-black text-white uppercase tracking-tighter italic">COGNITIVE DOMINANCE</h3>
+                            <p className="text-2xl text-slate-400 font-bold mt-4">Scaling Human Intelligence via Otonom AI.</p>
                         </div>
                     </div>
                 </div>

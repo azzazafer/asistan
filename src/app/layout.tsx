@@ -1,13 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import Script from "next/script";
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-});
+const outfitClassName = "font-sans";
 
 import { getMetadata } from "@/lib/seo";
 
@@ -45,7 +41,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className={`${outfit.variable}`}>
+      <body className="font-sans antialiased text-slate-100 bg-[#050505]">
         <Toaster position="top-right" />
         {children}
 
