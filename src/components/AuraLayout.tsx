@@ -6,6 +6,8 @@ import { Brain, Menu, X, ArrowUpRight, Globe, Shield, MessageSquare, Radio, Cpu,
 import Link from "next/link";
 import Script from "next/script";
 
+import ScarcityToast from "./ScarcityToast";
+
 interface AuraLayoutProps {
     children: React.ReactNode;
     lang: 'tr' | 'en' | 'ar';
@@ -109,6 +111,7 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
             </AnimatePresence>
 
             <main className="relative z-10">{children}</main>
+            <ScarcityToast />
 
             {/* --- PRESTIGE FOOTER --- */}
             <footer className="py-20 md:py-40 px-8 border-t border-white/5 bg-[#050505] relative z-20 overflow-hidden">
