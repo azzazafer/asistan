@@ -3,41 +3,44 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import AuraLayout from "@/components/AuraLayout";
-import { Clock, HeartPulse, Camera, Zap, Shield, ArrowUpRight, CheckCircle2, Database } from "lucide-react";
+import { Clock, HeartPulse, Camera, Zap, Shield, ArrowUpRight, CheckCircle2, Database, ChevronRight } from "lucide-react";
 
-export default function ClinicsPage() {
+export default function ClinicsPrestigePage() {
     const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
 
     const CONTENT = {
         tr: {
-            tag: "CLINIC DOMINANCE • 9.0",
-            title: "Boş Koltuk Maliyetini Sıfırlayın.",
-            subtitle: "Klinik Otonomisi: Reklam bütçenizi değiştirmeden cironuzu %40 artırın.",
-            bento: [
-                { title: "Nex-Scan™ Cerrahi Triaş", desc: "Hastanın gönderdiği medikal fotoğrafları (Diş, Saç, Estetik) Aura'nın eğitilmiş görme yeteneği ile analiz edin.", icon: <Camera /> },
-                { title: "Autonomic Night-Shift", desc: "Siz uyurken gelen Avrupa ve Orta Doğu kaynaklı leadleri otonom olarak sıcak tutun ve satışı kapatın.", icon: <Clock /> },
-                { title: "Revenue Leak Detection", desc: "Klinik içindeki gizli ciro kayıplarını saniyeler içinde tespit edin.", icon: <Zap /> }
-            ]
+            tag: "CLINICAL LEADERSHIP • V10.0",
+            title: "Ciro Akışını\nOtonomlaştırın.",
+            subtitle: "Klinik Otonomisi: Reklam bütçenizi değiştirmeden operasyonel kârlılığınızı %40 artırın.",
+            sections: [
+                { title: "Nex-Scan™ Triaş", desc: "Hastanın gönderdiği medikal verileri Aura'nın eğitilmiş görme yeteneği ile analiz edin. Yüksek niyetli hastayı saniyeler içinde ayırt edin.", icon: <Camera size={24} /> },
+                { title: "Global Gece Hattı", desc: "Siz uyurken gelen Avrupa ve Orta Doğu leadlerini otonom olarak yönetin ve satışı o an kapatın.", icon: <Clock size={24} /> },
+                { title: "Gelir Kaçağı Analizi", icon: <Zap size={24} /> }
+            ],
+            scarcity: { title: "SEÇKİN ÜYELİK PROGRAMI.", desc: "Aura OS, bölge bazlı sınırlı sayıda kliniğe lisans sağlar. Pazar liderliğini garantileyin." }
         },
         en: {
-            tag: "CLINIC DOMINANCE • 9.0",
-            title: "Zero Empty Chair Cost.",
-            subtitle: "Clinic Autonomy: Increase your revenue by 40% without changing your ad budget.",
-            bento: [
-                { title: "Nex-Scan™ Surgical Triage", desc: "Analyze medical photos (Dental, Hair, Aesthetic) with Aura's trained vision intelligence.", icon: <Camera /> },
-                { title: "Autonomic Night-Shift", desc: "Keep European and Middle Eastern leads warm and close sales while you sleep.", icon: <Clock /> },
-                { title: "Revenue Leak Detection", desc: "Identify hidden revenue losses within the clinic in seconds.", icon: <Zap /> }
-            ]
+            tag: "CLINICAL LEADERSHIP • V10.0",
+            title: "Automate Your\nRevenue Flow.",
+            subtitle: "Clinic Autonomy: Increase your operational profitability by 40% without changing your ad budget.",
+            sections: [
+                { title: "Nex-Scan™ Triage", desc: "Analyze patient medical data with Aura's trained vision. Identify high-intent patients in seconds.", icon: <Camera size={24} /> },
+                { title: "Global Night-Shift", desc: "Autonomously manage European and Middle Eastern leads while you sleep and close sales instantly.", icon: <Clock size={24} /> },
+                { title: "Revenue Leak Analysis", icon: <Zap size={24} /> }
+            ],
+            scarcity: { title: "ELITE MEMBERSHIP PROGRAM.", desc: "Aura OS provides licenses to a limited number of clinics per region. Secure your market leadership." }
         },
         ar: {
-            tag: "CLINIC DOMINANCE • 9.0",
-            title: "صفر تكلفة المقاعد الفارغة.",
-            subtitle: "استقلالية العيادة: زيادة أرباحك بنسبة 40٪ دون تغيير ميزانية الإعلان.",
-            bento: [
-                { title: "Nex-Scan™ الترياج الجراحي", desc: "تحليل الصور الطبية (للأسنان، الشعر، التجميل) بذكاء أورا المدرب.", icon: <Camera /> },
-                { title: "Autonomic Night-Shift", desc: "حافظ على حيوية العملاء الأوروبيين والشرق أوسطيين وأغلق المبيعات أثناء نومك.", icon: <Clock /> },
-                { title: "Kشف تسرب الإيرادات", desc: "تحديد خسائر الإيرادات المخفية داخل العيادة في ثوانٍ.", icon: <Zap /> }
-            ]
+            tag: "CLINICAL LEADERSHIP • V10.0",
+            title: "أتمتة تدفق\nالإيرادات.",
+            subtitle: "استقلالية العiyada: زيادة ربحيتك التشغيلية بنسبة 40٪ دون تغيير ميزانية الإعلان.",
+            sections: [
+                { title: "Nex-Scan™ ترياج", desc: "تحليل البيانات الطبية للمرضى برؤية أورا المدربة. تعرف على المرضى ذوي النوايا العالية في ثوانٍ.", icon: <Camera size={24} /> },
+                { title: "الوردية الليلية العالمية", desc: "إدارة العملاء الأوروبيين والشرق أوسطيين بشكل مستقل أثناء نومك وإغلاق المبيعات فوراً.", icon: <Clock size={24} /> },
+                { title: "تحليل تسرب الإيرادات", icon: <Zap size={24} /> }
+            ],
+            scarcity: { title: "برنامج العضوية النخبوية.", desc: "يوفر أورا أوس تراخيص لعدد محدود من العيادات لكل منطقة. اضمن ريادتك في السوق." }
         }
     };
 
@@ -45,65 +48,67 @@ export default function ClinicsPage() {
 
     return (
         <AuraLayout lang={lang} setLang={setLang}>
-            <section className="pt-40 md:pt-60 pb-40 px-6 bg-[#050505]">
-                <div className="max-w-[1400px] mx-auto">
-                    {/* Hero */}
-                    <div className="mb-40 space-y-12 max-w-4xl">
-                        <div className="inline-flex items-center gap-3 px-6 py-2 bg-teal-500/10 text-teal-400 rounded-full text-[11px] font-black uppercase tracking-[0.4em] border border-teal-500/20">
+            <section className="pt-40 md:pt-60 pb-40 px-6 bg-[#050505] overflow-hidden">
+                <div className="max-w-[1600px] mx-auto">
+                    {/* Header: Left Aligned Authority */}
+                    <div className="mb-40 space-y-12 max-w-5xl">
+                        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="inline-flex items-center gap-4 px-6 py-2 bg-white/5 text-teal-400 rounded-lg text-[10px] font-black uppercase tracking-[0.6em] border border-white/5">
                             <Zap size={14} /> {t.tag}
-                        </div>
-                        <motion.h1 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-6xl md:text-[8rem] font-black tracking-tighter text-white uppercase italic leading-[0.85] drop-shadow-3xl">
+                        </motion.div>
+                        <h1 className="text-6xl md:text-[10rem] font-bold tracking-[-0.08em] leading-[0.85] text-white uppercase italic">
                             {t.title}
-                        </motion.h1>
-                        <p className="text-3xl font-black text-teal-500 italic">"{t.subtitle}"</p>
+                        </h1>
+                        <p className="text-2xl md:text-4xl font-bold text-teal-500/80 italic border-l border-teal-500/20 pl-10 max-w-3xl">
+                            "{t.subtitle}"
+                        </p>
                     </div>
 
-                    {/* Bento Grid: Apple/SaaS Style */}
-                    <div className="grid lg:grid-cols-12 gap-8 mb-40">
-                        <div className="lg:col-span-8 p-16 rounded-[4rem] bg-white/[0.02] border border-white/5 hover:border-teal-500/40 transition-all group overflow-hidden relative">
-                            <div className="relative z-10 space-y-8">
-                                <div className="w-20 h-20 bg-teal-500/10 rounded-3xl flex items-center justify-center text-teal-400 group-hover:bg-teal-500 group-hover:text-black transition-all">
-                                    {t.bento[0].icon}
+                    {/* Asymetrical Layout Section 1 */}
+                    <div className="grid lg:grid-cols-12 gap-20 mb-60 items-center">
+                        <div className="lg:col-span-7 relative group">
+                            <motion.div initial={{ rotateY: 10 }} whileInView={{ rotateY: -15, scale: 1.05 }} transition={{ duration: 1.5 }} className="relative z-10 rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl">
+                                <img src="/images/patient_ui.png" alt="" className="w-full h-auto grayscale group-hover:grayscale-0 transition-all duration-[2000ms]" />
+                                <div className="absolute inset-0 bg-gradient-to-tr from-[#050505]/60 to-transparent" />
+                            </motion.div>
+                            <div className="absolute -bottom-10 -right-10 w-64 h-64 bg-teal-500/5 blur-[100px] rounded-full" />
+                        </div>
+                        <div className="lg:col-span-5 space-y-12">
+                            <div className="w-16 h-16 bg-teal-500/10 rounded-xl flex items-center justify-center text-teal-400">{t.sections[0].icon}</div>
+                            <h2 className="text-5xl font-bold text-white tracking-tighter uppercase italic">{t.sections[0].title}</h2>
+                            <p className="text-2xl text-slate-400 font-medium leading-relaxed">{t.sections[0].desc}</p>
+                            <button className="glass-btn px-10 py-5 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-teal-400 flex items-center gap-4">
+                                MİMARİ DETAYLAR <ChevronRight size={14} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Asymetrical Layout Section 2 */}
+                    <div className="grid lg:grid-cols-12 gap-20 mb-60 items-center">
+                        <div className="lg:col-span-5 space-y-12 order-2 lg:order-1">
+                            <div className="w-16 h-16 bg-white/5 rounded-xl flex items-center justify-center text-teal-400">{t.sections[1].icon}</div>
+                            <h2 className="text-5xl font-bold text-white tracking-tighter uppercase italic">{t.sections[1].title}</h2>
+                            <p className="text-2xl text-slate-400 font-medium leading-relaxed">{t.sections[1].desc}</p>
+                        </div>
+                        <div className="lg:col-span-7 relative order-1 lg:order-2">
+                            <motion.div initial={{ rotateY: -10 }} whileInView={{ rotateY: 15 }} transition={{ duration: 1.5 }} className="relative z-10 rounded-[3rem] overflow-hidden border border-white/10 shadow-3xl bg-white/5 p-8">
+                                <div className="aspect-video bg-black/40 rounded-[2rem] border border-white/5 flex items-center justify-center">
+                                    <Radio size={80} className="text-teal-500/20 animate-pulse" />
                                 </div>
-                                <h3 className="text-5xl font-black uppercase text-white tracking-tight">{t.bento[0].title}</h3>
-                                <p className="text-2xl text-slate-400 font-medium leading-relaxed max-w-xl">{t.bento[0].desc}</p>
-                            </div>
-                            <img src="/images/patient_ui.png" alt="" className="absolute -bottom-20 -right-20 w-1/2 opacity-20 group-hover:opacity-60 grayscale group-hover:grayscale-0 transition-all duration-1000 rotate-12" />
-                        </div>
-
-                        <div className="lg:col-span-4 p-12 rounded-[4rem] bg-teal-500 text-black space-y-8 shadow-[0_0_60px_rgba(0,240,255,0.3)]">
-                            <div className="w-16 h-16 bg-black/10 rounded-2xl flex items-center justify-center">
-                                {t.bento[2].icon}
-                            </div>
-                            <h3 className="text-4xl font-black uppercase leading-tight">{t.bento[2].title}</h3>
-                            <p className="text-xl font-bold opacity-80">{t.bento[2].desc}</p>
-                        </div>
-
-                        <div className="lg:col-span-4 p-12 rounded-[4rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.05] transition-all space-y-8">
-                            <div className="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center text-teal-400">
-                                {t.bento[1].icon}
-                            </div>
-                            <h3 className="text-3xl font-black uppercase text-white">{t.bento[1].title}</h3>
-                            <p className="text-xl text-slate-500 font-medium">{t.bento[1].desc}</p>
-                        </div>
-
-                        <div className="lg:col-span-8 p-16 rounded-[4rem] bg-indigo-600 text-white flex flex-col justify-between group overflow-hidden relative border border-white/10">
-                            <div className="relative z-10 space-y-6">
-                                <h3 className="text-5xl font-black uppercase tracking-tighter italic leading-[0.8]">NEXTORIA<br />ALPHA INTEGRATION</h3>
-                                <p className="text-xl font-bold opacity-80 max-w-md">Tüm HBYS ve CRM sistemleriyle 12ms senkronizasyon hızı.</p>
-                            </div>
-                            <div className="mt-12 flex gap-4 relative z-10">
-                                <button className="px-10 py-5 bg-white text-black font-black uppercase rounded-full hover:scale-105 transition-transform">HEMEN BAĞLAN</button>
-                            </div>
-                            <Database size={200} className="absolute -bottom-10 -right-10 opacity-10 group-hover:scale-110 transition-transform" />
+                            </motion.div>
                         </div>
                     </div>
 
-                    {/* Scarcity Banner */}
-                    <div className="p-20 rounded-[5rem] bg-red-600 text-white text-center space-y-8 shadow-[0_45px_100px_rgba(255,69,0,0.4)]">
+                    {/* Scarcity Prestige Widget */}
+                    <div className="p-20 md:p-40 rounded-[6rem] bg-indigo-600 space-y-12 text-center text-white relative overflow-hidden group shadow-[0_50px_100px_-20px_rgba(79,70,229,0.5)]">
+                        <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <Shield className="mx-auto" size={80} />
-                        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none italic">SADECE SEÇKİN KLİNİKLER İÇİN.</h2>
-                        <p className="text-2xl font-bold max-w-4xl mx-auto opacity-90">Aura OS, her şehirde sadece sınırlı sayıda kliniğe lisans verir. Rakiplerinizden önce yerinizi alın veya onların yükselişini izleyin.</p>
+                        <h2 className="text-5xl md:text-9xl font-bold uppercase tracking-[-0.08em] leading-none italic">{t.scarcity.title}</h2>
+                        <p className="text-2xl md:text-3xl font-bold max-w-4xl mx-auto opacity-80">{t.scarcity.desc}</p>
+                        <div className="pt-12">
+                            <button className="px-16 py-8 bg-white text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-[0.5em] shadow-2xl hover:scale-105 transition-transform">
+                                LİSANS SORGULA
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>

@@ -12,9 +12,9 @@ interface AuraLayoutProps {
 }
 
 const NAV_CONTENT = {
-    tr: { nav: { cli: "Klinikler", age: "Acenteler", tech: "Teknoloji", vision: "Vizyon", getStarted: "Sisteme Hükmet" }, footer: { signature: "NEXTORIA ALPHA • CYBERTRUCK KARARGAH", rights: "© 2026 Aura OS Galactic Operations. Tüm Hakları Saklıdır." } },
-    en: { nav: { cli: "Clinics", age: "Agencies", tech: "Technology", vision: "Vision", getStarted: "Dominate Now" }, footer: { signature: "NEXTORIA ALPHA • CYBERTRUCK KARARGAH", rights: "© 2026 Aura OS Galactic Operations. All Rights Reserved." } },
-    ar: { nav: { cli: "العيادات", age: "الوكالات", tech: "التكنولوجيا", vision: "الرؤية", getStarted: "أحكم سيطرتك" }, footer: { signature: "NEXTORIA ALPHA • CYBERTRUCK KARARGAH", rights: "© 2026 Aura OS Galactic Operations. جميع الحقوق محفوظة." } }
+    tr: { nav: { cli: "Klinik Yönetimi", age: "Acente Ağı", tech: "Teknoloji Mimari", vision: "Vizyon 2026", getStarted: "Operasyonu Başlat" }, footer: { signature: "NEXTORIA PRESTIGE • AURA OS ALPHA", rights: "© 2026 Aura OS Galactic Operations. Tüm Hakları Saklıdır." } },
+    en: { nav: { cli: "Clinic Management", age: "Agency Network", tech: "Tech Architecture", vision: "Vision 2026", getStarted: "Start Operation" }, footer: { signature: "NEXTORIA PRESTIGE • AURA OS ALPHA", rights: "© 2026 Aura OS Galactic Operations. All Rights Reserved." } },
+    ar: { nav: { cli: "إدارة العيادات", age: "شبكة الوكالات", tech: "بنية التكنولوجيا", vision: "رؤية 2026", getStarted: "بدء التشغيل" }, footer: { signature: "NEXTORIA PRESTIGE • AURA OS ALPHA", rights: "© 2026 Aura OS Galactic Operations. جميع الحقوق محفوظة." } }
 };
 
 export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps) {
@@ -30,115 +30,118 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
     }, []);
 
     return (
-        <div className={`min-h-screen bg-[#050505] text-slate-100 selection:bg-teal-500/40 overflow-x-hidden ${isRTL ? 'text-right font-arabic' : 'text-left font-sans'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className={`min-h-screen bg-[#050505] text-[#E0E0E0] selection:bg-teal-500/40 overflow-x-hidden ${isRTL ? 'text-right font-arabic' : 'text-left font-prestige'}`} dir={isRTL ? 'rtl' : 'ltr'}>
 
-            {/* --- CYBERTRUCK NAV --- */}
-            <nav className="fixed top-0 w-full z-[1000] px-4 md:px-10 py-6 transition-all duration-500">
-                <div className={`max-w-[1600px] mx-auto flex items-center justify-between transition-all duration-700 rounded-[2.5rem] px-8 md:px-12 h-20 md:h-24 ${isScrolled ? 'bg-[#050505]/80 backdrop-blur-3xl border border-white/10 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)] scale-[0.98]' : 'bg-transparent border border-transparent'}`}>
+            {/* --- PRESTIGE NAV --- */}
+            <nav className="fixed top-0 w-full z-[1000] px-4 md:px-10 py-8 transition-all duration-500">
+                <div className={`max-w-[1600px] mx-auto flex items-center justify-between transition-all duration-700 rounded-[1.2rem] px-8 md:px-12 h-20 md:h-24 ${isScrolled ? 'bg-black/60 backdrop-blur-3xl border border-white/5 shadow-3xl scale-[0.99]' : 'bg-transparent border border-transparent'}`}>
                     <Link href="/" className="flex items-center gap-4 group cursor-pointer">
-                        <div className="w-12 h-12 bg-teal-500 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(0,240,255,0.4)] transition-transform duration-1000 group-hover:rotate-[360deg] group-hover:bg-teal-400">
-                            <Brain size={28} className="text-black" />
+                        <div className="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center shadow-[0_0_40px_rgba(0,240,255,0.3)] group-hover:scale-110 transition-transform">
+                            <Brain size={26} className="text-black" />
                         </div>
-                        <span className="text-2xl md:text-3xl font-black tracking-tighter uppercase italic py-2 leading-none text-white whitespace-nowrap">
-                            Aura <span className="text-teal-500">OS</span>
+                        <span className="text-2xl md:text-3xl font-black tracking-[-0.08em] uppercase italic py-2 leading-none text-white whitespace-nowrap">
+                            Aura <span className="text-teal-500/80">OS</span>
                         </span>
                     </Link>
 
-                    <div className="hidden lg:flex items-center gap-8 xl:gap-14 text-white">
-                        <Link href="/solutions/clinics" className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.cli}</Link>
-                        <Link href="/solutions/agencies" className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.age}</Link>
-                        <Link href="/technology" className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.tech}</Link>
-                        <Link href="/vision" className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-400 hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.vision}</Link>
+                    <div className="hidden lg:flex items-center gap-8 xl:gap-14 text-white/80">
+                        <Link href="/solutions/clinics" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.cli}</Link>
+                        <Link href="/solutions/agencies" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.age}</Link>
+                        <Link href="/technology" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.tech}</Link>
+                        <Link href="/vision" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.vision}</Link>
 
-                        <div className="flex bg-white/5 p-1 rounded-2xl border border-white/5 mx-2 min-w-[150px]">
+                        <div className="flex bg-white/5 p-1 rounded-lg border border-white/5 mx-2">
                             {(['tr', 'en', 'ar'] as const).map((l) => (
-                                <button key={l} onClick={() => setLang(l)} className={`flex-1 px-3 py-2 rounded-xl text-[10px] font-black uppercase transition-all duration-500 ${lang === l ? 'bg-teal-500 text-black shadow-xl' : 'text-slate-500 hover:text-white'}`}>{l}</button>
+                                <button key={l} onClick={() => setLang(l)} className={`px-4 py-2 rounded-md text-[9px] font-black uppercase transition-all duration-500 ${lang === l ? 'bg-white/10 text-teal-400' : 'text-slate-600 hover:text-white'}`}>{l}</button>
                             ))}
                         </div>
-                        <button className="bg-white text-black px-10 py-4.5 rounded-full text-[11px] font-black uppercase tracking-widest hover:bg-teal-500 hover:text-black transition-all shadow-2xl active:scale-95 whitespace-nowrap">
-                            {t.nav.getStarted}
+                        <button className="relative group px-10 py-4.5 rounded-full overflow-hidden transition-all active:scale-95 whitespace-nowrap">
+                            <div className="absolute inset-0 bg-teal-500 group-hover:bg-teal-400 transition-colors" />
+                            <div className="absolute inset-0 bg-black/10 group-active:bg-black/20" />
+                            <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.3em] text-black">{t.nav.getStarted}</span>
                         </button>
                     </div>
 
-                    <button className="lg:hidden p-4 bg-white/5 border border-white/10 rounded-2xl text-white hover:bg-white/10 transition-all" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    <button className="lg:hidden p-4 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                         {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
                     </button>
                 </div>
             </nav>
 
-            {/* --- MOBILE OVERLAY --- */}
+            {/* --- MOBILE OVERLAY (PRESTIGE) --- */}
             <AnimatePresence>
                 {isMenuOpen && (
-                    <motion.div initial={{ opacity: 0, scale: 1.1 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} className="fixed inset-0 z-[900] bg-[#050505]/98 backdrop-blur-3xl flex flex-col items-center justify-center gap-10 lg:hidden px-10 text-white">
-                        <Link href="/solutions/clinics" className="text-3xl font-black uppercase tracking-widest hover:text-teal-400 transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.cli}</Link>
-                        <Link href="/solutions/agencies" className="text-3xl font-black uppercase tracking-widest hover:text-teal-400 transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
-                        <Link href="/technology" className="text-3xl font-black uppercase tracking-widest hover:text-teal-400 transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
-                        <Link href="/vision" className="text-3xl font-black uppercase tracking-widest hover:text-teal-400 transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.vision}</Link>
-                        <div className="h-px w-20 bg-white/20 my-4" />
-                        <button className="w-full bg-white text-black py-6 rounded-full font-black uppercase tracking-widest shadow-2xl">{t.nav.getStarted}</button>
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[900] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center gap-10 lg:hidden px-10 text-white">
+                        <Link href="/solutions/clinics" className="text-3xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.cli}</Link>
+                        <Link href="/solutions/agencies" className="text-3xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
+                        <Link href="/technology" className="text-3xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
+                        <div className="h-px w-20 bg-white/10 my-4" />
+                        <button className="w-full bg-teal-500 text-black py-6 rounded-full font-black uppercase tracking-widest">{t.nav.getStarted}</button>
                     </motion.div>
                 )}
             </AnimatePresence>
 
             <main className="relative z-10">{children}</main>
 
-            {/* --- CYBERTRUCK FOOTER --- */}
-            <footer className="py-20 md:py-40 px-8 border-t border-white/5 bg-[#050505] relative z-20">
-                <div className="max-w-[1600px] mx-auto grid lg:grid-cols-4 gap-20 md:gap-32">
+            {/* --- PRESTIGE FOOTER --- */}
+            <footer className="py-20 md:py-40 px-8 border-t border-white/5 bg-[#050505] relative z-20 overflow-hidden">
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-teal-500/20 to-transparent" />
+                <div className="max-w-[1600px] mx-auto grid lg:grid-cols-4 gap-20">
                     <div className="lg:col-span-1 space-y-12">
                         <div className="flex items-center gap-4">
-                            <div className="w-16 h-16 bg-teal-500 rounded-[2.2rem] flex items-center justify-center shadow-[0_0_40px_rgba(0,240,255,0.2)]"><Brain size={34} className="text-black" /></div>
-                            <span className="text-4xl font-black tracking-tighter uppercase italic py-2 text-white leading-none">AURA <span className="text-teal-500">OS</span></span>
+                            <div className="w-14 h-14 bg-teal-500 rounded-lg flex items-center justify-center shadow-2xl"><Brain size={30} className="text-black" /></div>
+                            <span className="text-3xl font-black tracking-tighter uppercase italic py-2 text-white leading-none">AURA <span className="text-teal-500/60">OS</span></span>
                         </div>
-                        <p className="text-[11px] font-black uppercase tracking-[0.5em] text-slate-600 leading-loose max-w-[280px]">
-                            NEXTORIA ALPHA INFRASTRUCTURE<br />VERSION 9.0.01 • CYBERTRUCK BUILD<br />OPERATING MANUAL FOR THE FUTURE
+                        <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-slate-700 leading-loose max-w-[280px]">
+                            NEXTORIA PRESTIGE INFRASTRUCTURE<br />VERSION 10.0 • ALPHA ASSET<br />GLOBAL REVENUE ENGINE
                         </p>
                         <div className="flex gap-4">
                             {[Radio, Globe, Shield, MessageSquare].map((Icon, i) => (
-                                <div key={i} className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-500 hover:text-teal-400 hover:bg-white/10 transition-all cursor-pointer"><Icon size={20} /></div>
+                                <div key={i} className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-slate-600 hover:text-teal-400 hover:bg-white/10 transition-all cursor-pointer border border-white/5"><Icon size={18} /></div>
                             ))}
                         </div>
                     </div>
 
                     <div className="lg:col-span-2 grid grid-cols-2 lg:grid-cols-3 gap-16 md:gap-24">
                         <div className="space-y-10">
-                            <div className="text-[10px] font-black uppercase tracking-[0.6em] text-teal-500">SEKTÖRLER</div>
-                            <Link href="/solutions/clinics" className="block text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all">{t.nav.cli}</Link>
-                            <Link href="/solutions/agencies" className="block text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all">{t.nav.age}</Link>
-                            <Link href="/technology" className="block text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all">{t.nav.tech}</Link>
+                            <div className="text-[9px] font-black uppercase tracking-[0.8em] text-teal-500/80">Pazar Çözümleri</div>
+                            <Link href="/solutions/clinics" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">{t.nav.cli}</Link>
+                            <Link href="/solutions/agencies" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">{t.nav.age}</Link>
                         </div>
                         <div className="space-y-10">
-                            <div className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-400">ALPHA</div>
-                            <Link href="/vision" className="block text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all">{t.nav.vision}</Link>
-                            <Link href="/security" className="block text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all">GÜVENLİK</Link>
-                            <Link href="#" className="block text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 hover:text-white transition-all">DOCS</Link>
+                            <div className="text-[9px] font-black uppercase tracking-[0.8em] text-slate-600">Alpha Core</div>
+                            <Link href="/technology" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">{t.nav.tech}</Link>
+                            <Link href="/security" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">GÜVENLİK</Link>
                         </div>
                     </div>
 
-                    <div className="lg:col-span-1 text-center lg:text-right space-y-20">
+                    <div className="lg:col-span-1 text-center lg:text-right space-y-16">
                         <div className="space-y-4">
-                            <div className="text-[13px] font-black uppercase tracking-[0.7em] text-white leading-tight">{t.footer.signature}</div>
-                            <p className="text-[10px] font-black text-slate-800 tracking-[0.4em] italic leading-relaxed">{t.footer.rights}</p>
+                            <div className="text-[11px] font-black uppercase tracking-[0.8em] text-white/50 leading-tight">{t.footer.signature}</div>
+                            <p className="text-[9px] font-bold text-slate-800 tracking-[0.4em] uppercase leading-relaxed">{t.footer.rights}</p>
                         </div>
-                        <div className="flex justify-center lg:justify-end gap-8 opacity-20">
-                            <Award size={48} strokeWidth={1} />
-                            <Workflow size={48} strokeWidth={1} />
-                            <Cpu size={48} strokeWidth={1} />
+                        <div className="flex justify-center lg:justify-end gap-6 opacity-10">
+                            <Award size={40} strokeWidth={1} />
+                            <Workflow size={40} strokeWidth={1} />
+                            <Cpu size={40} strokeWidth={1} />
                         </div>
                     </div>
                 </div>
             </footer>
 
             <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&display=swap');
-        body { font-family: 'Outfit', sans-serif; background: #050505; color: #f8fafc; margin:0; padding:0; overflow-x:hidden; -webkit-font-smoothing: antialiased; }
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        body { font-family: 'Space Grotesk', sans-serif; background: #050505; color: #E0E0E0; margin:0; padding:0; overflow-x:hidden; -webkit-font-smoothing: antialiased; }
+        .font-prestige { font-family: 'Space Grotesk', sans-serif; }
         .font-arabic { font-family: system-ui, sans-serif; }
-        h1, h2, h3, h4 { letter-spacing: -0.05em !important; }
+        h1, h2, h3, h4 { letter-spacing: -0.1em !important; font-weight: 700; }
         ::selection { background: #00F0FF; color: black; }
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-track { background: #050505; }
-        ::-webkit-scrollbar-thumb { background: #111111; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #222222; }
+        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #333333; }
+        .glass-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.2); backdrop-filter: blur(10px); }
+        .glass-btn:hover { border-color: rgba(0,240,255,0.5); background: rgba(255,255,255,0.05); }
       `}</style>
         </div>
     );
