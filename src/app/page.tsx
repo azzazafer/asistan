@@ -26,7 +26,8 @@ import {
   CheckCircle2,
   Strikethrough,
   Menu,
-  X
+  X,
+  Users
 } from "lucide-react";
 import Link from "next/link";
 import { useChat } from 'ai/react';
