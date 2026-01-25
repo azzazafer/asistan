@@ -1,523 +1,391 @@
 "use client";
-// Aura OS v2.0 Production Deployment - 2026.01.24.2344
 
-import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
-  Send,
-  Plus,
-  Bot,
-  User,
-  Phone,
-  ArrowRight,
   Sparkles,
-  Stethoscope,
-  Loader2,
-  Mic,
+  Zap,
+  Shield,
+  Activity,
+  ChevronRight,
+  Globe,
+  BrainCircuit,
   MessageSquare,
+  Instagram,
+  Send,
+  User,
   LayoutDashboard,
-  Wifi,
-  WifiOff,
-  Volume2,
-  VolumeX,
-  Image as ImageIcon,
-  ArrowLeft,
-  ShieldCheck,
-  X,
-  FileText
-} from 'lucide-react';
-import Link from 'next/link';
-import toast from 'react-hot-toast';
-import { saveLeadLocally, syncWithServer } from '@/lib/persistence';
-import { addLead } from '@/lib/leads';
+  Brain,
+  Layers,
+  PieChart,
+  Lock,
+  ArrowRight,
+  Play,
+  Stethoscope,
+  Clock,
+  CheckCircle2,
+  Strikethrough,
+  Menu,
+  X
+} from "lucide-react";
+import Link from "next/link";
+import { useChat } from 'ai/react';
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
-  analysis?: any; // New: Holds the structured vision result
-}
+// --- TRANSLATIONS ---
+const CONTENT = {
+  tr: {
+    hero: {
+      tag: "SAĞLIK TURİZMİNDE GELECEK",
+      title: "Kliniklerin Dijital Sinir Sistemi",
+      subtitle: "Bir chatbot değil; hasta temasından tıbbi analize, tekliflendirmeden ödemeye kadar tüm süreci yöneten akıllı bir operasyon altyapısı.",
+      ctaPrimary: "Demo Talep Edin",
+      ctaSecondary: "Aura Vision™'ı Keşfet"
+    },
+    funnel: {
+      title: "Kaostan Düzene Geçiş",
+      subtitle: "Dağınık kanalları tek bir zeka ile yönetin, verimliliği %40 artırın.",
+      step1: {
+        title: "1. Toplama & Anlama",
+        desc: "WhatsApp, Instagram ve Telegram'dan gelen her mesajı anında yakalar, hastanın niyetini ve aciliyetini analiz eder."
+      },
+      step2: {
+        title: "2. Vortex Vision™ Analizi",
+        desc: "Hastanın gönderdiği fotoğrafları cerrahi hassasiyetle analiz ederek tıbbi güven inşa eder. (MeduAI'da bulunmayan özel teknoloji)."
+      },
+      step3: {
+        title: "3. Neural Pay™ Kapanış",
+        desc: "Satışın en sıcak olduğu anda ödeme linkini oluşturur ve depozitoyu in-chat olarak tahsil eder."
+      }
+    },
+    features: {
+      title: "Neden Aura OS?",
+      items: [
+        { title: "7/24 Otonom Satış", desc: "Siz uyurken Aura leadsleri sıcak tutar ve randevuya dönüştürür." },
+        { title: "Kültürel Aynalama", desc: "Avrupa, Orta Doğu ve Global pazarlar için tonlamasını otomatik ayarlar." },
+        { title: "Loyalty Shield", desc: "Hastanın dışarı sızmasını engeller, Aura garantisini vurgular." }
+      ]
+    }
+  },
+  en: {
+    hero: {
+      tag: "FUTURE OF HEALTH TOURISM",
+      title: "The Digital Nervous System for Clinics",
+      subtitle: "Not just a chatbot; it's an intelligent operation infrastructure managing everything from patient contact to medical analysis and in-chat payments.",
+      ctaPrimary: "Request Demo",
+      ctaSecondary: "Explore Aura Vision™"
+    },
+    funnel: {
+      title: "From Chaos to Order",
+      subtitle: "Manage scattered channels with a single intelligence, boost efficiency by 40%.",
+      step1: {
+        title: "1. Collect & Understand",
+        desc: "Captures every message from WA, IG, and Telegram instantly, analyzing patient intent and urgency."
+      },
+      step2: {
+        title: "2. Vortex Vision™ Analysis",
+        desc: "Analyzes patient photos with surgical precision to build medical trust. (Exclusive technology not in MeduAI)."
+      },
+      step3: {
+        title: "3. Neural Pay™ Closing",
+        desc: "Generates payment links and collects deposits in-chat at the peak of the sales cycle."
+      }
+    },
+    features: {
+      title: "Why Aura OS?",
+      items: [
+        { title: "24/7 Autonomous Sales", desc: "Aura keeps leads hot and converts them into appointments while you sleep." },
+        { title: "Cultural Mirroring", desc: "Automatically adjusts tone for Europe, Middle East, and Global markets." },
+        { title: "Loyalty Shield", desc: "Prevents lead leakage by emphasizing Aura-exclusive surgical guarantees." }
+      ]
+    }
+  },
+  ar: {
+    hero: {
+      tag: "مستقبل السياحة العلاجية",
+      title: "الجهاز العصبي الرقمي للعيادات",
+      subtitle: "ليس مجرد روبوت محادثة؛ إنها بنية تحتية ذكية للعمليات تدير كل شيء من اتصال المريض إلى التحليل الطبي والمدفوعات داخل الدردشة.",
+      ctaPrimary: "اطلب عرضاً توضيحياً",
+      ctaSecondary: "اكتشف Aura Vision™"
+    },
+    funnel: {
+      title: "من الفوضى إلى النظام",
+      subtitle: "أدر قنواتك المتفرقة بذكاء واحد، ارفع الكفاءة بنسبة 40%.",
+      step1: {
+        title: "1. الجمع والفهم",
+        desc: "يلتقط كل رسالة من WhatsApp و Instagram و Telegram على الفور، ويحلل نية المريض ومدى الإلحاح."
+      },
+      step2: {
+        title: "2. تحليل Vortex Vision™",
+        desc: "يحلل صور المريض بدقة جراحية لبناء الثقة الطبية. (تقنية حصرية غير موجودة في MeduAI)."
+      },
+      step3: {
+        title: "3. إغلاق Neural Pay™",
+        desc: "يولد روابط الدفع ويحصل الودائع داخل الدردشة في ذروة دورة المبيعات."
+      }
+    },
+    features: {
+      title: "لماذا Aura OS؟",
+      items: [
+        { title: "مبيعات ذاتية 24/7", desc: "تبقي أورا العملاء مهتمين وتحولهم إلى مواعيد أثناء نومك." },
+        { title: "المحاكاة الثقافية", desc: "يعدل النبرة تلقائياً لأسواق أوروبا والشرق الأوسط والأسواق العالمية." },
+        { title: "درع الولاء", desc: "يمنع تسرب العملاء من خلال التأكيد على ضمانات أورا الجراحية الحصرية." }
+      ]
+    }
+  }
+};
 
-export default function Home() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
-  const [thinkingState, setThinkingState] = useState<string | null>(null);
-  const [isOnline, setIsOnline] = useState(true);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [hasConsent, setHasConsent] = useState(false);
-  const [showConsentModal, setShowConsentModal] = useState(false);
+export default function LandingPage() {
+  const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const t = CONTENT[lang];
+  const isRTL = lang === 'ar';
+
+  const { messages, input, handleInputChange, handleSubmit } = useChat();
   const scrollRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Language Dictionary for Greeting
-  const gTranslate = {
-    tr: 'Merhaba. Ben Aura. Bugün sağlık yolculuğunuzda size nasıl yardımcı olabilirim?',
-    en: 'Hello. I am Aura. How can I assist you in your health journey today?',
-    ar: 'مرحباً. أنا أورا. كيف يمكنني مساعدتك في رحلتك الصحية اليوم؟'
-  };
-
-  useEffect(() => {
-    const savedLang = localStorage.getItem("aura_lang") || 'en';
-    const greeting = gTranslate[savedLang as keyof typeof gTranslate] || gTranslate.en;
-
-    setMessages([{
-      id: 'init-1',
-      role: 'assistant',
-      content: greeting,
-      timestamp: new Date()
-    }]);
-  }, []);
-
-  const thinkingMessages = [
-    "Analyzing symptoms...",
-    "Syncing with Neural Records...",
-    "Validating medical safety...",
-    "Optimizing treatment matches...",
-    "Structuring intelligence response..."
-  ];
-
-  const visionThinkingMessages = [
-    "Processing visual data...",
-    "Mapping Norwood scale...",
-    "Calculating graft density...",
-    "Simulating post-op outcome...",
-    "Generating clinical report..."
-  ];
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-
-    const handleOnline = () => {
-      setIsOnline(true);
-      toast.success("Neural link restored.");
-      syncWithServer(addLead);
-    };
-    const handleOffline = () => {
-      setIsOnline(false);
-      toast.error("Neural link severed. Local persistence active.");
-    };
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
-    setIsOnline(navigator.onLine);
-
-    return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
-    };
-  }, [messages, thinkingState]);
-
-  const handleSend = async (overrideContent?: string) => {
-    const contentToSend = overrideContent || input;
-    if ((!contentToSend.trim() && !selectedImage) || isLoading) return;
-    const userMsg: Message = { id: Date.now().toString(), role: 'user', content: contentToSend || (selectedImage ? 'Image Analysis Request' : ''), timestamp: new Date() };
-    setMessages(prev => [...prev, userMsg]);
-    if (!overrideContent) setInput('');
-    setIsLoading(true);
-
-    // Determine thinking mode (Text vs Vision)
-    const currentThinkingPool = selectedImage ? visionThinkingMessages : thinkingMessages;
-    let thinkingIdx = 0;
-    setThinkingState(currentThinkingPool[0]);
-
-    const thinkingInterval = setInterval(() => {
-      thinkingIdx = (thinkingIdx + 1) % currentThinkingPool.length;
-      setThinkingState(currentThinkingPool[thinkingIdx]);
-    }, 1500);
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          userId: 'aura-user-1',
-          messages: [...messages, userMsg].map(m => ({ role: m.role, content: m.content })),
-          image: selectedImage,
-          language: localStorage.getItem("aura_lang") || 'en'
-        })
-      });
-
-      clearInterval(thinkingInterval);
-      setThinkingState(null);
-
-      const data = await response.json();
-      setSelectedImage(null); // Clear image immediately after response logic starts
-
-      if (data.error) {
-        toast.error(data.error);
-        setIsLoading(false);
-        return;
-      }
-
-      if (data.message?.content) {
-        const content = data.message.content;
-        setMessages(prev => [...prev, {
-          id: Date.now().toString() + '-ai',
-          role: 'assistant',
-          content: content,
-          timestamp: new Date(),
-          analysis: data.analysis // Capture the structured analysis
-        }]);
-
-        // Smart Language Detection
-        let detected = 'en';
-        if (/[ığüşöçİĞÜŞÖÇ]/.test(content)) detected = 'tr';
-        else if (/[\u0600-\u06FF]/.test(content)) detected = 'ar';
-        localStorage.setItem("aura_lang", detected);
-
-        // Aura Sound (TTS) Entegrasyonu
-        playAudio(content);
-      }
-    } catch (error) {
-      clearInterval(thinkingInterval);
-      setThinkingState(null);
-      toast.error('Connection issue.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  /* VOICE RECORDING & PLAYBACK STATE */
-  const [isRecording, setIsRecording] = useState(false);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const playAudio = async (text: string) => {
-    try {
-      const response = await fetch('/api/tts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, voice: 'nova' }),
-      });
-
-      if (!response.ok) throw new Error('TTS failed');
-
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-
-      if (audioRef.current) {
-        audioRef.current.src = url;
-        audioRef.current.play();
-      } else {
-        const audio = new Audio(url);
-        audioRef.current = audio;
-        audio.play();
-      }
-    } catch (error) {
-      console.error('Audio playback failed:', error);
-    }
-  };
-
-  const handleVoice = async () => {
-    if (isRecording) {
-      stopRecording();
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-
-      mediaRecorderRef.current = mediaRecorder;
-      chunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-
-      mediaRecorder.onstop = async () => {
-        setIsRecording(false);
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
-
-        // Send to API
-        const toastId = toast.loading("Processing voice...");
-        try {
-          const formData = new FormData();
-          formData.append('file', audioBlob);
-
-          const res = await fetch('/api/voice', {
-            method: 'POST',
-            body: formData,
-          });
-
-          const data = await res.json();
-          toast.dismiss(toastId);
-
-          if (data.text) {
-            toast.success("Holographic Voice Decoded", { icon: '🎙️' });
-            handleSend(data.text);
-          } else {
-            toast.error("Voice unintelligible.");
-          }
-        } catch (err) {
-          toast.dismiss(toastId);
-          toast.error("Voice uplink failed.");
-        }
-
-        // Stop all tracks
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      mediaRecorder.start();
-      setIsRecording(true);
-      toast("Listening...", { icon: '🔴' });
-
-    } catch (err) {
-      console.error(err);
-      toast.error("Microphone access denied.");
-    }
-  };
-
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-    }
-  };
-
-  const handleAnalysis = () => {
-    if (!hasConsent) {
-      setShowConsentModal(true);
-      return;
-    }
-    fileInputRef.current?.click();
-  };
-
-  const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!hasConsent) {
-      setShowConsentModal(true);
-      return;
-    }
-    const file = e.target.files?.[0];
-    if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Image too large. Max 5MB.");
-        return;
-      }
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setSelectedImage(reader.result as string);
-        toast.success("Holographic capture complete. Ready to analyze.");
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  }, [messages]);
 
   return (
-    <main className="min-h-screen bg-white selection:bg-black selection:text-white overflow-x-hidden">
-      {/* 2026 Spatial Background - Interactive Mesh */}
-      <div className="fixed inset-0 -z-10 bg-[#fafafa]">
-        <div className="absolute inset-0 opacity-40 mix-blend-multiply filter blur-[120px] animate-pulse">
-          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-200 rounded-full" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-200 rounded-full" />
-        </div>
+    <div className={`min-h-screen bg-white text-slate-900 font-sans ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      {/* --- NEURAL MESH BACKGROUND --- */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden opacity-30">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-indigo-100 rounded-full blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-cyan-50 rounded-full blur-[120px]" />
+        <svg className="absolute inset-0 w-full h-full opacity-[0.03]">
+          <pattern id="neural-grid" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1" fill="#4F46E2" />
+          </pattern>
+          <rect width="100%" height="100%" fill="url(#neural-grid)" />
+        </svg>
       </div>
 
-      {/* KVKK / GDPR Consent Modal */}
-      <AnimatePresence>
-        {showConsentModal && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/60 backdrop-blur-xl flex items-center justify-center p-8"
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 20 }}
-              animate={{ scale: 1, y: 0 }}
-              className="bg-white p-10 rounded-[3rem] w-full max-w-lg border border-neutral-100 shadow-2xl relative"
-            >
-              <div className="flex flex-col items-center text-center gap-6">
-                <div className="w-16 h-16 bg-neutral-50 rounded-2xl flex items-center justify-center text-black shadow-xl">
-                  <ShieldCheck size={32} />
-                </div>
-                <h3 className="text-3xl font-black tracking-tighter">Medical Privacy & Consent</h3>
-                <p className="text-neutral-500 text-sm leading-relaxed">
-                  To perform medical analysis on your images, Aura requires your explicit consent.
-                  Your data is encrypted and processed according to KVKK/GDPR standards.
-                </p>
-                <div className="w-full flex flex-col gap-4 mt-4">
-                  <button
-                    onClick={() => { setHasConsent(true); setShowConsentModal(false); }}
-                    className="w-full bg-black text-white py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:scale-105 active:scale-95 transition-all"
-                  >
-                    I Consent & Accept Terms
-                  </button>
-                  <button
-                    onClick={() => setShowConsentModal(false)}
-                    className="w-full text-neutral-400 py-2 text-[10px] font-bold uppercase tracking-widest hover:text-black transition-colors"
-                  >
-                    Not Now
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Hero Section & Navigation */}
-      <section className="relative min-h-screen flex flex-col items-center">
-        <nav className="w-full max-w-7xl px-8 md:px-12 py-10 flex flex-wrap items-center justify-between z-50 gap-8">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-4 group cursor-pointer"
-          >
-            <div className="w-12 h-12 flex items-center justify-center bg-black text-white rounded-2xl shadow-2xl group-hover:scale-110 transition-all">
-              <Stethoscope size={24} />
+      {/* --- NAVIGATION --- */}
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-100">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+              <Brain size={24} />
             </div>
-            <div className="flex flex-col">
-              <span className="text-3xl font-black tracking-tighter uppercase leading-none">Aura <span className="text-indigo-600">OS</span></span>
-              <span className="text-[10px] font-black text-neutral-400 tracking-[0.3em] uppercase">Revenue Engine</span>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex flex-wrap items-center gap-6 md:gap-10"
-          >
-            <Link href="/dashboard" className="text-xs font-black text-neutral-400 hover:text-black transition-all uppercase tracking-[0.2em] flex items-center gap-2 py-2">
-              <LayoutDashboard size={14} /> Control Center
-            </Link>
-
-            <Link href="/portal" className="group relative flex items-center gap-3 bg-black text-white px-8 py-4 rounded-full hover:scale-105 transition-all shadow-2xl">
-              <User size={16} />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Patient Space</span>
-            </Link>
-          </motion.div>
-        </nav>
-
-        <div className="flex-1 w-full max-w-5xl px-8 flex flex-col items-center justify-center relative pb-20">
-          <AnimatePresence>
-            {!messages.some(m => m.role === 'user') && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, y: -50 }}
-                className="flex flex-col items-center mb-16"
-              >
-                <div className="w-24 h-24 bg-black rounded-full mb-8 flex items-center justify-center shadow-[0_0_50px_rgba(79,70,229,0.3)] animate-pulse">
-                  <Sparkles size={40} className="text-white" />
-                </div>
-                <h1 className="text-6xl md:text-8xl lg:text-9xl font-black tracking-tighter text-center mb-6 leading-[0.85]">
-                  Revenue<br /><span className="text-indigo-600">Automated.</span>
-                </h1>
-                <p className="text-neutral-500 font-bold text-center max-w-lg uppercase tracking-[0.3em] text-[10px] mb-12">
-                  The World's First Autonomous Sales Force for Global Health Tourism.
-                </p>
-                <div className="flex gap-4">
-                  <button onClick={() => {
-                    const el = document.getElementById('funnel-logic');
-                    el?.scrollIntoView({ behavior: 'smooth' });
-                  }} className="px-10 py-5 bg-white border border-black/10 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-neutral-50 transition-all">
-                    How it works
-                  </button>
-                  <button onClick={() => {
-                    const el = document.getElementById('chat-input-area');
-                    el?.scrollIntoView({ behavior: 'smooth' });
-                  }} className="px-10 py-5 bg-black text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-2xl hover:scale-105 transition-all">
-                    Try Aura Vision
-                  </button>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className={`w-full transition-all duration-1000 ${messages.some(m => m.role === 'user') ? 'min-h-[60vh]' : 'h-0 opacity-0 overflow-hidden'}`}>
-            <div ref={scrollRef} className="h-full px-6 py-12 space-y-12">
-              {messages.map((m) => (
-                <div key={m.id} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
-                  <div className={`max-w-[80%] p-6 rounded-3xl text-xl font-bold ${m.role === 'user' ? 'bg-black text-white shadow-xl' : 'bg-white border border-neutral-100 shadow-sm text-neutral-500'}`}>
-                    {m.content}
-                  </div>
-                  {m.analysis && (
-                    <div className="mt-4 p-8 bg-indigo-50 rounded-[2rem] border border-indigo-100 w-full max-w-md shadow-2xl">
-                      <div className="flex items-center gap-3 mb-4">
-                        <Sparkles size={20} className="text-indigo-600" />
-                        <span className="font-black text-[10px] uppercase tracking-widest">Aura Vision Analysis</span>
-                      </div>
-                      <p className="text-2xl font-black mb-2">{m.analysis.diagnosis}</p>
-                      <p className="text-sm font-bold text-indigo-600/70 mb-4">{m.analysis.suggestedTreatment}</p>
-                      <div className="bg-white p-4 rounded-xl flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase text-neutral-400">Graft Estimate</span>
-                        <span className="text-xl font-black text-black">{m.analysis.estimatedGrafts}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-              {thinkingState && <div className="text-indigo-600 font-black animate-pulse uppercase tracking-widest text-xs italic">{thinkingState}</div>}
-            </div>
+            <span className="text-xl font-black tracking-tighter uppercase italic">Aura <span className="text-indigo-600">OS</span></span>
           </div>
 
-          <div id="chat-input-area" className="w-full mt-auto pt-16">
-            <div className="spatial-card bg-white/40 backdrop-blur-3xl rounded-[3rem] p-4 flex flex-col shadow-2xl border border-white/20">
-              <div className="flex items-center gap-4 w-full">
-                <input type="text" value={input} onChange={e => setInput(e.target.value)} onKeyPress={e => e.key === 'Enter' && handleSend()} placeholder="Ask Aura anything..." className="flex-1 bg-transparent px-2 py-4 text-xl font-bold focus:outline-none" />
-                <button onClick={() => handleSend()} className="bg-black text-white w-14 h-14 rounded-full flex items-center justify-center hover:scale-110 transition-all">
-                  <ArrowRight size={24} />
+          <div className="hidden md:flex items-center gap-8">
+            <div className="flex items-center gap-2 bg-slate-50 p-1 rounded-full border border-slate-100">
+              {(['tr', 'en', 'ar'] as const).map((l) => (
+                <button
+                  key={l}
+                  onClick={() => setLang(l)}
+                  className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all ${lang === l ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                >
+                  {l}
                 </button>
+              ))}
+            </div>
+            <Link href="/dashboard" className="text-xs font-bold text-slate-500 hover:text-indigo-600 transition-colors uppercase tracking-widest flex items-center gap-2">
+              <LayoutDashboard size={14} /> Dashboard
+            </Link>
+            <button className="bg-slate-900 text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-xl">
+              Get Started
+            </button>
+          </div>
+
+          <button className="md:hidden p-2 text-slate-600" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </nav>
+
+      {/* --- HERO SECTION --- */}
+      <section className="relative pt-40 pb-20 px-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 text-indigo-600 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 border border-indigo-100"
+          >
+            <Sparkles size={14} /> {t.hero.tag}
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl md:text-8xl font-black tracking-tighter text-slate-900 leading-[0.9] mb-8 max-w-4xl"
+          >
+            {t.hero.title}
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg md:text-xl text-slate-500 font-medium max-w-2xl mb-12 leading-relaxed"
+          >
+            {t.hero.subtitle}
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto"
+          >
+            <button className="px-12 py-6 bg-indigo-600 text-white rounded-2xl text-sm font-black uppercase tracking-widest shadow-2xl hover:scale-105 hover:bg-indigo-700 transition-all">
+              {t.hero.ctaPrimary}
+            </button>
+            <button className="px-12 py-6 bg-white border border-slate-200 text-slate-900 rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-slate-50 transition-all flex items-center justify-center gap-3">
+              <Play size={16} fill="currentColor" /> {t.hero.ctaSecondary}
+            </button>
+          </motion.div>
+
+          {/* Dash Görüntüsü / Mockup */}
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 1 }}
+            className="mt-24 w-full max-w-6xl relative"
+          >
+            <div className="absolute inset-0 bg-indigo-500/20 blur-[100px] rounded-full" />
+            <div className="bg-white/50 backdrop-blur-2xl border border-white p-4 rounded-[2.5rem] shadow-[0_50px_100px_rgba(0,0,0,0.1)]">
+              <div className="bg-slate-50/80 rounded-[2rem] overflow-hidden border border-slate-200/50 aspect-video flex flex-col">
+                <div className="h-10 border-b border-slate-200/50 flex items-center px-6 gap-2">
+                  <div className="w-3 h-3 rounded-full bg-red-400" />
+                  <div className="w-3 h-3 rounded-full bg-amber-400" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-400" />
+                  <div className="flex-1 flex justify-center">
+                    <div className="bg-slate-200/50 h-5 w-40 rounded-full" />
+                  </div>
+                </div>
+                <div className="flex-1 p-8 grid grid-cols-12 gap-6">
+                  <div className="col-span-3 space-y-4">
+                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                      <div className="w-10 h-10 bg-indigo-50 rounded-lg flex items-center justify-center text-indigo-600 mb-3">
+                        <Users size={20} />
+                      </div>
+                      <div className="h-4 w-20 bg-slate-100 rounded mb-2" />
+                      <div className="h-6 w-12 bg-indigo-100 rounded" />
+                    </div>
+                    <div className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+                      <div className="w-10 h-10 bg-emerald-50 rounded-lg flex items-center justify-center text-emerald-600 mb-3">
+                        <PieChart size={20} />
+                      </div>
+                      <div className="h-4 w-20 bg-slate-100 rounded mb-2" />
+                      <div className="h-6 w-12 bg-emerald-100 rounded" />
+                    </div>
+                  </div>
+                  <div className="col-span-9 bg-white rounded-3xl border border-slate-100 shadow-sm p-6 overflow-hidden">
+                    <div className="flex items-center justify-between mb-8">
+                      <div className="h-6 w-40 bg-slate-100 rounded-full" />
+                      <div className="flex gap-2">
+                        <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100" />
+                        <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-100" />
+                      </div>
+                    </div>
+                    <div className="space-y-6">
+                      {[1, 2, 3].map(i => (
+                        <div key={i} className="flex gap-4 items-center">
+                          <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100" />
+                          <div className="flex-1 space-y-2">
+                            <div className="h-4 w-1/3 bg-slate-100 rounded" />
+                            <div className="h-3 w-2/3 bg-slate-50 rounded" />
+                          </div>
+                          <div className="w-20 h-8 rounded-full bg-indigo-50 text-[10px] font-black text-indigo-600 flex items-center justify-center uppercase">CLOSING</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="flex justify-center gap-10 mt-8">
-              <button onClick={handleVoice} className="text-[10px] font-black text-neutral-400 uppercase tracking-widest hover:text-black flex items-center gap-2">
-                <Mic size={14} /> Voice Command
-              </button>
-              <button onClick={handleAnalysis} className="text-[10px] font-black text-indigo-600 uppercase tracking-widest hover:text-indigo-700 flex items-center gap-2">
-                <Sparkles size={14} /> Aura Vision™
-              </button>
-            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* --- FUNNEL SECTION (Medu Killer) --- */}
+      <section className="py-32 px-6 relative bg-slate-50/50">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-24">
+            <h2 className="text-4xl md:text-6xl font-black tracking-tighter mb-6">{t.funnel.title}</h2>
+            <p className="text-slate-500 font-bold max-w-xl mx-auto uppercase tracking-widest text-xs">{t.funnel.subtitle}</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-12">
+            {[
+              { step: t.funnel.step1, icon: <Layers />, color: 'bg-indigo-600' },
+              { step: t.funnel.step2, icon: <BrainCircuit />, color: 'bg-indigo-600', highlight: true },
+              { step: t.funnel.step3, icon: <Lock />, color: 'bg-indigo-600' }
+            ].map((item, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -10 }}
+                className={`bg-white p-8 rounded-[2.5rem] shadow-[0_20px_40px_rgba(0,0,0,0.02)] border ${item.highlight ? 'border-indigo-600' : 'border-slate-100'} relative overflow-hidden`}
+              >
+                {item.highlight && (
+                  <div className="absolute top-0 right-0 p-4">
+                    <div className="bg-indigo-600 text-white px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest">Aura Exclusive</div>
+                  </div>
+                )}
+                <div className={`w-16 h-16 ${item.color} text-white rounded-[1.5rem] flex items-center justify-center mb-8 shadow-xl shadow-indigo-200`}>
+                  {item.icon}
+                </div>
+                <h3 className="text-2xl font-black mb-4 tracking-tight">{item.step.title}</h3>
+                <p className="text-slate-500 font-medium leading-relaxed">{item.step.desc}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* SECTION 2: THE FUNNEL LOGIC */}
-      <section id="funnel-logic" className="py-40 bg-black text-white relative">
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
-            <div className="space-y-12">
-              <span className="text-indigo-400 text-xs font-black uppercase tracking-[0.5em]">The Conversion Engine</span>
-              <h2 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.85]">
-                Closer,<br /><span className="text-neutral-700">Not Assistant.</span>
+      {/* --- AURA VISION DISPLAY --- */}
+      <section className="py-32 px-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto bg-slate-900 rounded-[4rem] p-12 md:p-24 relative">
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-indigo-500/20 blur-[120px]" />
+          <div className="grid md:grid-cols-2 gap-20 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 text-white rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-10 border border-white/10 backdrop-blur-sm">
+                <Sparkles size={14} className="text-indigo-400" /> VORTEX VISION™
+              </div>
+              <h2 className="text-4xl md:text-6xl font-black text-white tracking-tighter leading-tight mb-8">
+                Surgical-Grade AI Diagnostics.
               </h2>
-              <p className="text-neutral-400 text-xl font-medium leading-relaxed">
-                Rakipler sadece sekreterlik yapar. Aura OS ise hastayı analiz eder, tıbbi otorite kurar ve **Stripe entegresi** ile satışı saniyeler içinde kapatır.
+              <p className="text-slate-400 text-lg mb-12 leading-relaxed font-medium">
+                Analyze patient photos with deep-learning neural networks. From graft estimation to dental symmetry, Aura OS creates professional medical reports instantly to build unwavering trust before the first call.
               </p>
-              <div className="space-y-12">
+              <div className="space-y-4">
                 {[
-                  { title: "Vortex Vision™ Diagnostic", desc: "Hastanın gönderdiği fotoğrafları cerrahi hassasiyetle analiz ederek 'Bilimsel Güven' yaratır." },
-                  { title: "Neural Pay™ Bridge", desc: "Satışın en sıcak olduğu anda chat içinde depozitoyu tahsil ederek 'Closing' yapar." },
-                  { title: "Channel Persistence", desc: "Insta, WhatsApp ve Telegram arasında sarsılmaz bir hafıza ile lead takibi yapar." }
-                ].map((s, i) => (
-                  <div key={i} className="group">
-                    <h4 className="font-black text-3xl mb-4 group-hover:text-indigo-500 transition-colors uppercase tracking-tight">{s.title}</h4>
-                    <p className="text-neutral-500 text-lg">{s.desc}</p>
+                  "98% Accuracy in Hair Density Analysis",
+                  "Instant Dental Symmetry Mapping",
+                  "Automated CRM Lead Enrichment",
+                  "Hyper-Personalized Treatment Paths"
+                ].map(feat => (
+                  <div key={feat} className="flex items-center gap-4 text-white font-bold text-sm tracking-tight">
+                    <CheckCircle2 size={18} className="text-indigo-400" /> {feat}
                   </div>
                 ))}
               </div>
             </div>
+
             <div className="relative">
-              <div className="w-full aspect-[4/5] bg-neutral-900 rounded-[4rem] border border-white/10 overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.5)] flex items-center justify-center p-8">
-                {/* Visual Mockup Simulation */}
-                <div className="w-full space-y-8">
-                  <div className="p-8 bg-white/5 rounded-[2rem] border border-white/10">
-                    <p className="text-xs font-black text-indigo-400 uppercase tracking-widest mb-4">Aura Vision Active</p>
-                    <div className="h-40 bg-neutral-800 rounded-xl mb-6 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-indigo-600/20 to-transparent" />
-                      <div className="absolute bottom-4 left-4 right-4 h-1 bg-indigo-500/20 rounded-full overflow-hidden">
-                        <div className="w-[70%] h-full bg-indigo-500" />
+              <div className="bg-white/10 backdrop-blur-3xl rounded-[3rem] p-4 border border-white/10 overflow-hidden shadow-2xl">
+                <div className="bg-slate-800 rounded-[2.5rem] overflow-hidden aspect-[4/5] relative">
+                  {/* Mock Analysis UI */}
+                  <div className="absolute inset-0 flex flex-col p-8">
+                    <div className="flex justify-between mb-auto">
+                      <div className="bg-white text-slate-900 px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-xl">
+                        <Activity size={12} /> SCANNING
+                      </div>
+                      <div className="w-12 h-12 rounded-full border-2 border-indigo-400 flex items-center justify-center text-white font-black text-xs">95%</div>
+                    </div>
+                    <div className="space-y-4 text-white">
+                      <div className="h-6 w-40 bg-white/20 rounded-full animate-pulse" />
+                      <div className="h-10 w-full bg-indigo-500/30 rounded-2xl border border-indigo-400/50 flex items-center px-6">
+                        <span className="text-[10px] font-black uppercase tracking-widest text-indigo-200">Diagnosis: Class III Vertex</span>
                       </div>
                     </div>
-                    <p className="text-white font-bold italic">"Analiz tamamlandı: Norwood Scale 4. Tahmini 4200 greft ihtiyacı tespit edildi."</p>
-                  </div>
-                  <div className="p-6 bg-emerald-500/20 rounded-2xl text-emerald-400 text-center font-black uppercase text-xs tracking-[0.2em] animate-pulse">
-                    Aura Neural Pay: €500 Deposit Received
                   </div>
                 </div>
               </div>
@@ -526,74 +394,35 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SECTION 3: THE COMMAND CENTER REVEAL */}
-      <section className="py-40 bg-white text-black">
-        <div className="max-w-7xl mx-auto px-8">
-          <div className="text-center mb-32">
-            <span className="text-neutral-300 text-xs font-black uppercase tracking-[0.5em] mb-8 block">Global Command Center</span>
-            <h2 className="text-7xl md:text-8xl font-black tracking-tighter mb-12">Total Command.</h2>
-            <p className="text-neutral-400 text-xl font-medium max-w-2xl mx-auto">
-              Hastaneler için geliştirilen yeni nesil Dashboard ile gelir akışını, lead kalitesini ve AI performansını
-              dünyanın her yerinden, saniyeler içinde izleyin.
-            </p>
-          </div>
-
-          <div className="p-4 bg-neutral-50 rounded-[4rem] border border-neutral-100 shadow-2xl relative group">
-            <div className="absolute inset-0 bg-indigo-600/5 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-            <div className="relative aspect-video rounded-[3.5rem] overflow-hidden bg-neutral-900 flex items-center justify-center border border-black/5">
-              {/* PLACEHOLDER FOR DASHBOARD MOCKUP */}
-              <div className="text-center space-y-4">
-                <LayoutDashboard size={64} className="text-indigo-600 mx-auto animate-pulse" />
-                <p className="font-black text-[10px] uppercase tracking-[0.5em] text-neutral-500">Live Dashboard Preview: getauraos.com/admin</p>
+      {/* --- FOOTER --- */}
+      <footer className="py-20 px-6 border-t border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-12">
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg">
+                <Brain size={24} />
               </div>
+              <span className="text-xl font-black tracking-tighter uppercase italic">Aura <span className="text-indigo-600">OS</span></span>
             </div>
+            <p className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em]">Next-Gen Revenue Infrastructure</p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
+            {["Product", "Marketplace", "Security", "Pricing"].map(item => (
+              <Link key={item} href="#" className="text-[10px] font-black uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">{item}</Link>
+            ))}
+          </div>
+
+          <div className="flex gap-4">
+            <button className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-400 hover:text-indigo-600 transition-colors">
+              <Globe size={18} />
+            </button>
           </div>
         </div>
-      </section>
-
-      {/* SECTION 4: ROI TABLE */}
-      <section className="py-40 bg-neutral-50 text-black border-t border-neutral-100">
-        <div className="max-w-4xl mx-auto px-8">
-          <div className="bg-white rounded-[4rem] p-16 md:p-24 shadow-2xl text-center">
-            <h3 className="text-5xl font-black tracking-tighter mb-8 leading-tight">Geleceği Bugün Kurun.</h3>
-            <p className="text-neutral-400 text-lg mb-16">Aura OS bir masraf değil, kendisini 24 saatte amorti eden bir yatırımdır.</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-20 text-left">
-              <div>
-                <p className="text-3xl font-black text-black mb-1">+40%</p>
-                <p className="text-[9px] font-black uppercase text-neutral-400 tracking-widest whitespace-nowrap">Conversion Boost</p>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-black mb-1">24/7</p>
-                <p className="text-[9px] font-black uppercase text-neutral-400 tracking-widest whitespace-nowrap">Active Sales</p>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-black mb-1">Zero</p>
-                <p className="text-[9px] font-black uppercase text-neutral-400 tracking-widest whitespace-nowrap">Human Latency</p>
-              </div>
-              <div>
-                <p className="text-3xl font-black text-black mb-1">Global</p>
-                <p className="text-[9px] font-black uppercase text-neutral-400 tracking-widest whitespace-nowrap">Multi-Cloud</p>
-              </div>
-            </div>
-            <Link href="/dashboard" className="w-full inline-block py-8 bg-black text-white text-center rounded-[2rem] font-black uppercase tracking-[0.2em] shadow-2xl hover:scale-[1.02] transition-all">
-              Cironu Artırmaya Başla
-            </Link>
-          </div>
+        <div className="max-w-7xl mx-auto mt-20 text-center">
+          <p className="text-slate-300 text-[8px] font-black uppercase tracking-[0.5em]">© 2026 Aura OS Galactic Operations Hub</p>
         </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-20 bg-white border-t border-neutral-100 text-center">
-        <div className="flex justify-center gap-10 mb-8 opacity-20 filter grayscale">
-          <Stethoscope size={24} />
-          <Bot size={24} />
-          <ShieldCheck size={24} />
-        </div>
-        <p className="text-[9px] font-black uppercase tracking-[0.4em] text-neutral-300">Aura Intel v.2026 • Powered by Galactic Scaling • Based in Istanbul</p>
       </footer>
-    </main>
+    </div>
   );
 }
-
-
-

@@ -65,6 +65,7 @@ export default function Dashboard() {
 
   const [lang, setLang] = useState<DashboardLang>('en');
   const t = DASHBOARD_TRANSLATIONS[lang];
+  const isRTL = lang === 'ar';
   const [isImpersonating, setIsImpersonating] = useState(false);
 
   // Manual language switcher update
@@ -362,7 +363,7 @@ export default function Dashboard() {
   if (!isMounted) return <div className="min-h-screen bg-white" />;
 
   return (
-    <div className={`min-h-screen mesh-bg flex flex-col lg:flex-row flex-nowrap w-full max-w-[100vw] overflow-x-hidden selection:bg-black selection:text-white ${lang === 'ar' ? 'rtl' : ''}`}>
+    <div className={`min-h-screen mesh-bg flex flex-col lg:flex-row flex-nowrap w-full max-w-[100vw] overflow-x-hidden selection:bg-black selection:text-white ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Native Audio Element */}
       <audio ref={audioRef} loop />
       <ZenControls
