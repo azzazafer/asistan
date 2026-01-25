@@ -1,202 +1,213 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
-  Sparkles,
+  Brain,
   Zap,
   Shield,
   Activity,
   Globe,
-  BrainCircuit,
-  MessageSquare,
-  Instagram,
-  Send,
-  User,
-  LayoutDashboard,
-  Brain,
-  Layers,
-  PieChart,
   Lock,
-  ArrowRight,
-  Play,
-  Stethoscope,
-  Clock,
-  CheckCircle2,
+  ChevronRight,
   Menu,
   X,
-  Users,
-  ChevronRight,
-  ChevronLeft,
-  DollarSign,
+  Play,
+  CheckCircle2,
   TrendingUp,
-  Cpu,
-  Monitor
+  Target,
+  Users,
+  MessageSquare,
+  Sparkles,
+  ArrowUpRight,
+  DollarSign
 } from "lucide-react";
 import Link from "next/link";
-import { useChat } from 'ai/react';
 
-// --- PREMIUM TRANSLATIONS ---
-const CONTENT = {
+// --- ELITE CONTENT MATRIX (TR, EN, AR) ---
+const ELITE_CONTENT = {
   tr: {
-    nav: { dashboard: "Dashboard", getStarted: "Hemen Başla" },
+    meta: {
+      title: "Aura OS | Sağlık Turizminde Dijital Sinir Sistemi",
+      desc: "Chatbotları unutun. Aura OS, leadsleri %42 daha fazla operasyona dönüştüren otonom bir satış motorudur."
+    },
+    nav: { features: "Çözümler", tech: "Teknoloji", caseStudies: "Başarılar", getStarted: "Sisteme Katıl" },
     hero: {
-      tag: "SAĞLIK TURİZMİNDE 2026 STANDARDI",
-      title: "Kliniklerin Dijital Sinir Sistemi",
-      subtitle: "Chatbotlardan kurtulun. Aura OS; hasta temasından tıbbi analize, tekliflendirmeden in-chat ödemeye kadar tüm operasyonu yöneten otonom bir büyüme katmanıdır.",
-      ctaPrimary: "Canlı Demoyu Gör",
-      ctaSecondary: "Aura Vision™'ı İzle"
+      tag: "SAĞLIK TURİZMİ 4.0",
+      title: "Klinikleri Otonom Satış Makinelerine Dönüştürün",
+      subtitle: "Sadece yanıt vermeyin, kazanın. Aura OS; WhatsApp, Instagram ve Telegram leadslerinizi cerrahi analiz ve in-chat ödeme ile nakit akışına dönüştüren tek otonom büyüme katmanıdır.",
+      primary: "Demoyu Başlat",
+      secondary: "Vortex Vision™'ı Keşfet"
     },
-    funnel: {
-      title: "Kaostan Nakit Akışına",
-      subtitle: "Dağınık mesaj kanallarını tek bir yapay zeka ile profesyonel bir satış makinesine dönüştürün.",
-      step1: { title: "Omnichannel Yakalama", desc: "WhatsApp, IG ve Telegram mesajlarını anında analiz eder, niyet puanlaması yapar." },
-      step2: { title: "Vortex Vision™ Analizi", desc: "Hastanın gönderdiği görselleri cerrahi hassasiyetle analiz ederek tıbbi güven inşa eder." },
-      step3: { title: "Neural Pay™ Kapanış", desc: "Satışın zirvesinde ödeme linkini oluşturur ve depozitoyu saniyeler içinde tahsil eder." }
-    },
-    features: {
-      title: "Neden Aura OS?",
+    problems: {
+      title: "Piyasadaki En Büyük Sorununuz Nedir?",
       items: [
-        { title: "7/24 Otonom Satış", desc: "Siz uyurken Aura leadsleri sıcak tutar ve randevuya dönüştürür." },
-        { title: "Kültürel Aynalama", desc: "Global pazarlar için tonlamasını ve ikna dilini otomatik ayarlar." },
-        { title: "Loyalty Shield", desc: "Hastanın dışarı sızmasını engeller, kliniğinizin değerini vurgular." }
+        { id: "01", title: "Lead Sızıntısı", desc: "Mesajlara 5 dakika içinde dönülmemesi leadlerin %80'ini kaybetmenize sebep olur. Aura 0.4 saniyede yanıt verir." },
+        { id: "02", title: "Güven Boşluğu", desc: "Hastalar tıbbi kanıt ister. Aura, fotoğrafları anında analiz ederek cerrahi bir rapor sunar ve güveni kilitler." },
+        { id: "03", title: "Kapanış Sorunu", desc: "Randevu almak yetmez, depozito gerekir. Aura, konuşma anında ödemeyi saniyeler içinde tahsil eder." }
       ]
     },
-    stats: { conversion: "Kayıp Leadleri Yakala", revenue: "Gelir Artışı", speed: "Yanıt Hızı" }
+    solutions: {
+      tag: "ÇÖZÜMÜMÜZ",
+      title: "Sadece Teknoloji Değil, Bir Satış Stratejisi.",
+      items: [
+        { title: "Capture & Qualify", desc: "Tüm kanallardan gelen leadsleri anında yakalar, niyet analizi yapar ve filtreler.", icon: <Target className="text-emerald-400" /> },
+        { title: "Vortex Vision™", desc: "Hastanın durumunu medikal bir raporla analiz eder, kliniğinizin farkını bilimsel olarak kanıtlar.", icon: <Activity className="text-indigo-400" /> },
+        { title: "Neural Pay™", desc: "Stripe altyapısıyla en sıcak anda depozitoyu tahsil eder. Satışın soğumasına izin vermez.", icon: <DollarSign className="text-violet-400" /> }
+      ]
+    },
+    footer: { rights: "© 2026 Aura OS Galactic Operations. Tüm Hakları Saklıdır." }
   },
   en: {
-    nav: { dashboard: "Dashboard", getStarted: "Get Started" },
+    meta: {
+      title: "Aura OS | The Digital Nervous System for Clinics",
+      desc: "Forget chatbots. Aura OS is an autonomous sales engine converting leads into 42% more operations."
+    },
+    nav: { features: "Solutions", tech: "Technology", caseStudies: "Success", getStarted: "Join the Future" },
     hero: {
-      tag: "THE 2026 HEALTH TOURISM STANDARD",
-      title: "The Digital Nervous System for Clinics",
-      subtitle: "Move beyond chatbots. Aura OS is an autonomous growth layer managing everything from patient contact to medical analysis and in-chat payments.",
-      ctaPrimary: "Watch Live Demo",
-      ctaSecondary: "Explore Aura Vision™"
+      tag: "HEALTH TOURISM 4.0",
+      title: "Transform Clinics into Autonomous Sales Machines",
+      subtitle: "Don't just respond, win. Aura OS is the only autonomous growth layer that converts your WA, IG, and Telegram leads into cash flow with surgical analysis and in-chat payments.",
+      primary: "Start Demo",
+      secondary: "Explore Vortex Vision™"
     },
-    funnel: {
-      title: "From Chaos to Cash Flow",
-      subtitle: "Convert scattered messaging channels into a professional sales machine with a single AI.",
-      step1: { title: "Omnichannel Capture", desc: "Instantly analyzes WA, IG, and Telegram messages with intent scoring." },
-      step2: { title: "Vortex Vision™ Analysis", desc: "Analyzes patient photos with surgical precision to build medical trust." },
-      step3: { title: "Neural Pay™ Closing", desc: "Generates payment links at the peak of the sales cycle and collects deposits instantly." }
-    },
-    features: {
-      title: "Why Aura OS?",
+    problems: {
+      title: "What is Your Biggest Market Challenge?",
       items: [
-        { title: "24/7 Autonomous Sales", desc: "Aura keeps leads hot and converts them into appointments while you sleep." },
-        { title: "Cultural Mirroring", desc: "Automatically adjusts tone and persuasion for global markets." },
-        { title: "Loyalty Shield", desc: "Prevents lead leakage by emphasizing your clinic's unique value." }
+        { id: "01", title: "Lead Leakage", desc: "Failing to respond within 5 minutes loses 80% of leads. Aura responds in 0.4 seconds." },
+        { id: "02", title: "The Trust Gap", desc: "Patients demand evidence. Aura analyzes photos instantly with a surgical report, locking in trust." },
+        { id: "03", title: "Closing Friction", desc: "Booking isn't enough; deposits are. Aura collects payments in-chat in seconds." }
       ]
     },
-    stats: { conversion: "Recover Lost Leads", revenue: "Revenue Growth", speed: "Response Speed" }
+    solutions: {
+      tag: "OUR SOLUTION",
+      title: "Not Just Tech, a Sales Strategy.",
+      items: [
+        { title: "Capture & Qualify", desc: "Captures leads from all channels, analyzes intent, and filters them instantly.", icon: <Target className="text-emerald-400" /> },
+        { title: "Vortex Vision™", desc: "Analyzes patient cases with medical reports, scientifically proving your clinic's superiority.", icon: <Activity className="text-indigo-400" /> },
+        { title: "Neural Pay™", desc: "Collects deposits at the peak of the conversation via Stripe. Never let a sale get cold.", icon: <DollarSign className="text-violet-400" /> }
+      ]
+    },
+    footer: { rights: "© 2026 Aura OS Galactic Operations. All Rights Reserved." }
   },
   ar: {
-    nav: { dashboard: "لوحة التحكم", getStarted: "ابدأ الآن" },
+    meta: {
+      title: "Aura OS | الجهاز العصبي الرقمي للعيادات",
+      desc: "انسَ روبوتات الدردشة. Aura OS هو محرك مبيعات ذاتي يحول العملاء المحتملين إلى عمليات أكثر بنسبة 42%."
+    },
+    nav: { features: "الحلول", tech: "التكنولوجيا", caseStudies: "النجاحات", getStarted: "انضم إلينا" },
     hero: {
-      tag: "معيار السياحة العلاجية 2026",
-      title: "الجهاز العصبي الرقمي للعيادات",
-      subtitle: "تجاوز روبوتات الدردشة. Aura OS هي طبقة نمو ذاتية تدير كل شيء من اتصال المريض إلى التحليل الطبي والمدفوعات داخل الدردشة.",
-      ctaPrimary: "شاهد العرض المباشر",
-      ctaSecondary: "اكتشف Aura Vision™"
+      tag: "السياحة العلاجية 4.0",
+      title: "حول عيادتك إلى آلة مبيعات ذاتية",
+      subtitle: "لا تكتفِ بالرد، بل اربح. Aura OS هي طبقة النمو الذاتي الوحيدة التي تحول رسائل WA و IG و Telegram إلى تدفق نقدي من خلال التحليل الجراحي والمدفوعات داخل الدردشة.",
+      primary: "ابدأ العرض",
+      secondary: "اكتشف Vortex Vision™"
     },
-    funnel: {
-      title: "من الفوضى إلى التدفق النقدي",
-      subtitle: "حول قنوات المراسلة المشتتة إلى آلة مبيعات احترافية باستخدام ذكاء اصطناعي واحد.",
-      step1: { title: "الالتقاط متعدد القنوات", desc: "يحلل رسائل WA و IG و Telegram فوراً مع تسجيل النوايا." },
-      step2: { title: "تحليل Vortex Vision™", desc: "يحلل صور المرضى بدقة جراحية لبناء الثقة الطبية." },
-      step3: { title: "إغلاق Neural Pay™", desc: "ينشئ روابط الدفع في ذروة دورة المبيعات ويحصل الودائع فوراً." }
-    },
-    features: {
-      title: "لماذا Aura OS؟",
+    problems: {
+      title: "ما هو أكبر تحدٍ يواجهك في السوق؟",
       items: [
-        { title: "مبيعات ذاتية 24/7", desc: "أورا تبقي العملاء مهتمين وتحولهم إلى مواعيد أثناء نومك." },
-        { title: "المحاكاة الثقافية", desc: "يعدل النبرة والإقناع تلقائياً للأسواق العالمية." },
-        { title: "درع الولاء", desc: "يمنع تسرب العملاء من خلال التأكيد على القيمة الفريدة لعيادتك." }
+        { id: "01", title: "تسرب العملاء", desc: "الفشل في الرد خلال 5 دقائق يفقدك 80% من العملاء. أورا ترد في 0.4 ثانية." },
+        { id: "02", title: "فجوة الثقة", desc: "يطلب المرضى أدلة طبية. تحلل أورا الصور وتصدر تقارير جراحية تقفل الثقة فوراً." },
+        { id: "03", title: "مشكلة الإغلاق", desc: "الحجز لا يكفي، بل الوديعة. تقوم أورا بتحصيل المدفوعات داخل الدردشة في ثوانٍ." }
       ]
     },
-    stats: { conversion: "استعادة المفقودين", revenue: "نمو الإيرادات", speed: "سرعة الرد" }
+    solutions: {
+      tag: "حلنا",
+      title: "ليست مجرد تقنية، بل استراتيجية مبيعات.",
+      items: [
+        { title: "الالتقاط والتأهيل", desc: "يحلل العملاء من كافة القنوات، ويصنف النوايا ويفلترهم فوراً.", icon: <Target className="text-emerald-400" /> },
+        { title: "Vortex Vision™", desc: "تحليل حالات المرضى بتقارير طبية، ما يثبت تميز عيادتك علمياً.", icon: <Activity className="text-indigo-400" /> },
+        { title: "Neural Pay™", desc: "تحصيل الودائع في ذروة المحادثة عبر Stripe. لا تترك البيعة تبرد.", icon: <DollarSign className="text-violet-400" /> }
+      ]
+    },
+    footer: { rights: "© 2026 Aura OS Galactic Operations. جميع الحقوق محفوظة." }
   }
 };
 
 export default function LandingPage() {
   const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const t = CONTENT[lang];
+  const t = ELITE_CONTENT[lang];
   const isRTL = lang === 'ar';
 
   const { scrollYProgress } = useScroll();
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -200]);
-  const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
+  const backgroundOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.5]);
 
   return (
-    <div className={`min-h-screen bg-[#050505] text-white font-sans selection:bg-indigo-500/30 ${isRTL ? 'text-right font-arabic' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-      {/* --- REFINED AMBIENT BACKGROUND --- */}
-      <div className="fixed inset-0 pointer-events-none z-0">
-        <div className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-indigo-600/10 rounded-full blur-[180px] animate-pulse" />
-        <div className="absolute bottom-[-20%] right-[-10%] w-[70%] h-[70%] bg-emerald-600/5 rounded-full blur-[180px]" />
-        <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] bg-violet-600/10 rounded-full blur-[150px]" />
+    <div className={`min-h-screen bg-[#020202] text-white selection:bg-indigo-500/40 ${isRTL ? 'text-right font-arabic' : 'text-left font-sans'}`} dir={isRTL ? 'rtl' : 'ltr'}>
 
-        {/* Subtle Grid */}
-        <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: `radial-gradient(circle at 2px 2px, #333 1px, transparent 0)`, backgroundSize: '40px 40px' }} />
-      </div>
+      {/* --- SEO HIDDEN --- */}
+      <h1 className="sr-only">{t.meta.title}</h1>
+      <p className="sr-only">{t.meta.desc}</p>
 
-      {/* --- SPACIAL NAVIGATION --- */}
-      <nav className="fixed top-0 w-full z-50 px-6 py-6">
-        <div className="max-w-7xl mx-auto flex items-center justify-between bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] rounded-3xl px-8 h-20 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+      {/* --- ELITE NAVIGATION --- */}
+      <nav className="fixed top-0 w-full z-[100] px-6 py-8">
+        <div className="max-w-7xl mx-auto flex items-center justify-between bg-black/40 backdrop-blur-3xl border border-white/5 rounded-full px-10 h-20 shadow-2xl">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl flex items-center justify-center shadow-[0_0_30px_rgba(79,70,229,0.4)] relative group overflow-hidden">
-              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
-              <Brain size={28} className="relative z-10" />
+            <div className="w-11 h-11 bg-gradient-to-br from-indigo-500 to-indigo-700 rounded-2xl flex items-center justify-center shadow-lg group-hover:rotate-12 transition-all">
+              <Brain size={24} className="text-white" />
             </div>
-            <span className="text-2xl font-black tracking-tighter uppercase italic py-1">
-              Aura <span className="text-indigo-400">OS</span>
+            <span className="text-2xl font-black tracking-tighter uppercase italic">
+              Aura <span className="text-indigo-500">OS</span>
             </span>
           </div>
 
           <div className="hidden lg:flex items-center gap-10">
-            <div className="flex items-center gap-2 bg-white/[0.05] p-1.5 rounded-2xl border border-white/[0.05]">
+            {Object.values(t.nav).slice(0, 3).map((item, i) => (
+              <Link key={i} href="#" className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all">{item}</Link>
+            ))}
+
+            <div className="flex items-center gap-2 bg-white/5 p-1 rounded-2xl border border-white/5">
               {(['tr', 'en', 'ar'] as const).map((l) => (
                 <button
                   key={l}
                   onClick={() => setLang(l)}
-                  className={`px-5 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${lang === l ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'text-slate-400 hover:text-white'}`}
+                  className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase transition-all duration-300 ${lang === l ? 'bg-indigo-600 text-white shadow-xl' : 'text-slate-500 hover:text-white'}`}
                 >
                   {l}
                 </button>
               ))}
             </div>
-            <Link href="/dashboard" className="text-[11px] font-black text-slate-400 hover:text-indigo-400 transition-all uppercase tracking-widest flex items-center gap-2 group">
-              <LayoutDashboard size={16} className="group-hover:rotate-12 transition-transform" /> {t.nav.dashboard}
-            </Link>
-            <button className="bg-white text-black px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-widest hover:bg-slate-200 hover:-translate-y-1 transition-all shadow-[0_10px_30px_rgba(255,255,255,0.1)] active:scale-95">
+
+            <button className="bg-white text-black px-8 py-4 rounded-full text-[11px] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl active:scale-95">
               {t.nav.getStarted}
             </button>
           </div>
 
-          <button className="lg:hidden p-3 bg-white/5 rounded-2xl" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          <button className="lg:hidden p-3 bg-white/5 rounded-full" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </nav>
 
-      {/* --- IMMERSIVE HERO --- */}
-      <section className="relative pt-52 pb-32 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center">
+      {/* --- ELITE HERO SECTION --- */}
+      <header className="relative min-h-screen flex flex-col justify-center items-center px-6 pt-32 text-center overflow-hidden">
+        {/* Background Elite Visual */}
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <motion.div style={{ opacity: backgroundOpacity }} className="absolute inset-x-0 top-0 h-full">
+            <img
+              src="/images/hero_elite.png"
+              alt="Aura OS Digital Nervous System"
+              className="w-full h-full object-cover opacity-60 mix-blend-screen"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#020202] via-transparent to-[#020202]/80" />
+          </motion.div>
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8 }}
-            className="inline-flex items-center gap-3 px-6 py-2.5 bg-indigo-500/10 text-indigo-400 rounded-full text-[11px] font-black uppercase tracking-[0.3em] mb-12 border border-indigo-500/20 backdrop-blur-md shadow-[0_0_40px_rgba(99,102,241,0.15)]"
+            className="inline-flex items-center gap-3 px-6 py-2 bg-indigo-500/10 text-indigo-400 rounded-full text-[11px] font-black uppercase tracking-[0.4em] mb-12 border border-indigo-500/20 backdrop-blur-md"
           >
-            <div className="w-2 h-2 bg-indigo-400 rounded-full animate-ping" />
-            {t.hero.tag}
+            <Sparkles size={14} className="animate-pulse" /> {t.hero.tag}
           </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 1 }}
-            className="text-6xl md:text-[7rem] font-black tracking-tighter leading-[0.85] mb-10 max-w-5xl bg-gradient-to-b from-white via-white to-white/40 bg-clip-text text-transparent"
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-6xl md:text-[8rem] font-black tracking-tighter leading-[0.85] mb-12 bg-gradient-to-b from-white to-white/30 bg-clip-text text-transparent"
           >
             {t.hero.title}
           </motion.h1>
@@ -204,8 +215,8 @@ export default function LandingPage() {
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, duration: 1 }}
-            className="text-xl md:text-2xl text-slate-400 font-medium max-w-3xl mb-16 leading-relaxed"
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="text-xl md:text-2xl text-slate-400 max-w-3xl mx-auto mb-16 leading-relaxed font-medium"
           >
             {t.hero.subtitle}
           </motion.p>
@@ -213,297 +224,193 @@ export default function LandingPage() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 1 }}
-            className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto"
+            transition={{ delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-6 justify-center"
           >
-            <button className="px-14 py-7 bg-indigo-600 text-white rounded-[2rem] text-xs font-black uppercase tracking-widest shadow-[0_25px_60px_-15px_rgba(79,70,229,0.5)] hover:scale-105 hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 active:scale-95">
-              {t.hero.ctaPrimary} <ChevronRight size={18} className={isRTL ? 'rotate-180' : ''} />
+            <button className="group px-14 py-7 bg-indigo-600 text-white rounded-[2.5rem] text-xs font-black uppercase tracking-widest shadow-[0_30px_60px_-15px_rgba(79,70,229,0.5)] hover:bg-indigo-700 transition-all flex items-center justify-center gap-3 active:scale-95">
+              {t.hero.primary} <ArrowUpRight size={18} className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="px-14 py-7 bg-white/5 border border-white/10 text-white rounded-[2rem] text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-4 backdrop-blur-sm group">
-              <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center group-hover:bg-indigo-500/40 transition-colors">
-                <Play size={18} fill="currentColor" />
+            <button className="px-14 py-7 bg-white/5 border border-white/10 text-white rounded-[2.5rem] text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all flex items-center justify-center gap-4 backdrop-blur-xl group">
+              <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center group-hover:scale-110 transition-all">
+                <Play size={16} fill="currentColor" />
               </div>
-              {t.hero.ctaSecondary}
+              {t.hero.secondary}
             </button>
-          </motion.div>
-
-          {/* --- HIGH-END DASH MOCKUP --- */}
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-32 w-full max-w-7xl relative"
-          >
-            <div className="absolute inset-0 bg-indigo-600/30 blur-[150px] rounded-full opacity-50" />
-            <div className="relative bg-[#0A0A0A]/80 backdrop-blur-3xl border border-white/10 p-5 rounded-[3.5rem] shadow-[0_80px_160px_-40px_rgba(0,0,0,0.8)] overflow-hidden group">
-              {/* Inner Border Glow */}
-              <div className="absolute inset-0 border border-white/5 rounded-[3.5rem] pointer-events-none" />
-
-              <div className="bg-[#050505] rounded-[2.5rem] overflow-hidden aspect-[21/9] border border-white/5 flex shadow-inner">
-                {/* Mock Sidebar */}
-                <div className="w-24 border-r border-white/5 p-6 flex flex-col items-center gap-8 bg-black/40">
-                  <div className="w-10 h-10 bg-indigo-500/20 rounded-xl" />
-                  <div className="space-y-6">
-                    {[Monitor, Activity, MessageSquare, Users, TrendingUp].map((Icon, i) => (
-                      <div key={i} className="w-10 h-10 flex items-center justify-center text-slate-500 hover:text-indigo-400 transition-colors cursor-pointer">
-                        <Icon size={20} />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Mock Content */}
-                <div className="flex-1 p-10 flex flex-col">
-                  <div className="flex justify-between items-center mb-12">
-                    <div className="space-y-2">
-                      <div className="h-4 w-48 bg-white/10 rounded-full" />
-                      <div className="h-10 w-64 bg-white/5 rounded-2xl" />
-                    </div>
-                    <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10" />
-                      <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10" />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-12 gap-8 flex-1">
-                    <div className="col-span-8 space-y-8">
-                      <div className="h-64 bg-gradient-to-br from-indigo-500/10 to-transparent rounded-[2.5rem] border border-white/5 p-8 relative overflow-hidden">
-                        <div className="absolute top-8 left-8 space-y-2">
-                          <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest text-left">Revenue Forecast</div>
-                          <div className="text-3xl font-black text-left">$142,500.00</div>
-                        </div>
-                        <div className="absolute bottom-0 inset-x-0 h-32 opacity-20">
-                          <svg viewBox="0 0 400 100" className="w-full h-full preserve-3d">
-                            <path d="M0,80 Q50,20 100,50 T200,30 T300,70 T400,10" fill="none" stroke="currentColor" strokeWidth="4" className="text-indigo-500" />
-                          </svg>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-8">
-                        <div className="h-40 bg-white/5 rounded-[2rem] border border-white/5 p-6 flex flex-col justify-between">
-                          <div className="w-10 h-10 bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center">
-                            <CheckCircle2 size={20} />
-                          </div>
-                          <div className="text-right text-2xl font-black">98.2%</div>
-                        </div>
-                        <div className="h-40 bg-white/5 rounded-[2rem] border border-white/5 p-6 flex flex-col justify-between">
-                          <div className="w-10 h-10 bg-orange-500/20 text-orange-400 rounded-xl flex items-center justify-center">
-                            <Clock size={20} />
-                          </div>
-                          <div className="text-right text-2xl font-black">0.4s</div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-span-4 bg-white/[0.03] rounded-[2.5rem] border border-white/5 p-8">
-                      <div className="text-[11px] font-black text-slate-500 uppercase tracking-widest mb-8 text-left">Live Cognitive Flow</div>
-                      <div className="space-y-6">
-                        {[1, 2, 3].map(i => (
-                          <div key={i} className="flex gap-4 items-center animate-pulse" style={{ animationDelay: `${i * 0.5}s` }}>
-                            <div className="w-10 h-10 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
-                              <Activity size={16} />
-                            </div>
-                            <div className="flex-1 space-y-2">
-                              <div className="h-3 w-3/4 bg-white/10 rounded-full" />
-                              <div className="h-2 w-1/2 bg-white/5 rounded-full" />
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </motion.div>
         </div>
-      </section>
+      </header>
 
-      {/* --- NEURAL FUNNEL: 1-2-3 --- */}
-      <section className="py-40 px-6 relative">
+      {/* --- THE PROBLEM SECTIONS (Narrative Flow) --- */}
+      <section className="py-40 px-6 relative bg-gradient-to-b from-transparent to-indigo-900/10">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-end justify-between mb-24 gap-8">
-            <div className="max-w-xl">
-              <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight mb-8">{t.funnel.title}</h2>
-              <p className="text-slate-400 text-lg font-medium">{t.funnel.subtitle}</p>
-            </div>
-            <div className="hidden md:block h-px flex-1 bg-gradient-to-r from-transparent via-white/10 to-transparent mx-12 mb-6" />
+          <div className="text-center mb-32 max-w-4xl mx-auto">
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-tight mb-8">
+              {t.problems.title}
+            </h2>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-10">
-            {[
-              { step: t.funnel.step1, icon: <Layers size={32} />, color: 'from-blue-600 to-indigo-600' },
-              { step: t.funnel.step2, icon: <BrainCircuit size={32} />, color: 'from-indigo-600 to-violet-600', highlight: true },
-              { step: t.funnel.step3, icon: <Lock size={32} />, color: 'from-violet-600 to-fuchsia-600' }
-            ].map((item, i) => (
+          <div className="grid lg:grid-cols-3 gap-16">
+            {t.problems.items.map((item, i) => (
               <motion.div
                 key={i}
-                whileHover={{ y: -15 }}
-                className={`group p-10 rounded-[3rem] bg-white/[0.02] border border-white/[0.06] backdrop-blur-3xl relative overflow-hidden transition-all duration-500 hover:bg-white/[0.04] hover:shadow-[0_40px_80px_rgba(0,0,0,0.3)]`}
+                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 40 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.2 }}
+                className="relative group p-12 rounded-[4rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-500"
               >
-                {item.highlight && (
-                  <div className="absolute top-10 right-10 bg-indigo-500/20 text-indigo-400 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-indigo-500/30">
-                    Proprietary Tech
-                  </div>
-                )}
-
-                <div className={`w-20 h-20 bg-gradient-to-br ${item.color} rounded-[2rem] flex items-center justify-center mb-10 shadow-2xl group-hover:scale-110 transition-transform duration-500`}>
-                  {item.icon}
+                <div className="text-[120px] font-black text-white/[0.03] absolute -top-10 -left-6 leading-none pointer-events-none group-hover:text-indigo-500/10 transition-colors">
+                  {item.id}
                 </div>
-                <h3 className="text-3xl font-black mb-6 tracking-tight group-hover:text-indigo-400 transition-colors uppercase">{item.step.title}</h3>
-                <p className="text-slate-400 text-lg leading-relaxed font-medium mb-10">{item.step.desc}</p>
-
-                {/* Visual Connector for funnel */}
-                {i < 2 && (
-                  <div className="hidden md:block absolute -right-10 top-1/2 -translate-y-1/2 z-10">
-                    <ChevronRight size={40} className={`text-white/10 ${isRTL ? 'rotate-180 -translate-x-full' : ''}`} />
-                  </div>
-                )}
+                <h3 className="text-3xl font-black mb-8 relative z-10 tracking-tight group-hover:text-indigo-400 transition-colors">{item.title}</h3>
+                <p className="text-slate-400 text-lg font-medium leading-relaxed mb-8 relative z-10">{item.desc}</p>
+                <div className="h-px w-20 bg-indigo-500/30 group-hover:w-full transition-all duration-700" />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* --- VORTEX VISION DEEP DIVE --- */}
-      <section className="py-40 px-6">
-        <div className="max-w-7xl mx-auto rounded-[5rem] bg-gradient-to-b from-white/[0.03] to-transparent p-12 md:p-32 border border-white/5 relative overflow-hidden shadow-2xl">
-          <div className="absolute top-0 right-0 w-full h-full bg-indigo-600/5 blur-[120px] -z-10" />
-
-          <div className="grid lg:grid-cols-2 gap-24 items-center">
-            <div className="space-y-10">
-              <div className="inline-flex items-center gap-3 px-6 py-2 bg-indigo-500/10 text-indigo-400 rounded-full text-[10px] font-black uppercase tracking-[0.3em] border border-indigo-500/20">
-                <Cpu size={14} /> Intelligence Core
+      {/* --- THE SOLUTION: VORTEX VISION DEEP DIVE --- */}
+      <section className="py-40 px-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto flex flex-col items-center">
+          <div className="flex flex-col lg:flex-row items-center gap-24">
+            <div className="lg:w-1/2 space-y-12">
+              <div className="inline-flex items-center gap-3 px-6 py-2 bg-indigo-500/10 text-indigo-400 rounded-full text-[11px] font-black uppercase tracking-[0.4em] border border-indigo-500/20">
+                {t.solutions.tag}
               </div>
-              <h2 className="text-5xl md:text-[5.5rem] font-black leading-[0.9] tracking-tighter">
-                Vortex Vision™:<br />Digital Surgeon.
+              <h2 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.95]">
+                {t.solutions.title}
               </h2>
-              <p className="text-slate-400 text-xl font-medium leading-relaxed max-w-lg">
-                Analyze patient cases with aerospace precision. Automated dental mapping, graft estimation, and surgical planning—all before the patient even says 'hello'.
-              </p>
-              <div className="space-y-6">
-                {[
-                  "99.4% AI Diagnostic Accuracy",
-                  "Automated Patient Scoring Matrix",
-                  "Real-time CRM Auto-Enrichment"
-                ].map(feat => (
-                  <div key={feat} className="flex items-center gap-5 font-black text-sm uppercase tracking-widest text-white/80">
-                    <CheckCircle2 size={24} className="text-indigo-500" /> {feat}
+              <div className="space-y-10">
+                {t.solutions.items.map((sol, i) => (
+                  <div key={i} className="flex gap-8 group">
+                    <div className="w-16 h-16 rounded-3xl bg-[#0A0A0A] flex items-center justify-center flex-shrink-0 border border-white/5 shadow-inner">
+                      <div className="group-hover:scale-110 transition-transform duration-500">{sol.icon}</div>
+                    </div>
+                    <div className="space-y-2">
+                      <h4 className="text-2xl font-black uppercase tracking-tight group-hover:text-indigo-400 transition-colors">{sol.title}</h4>
+                      <p className="text-slate-400 font-medium leading-relaxed max-w-sm">{sol.desc}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div className="relative group">
-              <div className="absolute inset-0 bg-indigo-600/20 blur-[100px] group-hover:blur-[130px] transition-all duration-700" />
-              <div className="relative bg-black/80 rounded-[4rem] p-6 border border-white/10 shadow-2xl overflow-hidden aspect-[4/5]">
-                <div className="h-full w-full bg-slate-900/60 rounded-[3rem] relative overflow-hidden">
-                  {/* Scanning Line Animation */}
-                  <motion.div
-                    initial={{ top: '0%' }}
-                    animate={{ top: '100%' }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                    className="absolute inset-x-0 h-1 bg-indigo-500 shadow-[0_0_20px_rgba(79,70,229,0.8)] z-20"
-                  />
+            <div className="lg:w-1/2 relative">
+              <div className="absolute inset-0 bg-indigo-600/20 blur-[150px] animate-pulse rounded-full" />
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                className="relative bg-black/60 backdrop-blur-3xl p-6 rounded-[5rem] border border-white/10 shadow-[0_50px_100px_rgba(0,0,0,0.8)]"
+              >
+                <img
+                  src="/images/vortex_vision.png"
+                  alt="Vortex Vision AI Diagnostic"
+                  className="w-full h-auto rounded-[4rem] group"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-40 rounded-[5rem]" />
 
-                  <div className="absolute inset-0 flex flex-col p-10 justify-between">
-                    <div className="flex justify-between items-start">
-                      <div className="bg-white text-black px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] flex items-center gap-3">
-                        <Activity size={14} className="animate-pulse" /> Scanning Patient Data...
-                      </div>
-                      <div className="w-16 h-16 rounded-full border-4 border-indigo-500/30 flex items-center justify-center font-black text-lg">95%</div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="h-8 w-3/4 bg-white/10 rounded-xl" />
-                      <div className="p-6 bg-indigo-500/10 rounded-[2rem] border border-indigo-500/30 flex flex-col gap-3">
-                        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-300">Analysis Result:</div>
-                        <div className="text-xl font-bold tracking-tight">NW7 Pattern - High Viability</div>
-                      </div>
-                    </div>
-                  </div>
+                {/* Premium Overlay Mockup elements */}
+                <div className="absolute top-12 left-12 bg-white text-black px-6 py-3 rounded-2xl text-[10px] font-black uppercase tracking-[0.3em] flex items-center gap-3">
+                  <Activity size={14} className="animate-pulse" /> S-GRADE SCANNING...
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* --- REVENUE STATS --- */}
-      <section className="py-32 px-6">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-12 text-center">
+      {/* --- ELITE STATS / PROOF --- */}
+      <section className="py-40 px-6 bg-[#030303] border-y border-white/5">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-24 items-center">
           {[
-            { label: t.stats.conversion, value: "+42%", desc: "Conversion Boost" },
-            { label: t.stats.revenue, value: "3.5X", desc: "ROAS Optimization" },
-            { label: t.stats.speed, value: "< 1s", desc: "AI Decisioning" }
+            { label: "SLA Response", value: "0.4s", desc: "Instant AI Feedback" },
+            { label: "Efficiency", value: "+420%", desc: "Lead Pipeline Growth" },
+            { label: "Recovery", value: "3.5X", desc: "Lost Deposits Recovered" }
           ].map((stat, i) => (
-            <div key={i} className="p-10 rounded-[2.5rem] bg-white/[0.02] border border-white/[0.05] hover:bg-white/[0.04] transition-colors">
-              <div className="text-6xl font-black mb-4 tracking-tighter bg-gradient-to-br from-white to-white/40 bg-clip-text text-transparent">{stat.value}</div>
-              <div className="text-[11px] font-black uppercase tracking-[0.4em] text-indigo-400 mb-2">{stat.label}</div>
-              <div className="text-slate-500 font-medium">{stat.desc}</div>
+            <div key={i} className="flex flex-col items-center md:items-start text-center md:text-left group">
+              <div className="text-8xl md:text-9xl font-black italic tracking-tighter mb-4 bg-gradient-to-br from-white to-white/10 bg-clip-text text-transparent group-hover:text-white transition-all duration-700">
+                {stat.value}
+              </div>
+              <div className="text-[12px] font-black uppercase tracking-[0.5em] text-indigo-500 mb-2">{stat.label}</div>
+              <p className="text-slate-500 font-medium italic">{stat.desc}</p>
             </div>
           ))}
         </div>
       </section>
 
-      {/* --- GLOBAL FOOTER --- */}
-      <footer className="py-32 px-6 border-t border-white/5 relative bg-black/40">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-16 relative z-10">
-          <div className="flex flex-col items-center md:items-start gap-6">
+      {/* --- FINAL ACTION --- */}
+      <section className="py-52 px-6 relative overflow-hidden">
+        <div className="absolute inset-0 bg-indigo-600/10 blur-[180px] rounded-full translate-y-1/2" />
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85] mb-12">
+            Ready to Ignite Your Clinic?
+          </h2>
+          <button className="px-20 py-8 bg-white text-black rounded-[3rem] text-sm font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_40px_80px_rgba(255,255,255,0.15)] active:scale-95">
+            Claim Your Alpha Access
+          </button>
+        </div>
+      </section>
+
+      {/* --- ELITE FOOTER --- */}
+      <footer className="py-32 px-6 border-t border-white/5 bg-black/60 backdrop-blur-3xl">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-16">
+          <div className="flex flex-col items-center md:items-start gap-4">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
                 <Brain size={28} />
               </div>
-              <span className="text-2xl font-black tracking-tighter uppercase italic">Aura <span className="text-indigo-400">OS</span></span>
+              <span className="text-2xl font-black tracking-tighter uppercase italic">Aura <span className="text-indigo-500">OS</span></span>
             </div>
-            <p className="text-slate-500 text-[10px] font-black uppercase tracking-[0.4em]">Autonomous Revenue Infrastructure v3.0</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-500">Autonomous Growth Infrastructure v4.0.01</p>
           </div>
 
           <div className="flex flex-wrap justify-center gap-12">
-            {["Vision", "Infrastructure", "Security", "Pricing"].map(item => (
-              <Link key={item} href="#" className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-colors">{item}</Link>
+            {Object.values(t.nav).map((item, i) => (
+              <Link key={i} href="#" className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-white transition-all">{item}</Link>
             ))}
           </div>
 
           <div className="flex gap-4">
-            <div className="w-14 h-14 rounded-full border border-white/10 flex items-center justify-center text-slate-500 hover:text-white transition-all hover:bg-white/5 cursor-pointer">
-              <Globe size={20} />
+            <div className="w-16 h-16 rounded-full border border-white/10 flex items-center justify-center text-slate-500 hover:text-white hover:bg-white/5 transition-all cursor-pointer">
+              <Globe size={24} />
             </div>
           </div>
         </div>
-        <div className="max-w-7xl mx-auto mt-24 text-center border-t border-white/5 pt-12">
-          <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.5em]">© 2026 Aura OS Galactic Operations Hub - All Systems Nominal.</p>
+        <div className="max-w-7xl mx-auto mt-24 text-center">
+          <p className="text-slate-600 text-[9px] font-black uppercase tracking-[0.6em]">{t.footer.rights}</p>
         </div>
       </footer>
 
-      {/* Custom Styles for RTL & Arabic font fallback */}
+      {/* Global CSS for perfection */}
       <style jsx global>{`
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;900&display=swap');
         
         body {
           font-family: 'Outfit', sans-serif;
           -webkit-font-smoothing: antialiased;
         }
-        
+
         .font-arabic {
-          font-family: 'Inter', system-ui, -apple-system, sans-serif; /* Replace with premium Arabic font if available */
-        }
-        
-        .preserve-3d {
-          transform-style: preserve-3d;
+          font-family: system-ui, -apple-system, sans-serif;
         }
 
         ::-webkit-scrollbar {
-          width: 8px;
+          width: 6px;
         }
         ::-webkit-scrollbar-track {
-          background: #050505;
+          background: #020202;
         }
         ::-webkit-scrollbar-thumb {
-          background: #1a1a1a;
+          background: #111;
           border-radius: 10px;
         }
         ::-webkit-scrollbar-thumb:hover {
           background: #333;
+        }
+
+        @media (max-width: 640px) {
+          h1 { font-size: 3.5rem !important; }
         }
       `}</style>
     </div>
