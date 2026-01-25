@@ -48,55 +48,62 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
         <div className={`min-h-screen bg-[#050505] text-[#E0E0E0] selection:bg-[#00F0FF]/40 overflow-x-hidden ${isRTL ? 'text-right font-arabic' : 'text-left font-prestige'}`} dir={isRTL ? 'rtl' : 'ltr'}>
             <Script id="aura-seo-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-            {/* --- GOD-MODE BACKGROUND LAYER --- */}
-            <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
-            <div className="fixed inset-0 z-1 pointer-events-none opacity-[0.05] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
+            {/* --- GOD-MODE BACKGROUND LAYER (CLEAN & DEEP) --- */}
+            <div className="fixed inset-0 z-0 pointer-events-none">
+                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[#00F0FF]/[0.02] blur-[200px] rounded-full" />
+                <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-indigo-500/[0.02] blur-[150px] rounded-full" />
+            </div>
+            <div className="fixed inset-0 z-1 pointer-events-none opacity-[0.03] bg-[linear-gradient(to_right,#ffffff12_1px,transparent_1px),linear-gradient(to_bottom,#ffffff12_1px,transparent_1px)] bg-[size:60px_60px]" />
 
-            {/* --- PRESTIGE NAV --- */}
-            <nav className="fixed top-0 w-full z-[1000] px-4 md:px-10 py-8 transition-all duration-500">
-                <div className={`max-w-[1600px] mx-auto flex items-center justify-between transition-all duration-700 rounded-[1.2rem] px-8 md:px-12 h-20 md:h-24 ${isScrolled ? 'bg-black/80 backdrop-blur-3xl border border-white/5 shadow-3xl scale-[0.99]' : 'bg-transparent border border-transparent'}`}>
-                    <Link href="/" className="flex items-center gap-4 group cursor-pointer">
-                        <div className="w-12 h-12 bg-[#00F0FF] rounded-lg flex items-center justify-center shadow-[0_0_40px_rgba(0,240,255,0.3)] group-hover:scale-110 transition-transform">
-                            <Brain size={26} className="text-black" />
+            {/* --- PRESTIGE NAV (STREAMLINED) --- */}
+            <nav className="fixed top-0 w-full z-[1000] px-4 md:px-8 py-6">
+                <div className={`max-w-[1600px] mx-auto flex items-center justify-between transition-all duration-700 rounded-3xl px-8 h-20 ${isScrolled ? 'bg-black/40 backdrop-blur-3xl border border-white/5 shadow-2xl overflow-hidden' : 'bg-transparent border border-transparent'}`}>
+                    <Link href="/" className="flex items-center gap-3 group">
+                        <div className="w-10 h-10 bg-[#00F0FF] rounded-lg flex items-center justify-center shadow-[0_0_30px_rgba(0,240,255,0.4)] group-hover:scale-110 transition-transform duration-500">
+                            <Brain size={22} className="text-black" />
                         </div>
-                        <span className="text-2xl md:text-3xl font-black tracking-[-0.08em] uppercase italic py-2 leading-none text-white whitespace-nowrap">
-                            Aura <span className="text-[#00F0FF]/80">OS</span>
+                        <span className="text-xl md:text-2xl font-black uppercase tracking-[-0.05em] text-white">
+                            AURA <span className="text-[#00F0FF]">OS</span>
                         </span>
                     </Link>
 
-                    <div className="hidden lg:flex items-center gap-8 xl:gap-14 text-white/80">
-                        <Link href="/solutions/clinics" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-[#00F0FF] transition-all whitespace-nowrap">{t.nav.cli}</Link>
-                        <Link href="/solutions/agencies" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-[#00F0FF] transition-all whitespace-nowrap">{t.nav.age}</Link>
-                        <Link href="/technology" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-[#00F0FF] transition-all whitespace-nowrap">{t.nav.tech}</Link>
-                        <Link href="/vision" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-[#00F0FF] transition-all whitespace-nowrap">{t.nav.vision}</Link>
+                    <div className="hidden lg:flex items-center gap-10">
+                        <div className="flex items-center gap-8 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
+                            <Link href="/solutions/clinics" className="hover:text-white transition-colors">{t.nav.cli}</Link>
+                            <Link href="/solutions/agencies" className="hover:text-white transition-colors">{t.nav.age}</Link>
+                            <Link href="/technology" className="hover:text-white transition-colors">{t.nav.tech}</Link>
+                            <Link href="/vision" className="hover:text-white transition-colors">{t.nav.vision}</Link>
+                        </div>
 
-                        <div className="flex bg-white/5 p-1 rounded-lg border border-white/5 mx-2">
+                        <div className="h-6 w-px bg-white/10" />
+
+                        <div className="flex bg-white/5 p-1 rounded-xl border border-white/5">
                             {(['tr', 'en', 'ar'] as const).map((l) => (
-                                <button key={l} onClick={() => setLang(l)} className={`px-4 py-2 rounded-md text-[9px] font-black uppercase transition-all duration-500 ${lang === l ? 'bg-white/10 text-[#00F0FF]' : 'text-slate-600 hover:text-white'}`}>{l}</button>
+                                <button key={l} onClick={() => setLang(l)} className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all duration-500 ${lang === l ? 'bg-[#00F0FF] text-black' : 'text-slate-500 hover:text-white'}`}>{l}</button>
                             ))}
                         </div>
-                        <button className="relative group px-10 py-4.5 rounded-full overflow-hidden transition-all active:scale-95 whitespace-nowrap">
-                            <div className="absolute inset-0 bg-[#00F0FF] group-hover:bg-[#00F0FF] transition-colors" />
-                            <div className="absolute inset-0 bg-black/10 group-active:bg-black/20" />
-                            <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.3em] text-black">{t.nav.getStarted}</span>
+
+                        <button className="px-8 py-3 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#00F0FF] transition-all duration-500 active:scale-95 shadow-xl">
+                            {t.nav.getStarted}
                         </button>
                     </div>
 
-                    <button className="lg:hidden p-4 bg-white/5 border border-white/10 rounded-xl text-white hover:bg-white/10 transition-all" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                        {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    <button className="lg:hidden p-3 bg-white/5 border border-white/10 rounded-xl text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                        {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                 </div>
             </nav>
 
-            {/* --- MOBILE OVERLAY (PRESTIGE) --- */}
+            {/* --- MOBILE OVERLAY --- */}
             <AnimatePresence>
                 {isMenuOpen && (
-                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[900] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center gap-10 lg:hidden px-10 text-white">
-                        <Link href="/solutions/clinics" className="text-3xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.cli}</Link>
-                        <Link href="/solutions/agencies" className="text-3xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
-                        <Link href="/technology" className="text-3xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
-                        <div className="h-px w-20 bg-white/10 my-4" />
-                        <button className="w-full bg-[#00F0FF] text-black py-6 rounded-full font-black uppercase tracking-widest">{t.nav.getStarted}</button>
+                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="fixed inset-0 z-[900] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center gap-10 lg:hidden text-white pt-20">
+                        <Link href="/solutions/clinics" className="text-2xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.cli}</Link>
+                        <Link href="/solutions/agencies" className="text-2xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
+                        <Link href="/technology" className="text-2xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
+                        <Link href="/vision" className="text-2xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.vision}</Link>
+                        <div className="h-px w-20 bg-white/10" />
+                        <button className="px-10 py-5 bg-[#00F0FF] text-black rounded-full font-black uppercase tracking-widest">{t.nav.getStarted}</button>
                     </motion.div>
                 )}
             </AnimatePresence>

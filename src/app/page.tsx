@@ -116,32 +116,31 @@ export default function GodModePage() {
     <AuraLayout lang={lang} setLang={setLang}>
       {/* --- HERO: ULTIMATE DOMINANCE --- */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-32 pb-20 overflow-hidden bg-[#050505] text-[#E0E0E0]">
-        {/* Immersive Neural Background */}
-        <div className="absolute inset-0 opacity-40 grayscale-[0.8] brightness-[0.4] pointer-events-none transition-all duration-1000 group-hover:grayscale-0">
-          <img src="/images/aura_prestige_nexus_void_fill_1769365496003.png" alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
+        {/* Deep Field Background */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-[1000px] h-[1000px] bg-[#00F0FF]/[0.015] blur-[250px] rounded-full animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-[800px] h-[800px] bg-indigo-500/[0.01] blur-[200px] rounded-full" />
         </div>
 
         <div className="max-w-[1700px] mx-auto relative z-10 w-full grid lg:grid-cols-2 gap-20 items-center">
-          <div className="space-y-16">
-            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="inline-flex items-center gap-4 px-8 py-3 bg-white/5 text-[#00F0FF] rounded-lg text-[10px] font-black uppercase tracking-[0.6em] border border-white/10 backdrop-blur-3xl">
-              <Sparkles size={14} /> {t.hero.tag}
+          <div className="space-y-12">
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="inline-flex items-center gap-4 px-6 py-2 bg-white/5 text-[#00F0FF] rounded-xl text-[9px] font-black uppercase tracking-[0.5em] border border-white/5 backdrop-blur-3xl">
+              <Sparkles size={12} /> {t.hero.tag}
             </motion.div>
 
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="text-6xl md:text-[10rem] font-bold tracking-[-0.08em] leading-[0.82] text-white uppercase italic drop-shadow-[0_20px_40px_rgba(0,0,0,0.8)]">
+            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} className="text-5xl md:text-[8rem] font-black tracking-[-0.06em] leading-[0.85] text-white uppercase italic">
               {t.hero.title}
             </motion.h1>
 
-            <div className="max-w-xl space-y-16">
-              <p className="text-2xl md:text-3xl text-slate-300 font-medium leading-relaxed border-l-4 border-[#00F0FF]/40 pl-10">
+            <div className="max-w-xl space-y-12">
+              <p className="text-xl md:text-2xl text-slate-400 font-medium leading-relaxed border-l-2 border-[#00F0FF]/30 pl-8">
                 {t.hero.subtitle}
               </p>
-              <div className="flex flex-col sm:flex-row gap-8">
-                <button className="glass-btn px-16 py-8 rounded-full text-[11px] font-black uppercase tracking-[0.5em] text-[#00F0FF] overflow-hidden relative group shadow-[0_0_50px_rgba(0,240,255,0.2)]">
-                  <span className="relative z-10 flex items-center gap-6">{t.hero.cta} <ArrowUpRight size={20} /></span>
-                  <div className="absolute inset-0 bg-[#00F0FF]/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+              <div className="flex flex-col sm:flex-row gap-6">
+                <button className="px-12 py-6 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.3em] hover:bg-[#00F0FF] transition-all duration-500 active:scale-95 flex items-center gap-4 shadow-2xl">
+                  {t.hero.cta} <ArrowUpRight size={18} />
                 </button>
-                <button className="px-16 py-8 rounded-full text-[11px] font-black uppercase tracking-[0.5em] text-slate-500 hover:text-white transition-all border border-white/5 bg-white/5 backdrop-blur-3xl">
+                <button className="px-12 py-6 border border-white/5 bg-white/5 backdrop-blur-3xl rounded-full text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-white transition-all">
                   Alpha Mimari
                 </button>
               </div>
