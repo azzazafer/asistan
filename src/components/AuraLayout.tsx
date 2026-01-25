@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Menu, X, ArrowUpRight, Globe, Shield, MessageSquare, Database, Radio, Cpu, Award, Workflow } from "lucide-react";
+import { Brain, Menu, X, ArrowUpRight, Globe, Shield, MessageSquare, Radio, Cpu, Award, Workflow } from "lucide-react";
 import Link from "next/link";
+import Script from "next/script";
 
 interface AuraLayoutProps {
     children: React.ReactNode;
@@ -12,9 +13,9 @@ interface AuraLayoutProps {
 }
 
 const NAV_CONTENT = {
-    tr: { nav: { cli: "Klinik Yönetimi", age: "Acente Ağı", tech: "Teknoloji Mimari", vision: "Vizyon 2026", getStarted: "Operasyonu Başlat" }, footer: { signature: "NEXTORIA PRESTIGE • AURA OS ALPHA", rights: "© 2026 Aura OS Galactic Operations. Tüm Hakları Saklıdır." } },
-    en: { nav: { cli: "Clinic Management", age: "Agency Network", tech: "Tech Architecture", vision: "Vision 2026", getStarted: "Start Operation" }, footer: { signature: "NEXTORIA PRESTIGE • AURA OS ALPHA", rights: "© 2026 Aura OS Galactic Operations. All Rights Reserved." } },
-    ar: { nav: { cli: "إدارة العيادات", age: "شبكة الوكالات", tech: "بنية التكنولوجيا", vision: "رؤية 2026", getStarted: "بدء التشغيل" }, footer: { signature: "NEXTORIA PRESTIGE • AURA OS ALPHA", rights: "© 2026 Aura OS Galactic Operations. جميع الحقوق محفوظة." } }
+    tr: { nav: { cli: "Ultra-Premium Klinik", age: "Global Acente Ağı", tech: "Mimari Alpha", vision: "Vizyon 2026", getStarted: "Operasyonu Başlat" }, footer: { signature: "POWERED BY NEXTORIA DIGITAL", rights: "© 2026 Aura OS Galactic Operations. Tüm Hakları Saklıdır." } },
+    en: { nav: { cli: "Ultra-Premium Clinic", age: "Global Agency Network", tech: "Alpha Architecture", vision: "Vision 2026", getStarted: "Start Operation" }, footer: { signature: "POWERED BY NEXTORIA DIGITAL", rights: "© 2026 Aura OS Galactic Operations. All Rights Reserved." } },
+    ar: { nav: { cli: "عيادات النخبة", age: "شبكة الوكالات العالمية", tech: "هندسة ألفا", vision: "رؤية 2026", getStarted: "بدء التشغيل" }, footer: { signature: "بدعم من نكستوريا ديجيتال", rights: "© 2026 Aura OS Galactic Operations. جميع الحقوق محفوظة." } }
 };
 
 export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps) {
@@ -29,34 +30,53 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Aura OS",
+        "operatingSystem": "Web-Based",
+        "applicationCategory": "BusinessApplication",
+        "author": {
+            "@type": "Organization",
+            "name": "Nextoria Digital",
+            "url": "https://www.nextoriadigital.com"
+        },
+        "description": "The world's first autonomous revenue engine for ultra-premium health tourism."
+    };
+
     return (
-        <div className={`min-h-screen bg-[#050505] text-[#E0E0E0] selection:bg-teal-500/40 overflow-x-hidden ${isRTL ? 'text-right font-arabic' : 'text-left font-prestige'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+        <div className={`min-h-screen bg-[#050505] text-[#E0E0E0] selection:bg-[#00F0FF]/40 overflow-x-hidden ${isRTL ? 'text-right font-arabic' : 'text-left font-prestige'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+            <Script id="aura-seo-ld" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+            {/* --- GOD-MODE BACKGROUND LAYER --- */}
+            <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }} />
+            <div className="fixed inset-0 z-1 pointer-events-none opacity-[0.05] bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px]" />
 
             {/* --- PRESTIGE NAV --- */}
             <nav className="fixed top-0 w-full z-[1000] px-4 md:px-10 py-8 transition-all duration-500">
-                <div className={`max-w-[1600px] mx-auto flex items-center justify-between transition-all duration-700 rounded-[1.2rem] px-8 md:px-12 h-20 md:h-24 ${isScrolled ? 'bg-black/60 backdrop-blur-3xl border border-white/5 shadow-3xl scale-[0.99]' : 'bg-transparent border border-transparent'}`}>
+                <div className={`max-w-[1600px] mx-auto flex items-center justify-between transition-all duration-700 rounded-[1.2rem] px-8 md:px-12 h-20 md:h-24 ${isScrolled ? 'bg-black/80 backdrop-blur-3xl border border-white/5 shadow-3xl scale-[0.99]' : 'bg-transparent border border-transparent'}`}>
                     <Link href="/" className="flex items-center gap-4 group cursor-pointer">
-                        <div className="w-12 h-12 bg-teal-500 rounded-lg flex items-center justify-center shadow-[0_0_40px_rgba(0,240,255,0.3)] group-hover:scale-110 transition-transform">
+                        <div className="w-12 h-12 bg-[#00F0FF] rounded-lg flex items-center justify-center shadow-[0_0_40px_rgba(0,240,255,0.3)] group-hover:scale-110 transition-transform">
                             <Brain size={26} className="text-black" />
                         </div>
                         <span className="text-2xl md:text-3xl font-black tracking-[-0.08em] uppercase italic py-2 leading-none text-white whitespace-nowrap">
-                            Aura <span className="text-teal-500/80">OS</span>
+                            Aura <span className="text-[#00F0FF]/80">OS</span>
                         </span>
                     </Link>
 
                     <div className="hidden lg:flex items-center gap-8 xl:gap-14 text-white/80">
-                        <Link href="/solutions/clinics" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.cli}</Link>
-                        <Link href="/solutions/agencies" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.age}</Link>
-                        <Link href="/technology" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.tech}</Link>
-                        <Link href="/vision" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-teal-400 transition-all whitespace-nowrap">{t.nav.vision}</Link>
+                        <Link href="/solutions/clinics" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-[#00F0FF] transition-all whitespace-nowrap">{t.nav.cli}</Link>
+                        <Link href="/solutions/agencies" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-[#00F0FF] transition-all whitespace-nowrap">{t.nav.age}</Link>
+                        <Link href="/technology" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-[#00F0FF] transition-all whitespace-nowrap">{t.nav.tech}</Link>
+                        <Link href="/vision" className="text-[10px] font-bold uppercase tracking-[0.5em] hover:text-[#00F0FF] transition-all whitespace-nowrap">{t.nav.vision}</Link>
 
                         <div className="flex bg-white/5 p-1 rounded-lg border border-white/5 mx-2">
                             {(['tr', 'en', 'ar'] as const).map((l) => (
-                                <button key={l} onClick={() => setLang(l)} className={`px-4 py-2 rounded-md text-[9px] font-black uppercase transition-all duration-500 ${lang === l ? 'bg-white/10 text-teal-400' : 'text-slate-600 hover:text-white'}`}>{l}</button>
+                                <button key={l} onClick={() => setLang(l)} className={`px-4 py-2 rounded-md text-[9px] font-black uppercase transition-all duration-500 ${lang === l ? 'bg-white/10 text-[#00F0FF]' : 'text-slate-600 hover:text-white'}`}>{l}</button>
                             ))}
                         </div>
                         <button className="relative group px-10 py-4.5 rounded-full overflow-hidden transition-all active:scale-95 whitespace-nowrap">
-                            <div className="absolute inset-0 bg-teal-500 group-hover:bg-teal-400 transition-colors" />
+                            <div className="absolute inset-0 bg-[#00F0FF] group-hover:bg-[#00F0FF] transition-colors" />
                             <div className="absolute inset-0 bg-black/10 group-active:bg-black/20" />
                             <span className="relative z-10 text-[10px] font-black uppercase tracking-[0.3em] text-black">{t.nav.getStarted}</span>
                         </button>
@@ -76,7 +96,7 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
                         <Link href="/solutions/agencies" className="text-3xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
                         <Link href="/technology" className="text-3xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
                         <div className="h-px w-20 bg-white/10 my-4" />
-                        <button className="w-full bg-teal-500 text-black py-6 rounded-full font-black uppercase tracking-widest">{t.nav.getStarted}</button>
+                        <button className="w-full bg-[#00F0FF] text-black py-6 rounded-full font-black uppercase tracking-widest">{t.nav.getStarted}</button>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -85,26 +105,30 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
 
             {/* --- PRESTIGE FOOTER --- */}
             <footer className="py-20 md:py-40 px-8 border-t border-white/5 bg-[#050505] relative z-20 overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-teal-500/20 to-transparent" />
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#00F0FF]/20 to-transparent" />
                 <div className="max-w-[1600px] mx-auto grid lg:grid-cols-4 gap-20">
                     <div className="lg:col-span-1 space-y-12">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-teal-500 rounded-lg flex items-center justify-center shadow-2xl"><Brain size={30} className="text-black" /></div>
-                            <span className="text-3xl font-black tracking-tighter uppercase italic py-2 text-white leading-none">AURA <span className="text-teal-500/60">OS</span></span>
+                            <div className="w-14 h-14 bg-[#00F0FF] rounded-lg flex items-center justify-center shadow-2xl"><Brain size={30} className="text-black" /></div>
+                            <span className="text-3xl font-black tracking-tighter uppercase italic py-2 text-white leading-none">AURA <span className="text-[#00F0FF]/60">OS</span></span>
                         </div>
                         <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-slate-700 leading-loose max-w-[280px]">
-                            NEXTORIA PRESTIGE INFRASTRUCTURE<br />VERSION 10.0 • ALPHA ASSET<br />GLOBAL REVENUE ENGINE
+                            NEXTORIA PRESTIGE INFRASTRUCTURE<br />VERSION 11.0 • GOD-MODE ALPHA<br />GLOBAL REVENUE ENGINE
                         </p>
                         <div className="flex gap-4">
-                            {[Radio, Globe, Shield, MessageSquare].map((Icon, i) => (
-                                <div key={i} className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-slate-600 hover:text-teal-400 hover:bg-white/10 transition-all cursor-pointer border border-white/5"><Icon size={18} /></div>
+                            {['Radio', 'Globe', 'Shield'].map((icon, i) => (
+                                <div key={i} className="w-10 h-10 rounded-lg bg-white/5 flex items-center justify-center text-slate-600 hover:text-[#00F0FF] hover:bg-white/10 transition-all cursor-pointer border border-white/5">
+                                    {icon === 'Radio' && <Radio size={18} />}
+                                    {icon === 'Globe' && <Globe size={18} />}
+                                    {icon === 'Shield' && <Shield size={18} />}
+                                </div>
                             ))}
                         </div>
                     </div>
 
                     <div className="lg:col-span-2 grid grid-cols-2 lg:grid-cols-3 gap-16 md:gap-24">
                         <div className="space-y-10">
-                            <div className="text-[9px] font-black uppercase tracking-[0.8em] text-teal-500/80">Pazar Çözümleri</div>
+                            <div className="text-[9px] font-black uppercase tracking-[0.8em] text-[#00F0FF]/80">Pazar Çözümleri</div>
                             <Link href="/solutions/clinics" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">{t.nav.cli}</Link>
                             <Link href="/solutions/agencies" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">{t.nav.age}</Link>
                         </div>
@@ -117,7 +141,7 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
 
                     <div className="lg:col-span-1 text-center lg:text-right space-y-16">
                         <div className="space-y-4">
-                            <div className="text-[11px] font-black uppercase tracking-[0.8em] text-white/50 leading-tight">{t.footer.signature}</div>
+                            <a href="https://www.nextoriadigital.com" target="_blank" rel="noopener noreferrer" className="text-[11px] font-black uppercase tracking-[0.8em] text-white/50 leading-tight hover:text-[#00F0FF] transition-colors">{t.footer.signature}</a>
                             <p className="text-[9px] font-bold text-slate-800 tracking-[0.4em] uppercase leading-relaxed">{t.footer.rights}</p>
                         </div>
                         <div className="flex justify-center lg:justify-end gap-6 opacity-10">
@@ -134,7 +158,8 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
         body { font-family: 'Space Grotesk', sans-serif; background: #050505; color: #E0E0E0; margin:0; padding:0; overflow-x:hidden; -webkit-font-smoothing: antialiased; }
         .font-prestige { font-family: 'Space Grotesk', sans-serif; }
         .font-arabic { font-family: system-ui, sans-serif; }
-        h1, h2, h3, h4 { letter-spacing: -0.1em !important; font-weight: 700; }
+        h1, h2, h3, h4 { letter-spacing: -0.1em !important; font-weight: 700; color: #FFFFFF; }
+        p, span, li { color: #E0E0E0; }
         ::selection { background: #00F0FF; color: black; }
         ::-webkit-scrollbar { width: 3px; }
         ::-webkit-scrollbar-track { background: #050505; }
@@ -142,6 +167,7 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
         ::-webkit-scrollbar-thumb:hover { background: #333333; }
         .glass-btn { background: rgba(255,255,255,0.03); border: 1px solid rgba(0,240,255,0.2); backdrop-filter: blur(10px); }
         .glass-btn:hover { border-color: rgba(0,240,255,0.5); background: rgba(255,255,255,0.05); }
+        .shadow-3xl { shadow: 0 40px 80px -20px rgba(0,0,0,0.8); }
       `}</style>
         </div>
     );
