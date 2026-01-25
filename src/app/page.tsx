@@ -9,7 +9,15 @@ import {
 import Link from "next/link";
 import AuraLayout from "@/components/AuraLayout";
 
-const CONTENT = {
+type ContentType = {
+  [key in 'tr' | 'en' | 'ar']: {
+    hero: { tag: string; title: string; subtitle: string; cta: string };
+    funnel: { title: string; desc: string; steps: { title: string; desc: string }[] };
+    reality: { title: string; desc: string; old: { title: string; items: string[] }; new: { title: string; items: string[] } };
+  }
+};
+
+const CONTENT: ContentType = {
   tr: {
     hero: {
       tag: "GOD-MODE ALPHA • V11.0",
@@ -69,7 +77,7 @@ const CONTENT = {
       steps: [
         { title: "Nex-Scan™ تشخيص", desc: "طبقة ذكاء اصطناعي تحلل نية المريض والملف الطبي في غضون 12 مللي ثانية." },
         { title: "Neural Closing", desc: "بروتوكول مبيعات عصبية يحافظ على دفء العملاء العالميين ويغلق المبيعات ذاتيًا." },
-        { title: "Fintech Nexus", desc: "جسر شفاف يدير جميع التدفقات المالية ومدفوعات العمولات على الفور." }
+        { title: "Fintech Nexus", desc: "جسر شفاف يدير جميع التدفقات المالية ومدfوعات العمولات على الفور." }
       ]
     },
     reality: {
