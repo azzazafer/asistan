@@ -5,6 +5,8 @@ import AuraLayout from "@/components/AuraLayout";
 import { Cpu, Radio, Zap, Brain, Workflow, Server, Activity, ChevronRight, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 
+import AnimatedNumber from "@/components/AnimatedNumber";
+
 export default function TechGodModePage() {
     const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
 
@@ -33,7 +35,7 @@ export default function TechGodModePage() {
             subtitle: "أورا أوس ليس مجرد أداة؛ بل هو شبكة عصبية مستقلة مدربة على أكثر من 120 ألف مجموعة بيانات. على عكس الآخرين، نحن لا نقدم واجهة فحسب، بل نقدم ذكاءً.",
             grid: [
                 { title: "Nex-Scan™ Neural Vision", desc: "طبقة رؤية مستقلة تحلل البيانات الطبية ونوايا المريض بدقة 0.1 مم.", icon: <Cpu /> },
-                { title: "Closing Protocol 11.0", desc: "بروتوكول God-Mode يغلق المبيعات ذاتياً من خلال تحليل النية في 12 مللي ثانية.", icon: <Zap /> }
+                { title: "Closing Protocol 11.0", desc: "بروتوكول God-Mode يغلق المبيعات ذاتياً من خلال تحلیل النية في 12 مللي ثانية.", icon: <Zap /> }
             ]
         }
     };
@@ -43,9 +45,12 @@ export default function TechGodModePage() {
     return (
         <AuraLayout lang={lang} setLang={setLang}>
             <section className="pt-40 md:pt-60 pb-40 px-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-teal-500/[0.01] blur-[200px] rounded-full pointer-events-none" />
+                <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+                    <img src="/images/aura_secure_tech.png" alt="" className="w-full h-full object-cover filter grayscale" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
+                </div>
 
-                <div className="max-w-[1600px] mx-auto">
+                <div className="max-w-[1600px] mx-auto relative z-10">
                     <div className="mb-40 space-y-12 text-left">
                         <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="inline-flex items-center gap-4 px-6 py-2 bg-white/5 text-[#00F0FF] rounded-lg text-[10px] font-black uppercase tracking-[0.6em] border border-white/5">
                             <Cpu size={14} /> {t.tag}
@@ -71,14 +76,21 @@ export default function TechGodModePage() {
                     {/* Technical Spec Matrix: High Density */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                         {[
-                            { label: "SYNC SPEED", val: "12ms", icon: <Zap /> },
-                            { label: "AI TRAINING", val: "120K+", icon: <Brain /> },
-                            { label: "ENCRYPTION", val: "AES-256", icon: <Shield /> },
-                            { label: "CORE VERSION", val: "ALPHA 11", icon: <Server /> }
+                            { label: "SYNC SPEED", val: 12, suffix: "ms", icon: <Zap /> },
+                            { label: "AI TRAINING", val: 120540, suffix: "+", icon: <Brain /> },
+                            { label: "ENCRYPTION", val: 256, prefix: "AES-", icon: <Shield /> },
+                            { label: "CORE VERSION", val: 11, prefix: "ALPHA ", icon: <Server /> }
                         ].map((s, idx) => (
                             <div key={idx} className="p-12 rounded-[2rem] bg-black/40 border border-white/5 text-center space-y-4 group hover:bg-[#00F0FF] transition-all cursor-crosshair">
                                 <div className="text-teal-500 group-hover:text-black flex justify-center">{s.icon}</div>
-                                <div className="text-4xl font-bold text-white group-hover:text-black">{s.val}</div>
+                                <div className="text-4xl font-bold text-white group-hover:text-black">
+                                    <AnimatedNumber
+                                        value={s.val}
+                                        prefix={s.prefix}
+                                        suffix={s.suffix}
+                                        format={idx === 1}
+                                    />
+                                </div>
                                 <div className="text-[9px] font-black uppercase tracking-[0.6em] text-slate-700 group-hover:text-black/60">{s.label}</div>
                             </div>
                         ))}

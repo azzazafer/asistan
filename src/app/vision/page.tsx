@@ -46,10 +46,10 @@ export default function VisionGodModePage() {
                     </div>
 
                     <div className="grid lg:grid-cols-12 gap-20 mb-60">
-                        <div className="lg:col-span-12 relative group rounded-[4rem] overflow-hidden border border-white/5 shadow-3xl bg-black/40">
-                            <div className="absolute inset-0 bg-[#050505]/60 z-10" />
-                            <img src="/images/global_nexus.png" alt="" className="w-full h-auto object-cover opacity-30 group-hover:scale-105 transition-transform duration-[4000ms] grayscale brightness-75" />
-                            <div className="absolute inset-0 z-20 flex flex-col justify-center p-12 md:p-32 max-w-5xl">
+                        <div className="lg:col-span-12 relative group rounded-[4rem] overflow-hidden border border-white/5 shadow-3xl bg-black/40 min-h-[600px] flex items-center justify-center">
+                            <div className="absolute inset-0 bg-black/40 z-10" />
+                            <img src="/images/aura_revenue_flux.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-[4000ms] grayscale brightness-75" />
+                            <div className="relative z-20 flex flex-col justify-center p-12 md:p-32 max-w-5xl">
                                 <p className="text-3xl md:text-6xl font-bold text-white italic leading-tight drop-shadow-2xl">"{t.mission}"</p>
                             </div>
                         </div>

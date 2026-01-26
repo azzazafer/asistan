@@ -5,6 +5,8 @@ import AuraLayout from "@/components/AuraLayout";
 import { Shield, Lock, CheckCircle2, Server, EyeOff, Zap, ChevronRight, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 
+import AnimatedNumber from "@/components/AnimatedNumber";
+
 export default function SecurityGodModePage() {
     const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
 
@@ -43,9 +45,12 @@ export default function SecurityGodModePage() {
     return (
         <AuraLayout lang={lang} setLang={setLang}>
             <section className="pt-40 md:pt-60 pb-40 px-6 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-500/[0.01] blur-[200px] rounded-full pointer-events-none" />
+                <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
+                    <img src="/images/aura_secure_tech.png" alt="" className="w-full h-full object-cover filter grayscale" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
+                </div>
 
-                <div className="max-w-[1600px] mx-auto">
+                <div className="max-w-[1600px] mx-auto relative z-10">
                     <div className="mb-40 space-y-12 text-left">
                         <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="inline-flex items-center gap-4 px-8 py-3 bg-red-500/10 text-red-500 rounded-lg text-[10px] font-black uppercase tracking-[0.5em] border border-red-500/20">
                             <Shield size={16} /> {t.tag}
@@ -55,10 +60,18 @@ export default function SecurityGodModePage() {
                     </div>
 
                     <div className="grid lg:grid-cols-12 gap-20 mb-40 items-center">
-                        <div className="lg:col-span-12 xl:col-span-7 relative group">
-                            <motion.div initial={{ rotateX: 10 }} whileInView={{ rotateX: -5 }} transition={{ duration: 1.5 }} className="relative z-10 rounded-[4rem] overflow-hidden border border-white/5 shadow-[0_50px_100px_-20px_rgba(239,68,68,0.15)] grayscale group-hover:grayscale-0 transition-all duration-2000">
-                                <img src="/images/aura_security_tunnel_9_0_1769350112559.png" alt="" className="w-full h-auto object-cover opacity-80 group-hover:opacity-100" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-red-950/40 via-transparent to-transparent" />
+                        <div className="lg:col-span-12 xl:col-span-7 relative group rounded-[4rem] overflow-hidden">
+                            <motion.div initial={{ rotateX: 10 }} whileInView={{ rotateX: -5 }} transition={{ duration: 1.5 }} className="relative z-10 rounded-[4rem] overflow-hidden border border-white/5 shadow-[0_50px_100px_-20px_rgba(239,68,68,0.15)] bg-black/40 min-h-[500px] flex items-center justify-center">
+                                <img src="/images/aura_hero_bg.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale group-hover:grayscale-0 transition-all duration-[2000ms]" />
+                                <div className="relative z-20 flex flex-col items-center gap-8">
+                                    <Lock size={120} className="text-red-500/40" />
+                                    <div className="text-center">
+                                        <div className="text-6xl md:text-9xl font-black text-white tracking-tighter">
+                                            <AnimatedNumber value={256} prefix="AES-" format={false} />
+                                        </div>
+                                        <div className="text-red-500 text-[10px] font-black tracking-[1em] mt-4">ACTIVE SHIELD</div>
+                                    </div>
+                                </div>
                             </motion.div>
                         </div>
                         <div className="lg:col-span-12 xl:col-span-5 space-y-12">
@@ -84,7 +97,15 @@ export default function SecurityGodModePage() {
                                 <div className="text-3xl font-bold text-white uppercase italic tracking-tighter">Encrypted Alpha Tunnel Active</div>
                             </div>
                         </div>
-                        <div className="px-10 py-5 bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-[0.5em] rounded-full">FORT KNOX CERTIFIED</div>
+                        <div className="flex items-center gap-12">
+                            <div className="text-right">
+                                <div className="text-3xl font-black text-white">
+                                    <AnimatedNumber value={99} suffix="%" duration={1} />
+                                </div>
+                                <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Efficiency</div>
+                            </div>
+                            <div className="px-10 py-5 bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-[0.5em] rounded-full">FORT KNOX CERTIFIED</div>
+                        </div>
                     </div>
                 </div>
             </section>

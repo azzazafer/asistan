@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import AuraLayout from "@/components/AuraLayout";
 
+import AnimatedNumber from "@/components/AnimatedNumber";
+
 // --- NEURAL SALES CONTENT DNA ---
 const CONTENT = {
   tr: {
@@ -92,28 +94,28 @@ const CONTENT = {
 };
 
 // --- REVENUE FLUX DASHBOARD (3D) ---
-const RevenueDashboard = () => (
+const RevenueDashboard = ({ revenue }: { revenue: number }) => (
   <motion.div
     initial={{ rotateX: 15, y: 50, opacity: 0 }}
     animate={{ rotateX: 15, y: 0, opacity: 1 }}
     transition={{ duration: 1.5, ease: "easeOut" }}
-    className="relative w-full max-w-[800px] h-[450px] bg-white/[0.02] border border-white/10 rounded-[2.5rem] backdrop-blur-3xl p-10 flex flex-col items-center justify-center shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] perspective-[1000px]"
+    className="relative w-full max-w-[800px] h-[450px] bg-white/[0.02] border border-white/10 rounded-[2.5rem] backdrop-blur-3xl p-10 flex flex-col items-center justify-center shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] perspective-[1000px] overflow-hidden"
   >
     <div className="absolute inset-0 bg-gradient-to-br from-[#00F0FF]/[0.05] to-transparent rounded-[2.5rem]" />
 
-    <div className="relative z-10 text-center space-y-4">
+    <div className="relative z-20 text-center space-y-4">
       <motion.div
-        animate={{ scale: [1, 1.05, 1], opacity: [0.8, 1, 0.8] }}
+        animate={{ scale: [1, 1.02, 1] }}
         transition={{ duration: 3, repeat: Infinity }}
         className="text-6xl md:text-8xl font-black text-white tracking-tighter"
       >
-        € 142,500
+        <AnimatedNumber value={revenue} prefix="€ " />
       </motion.div>
       <div className="text-[#00F0FF] text-[10px] font-black tracking-[0.8em] uppercase">GÜNCEL CİRO AKIŞI</div>
     </div>
 
     {/* Live Audio Visualizer Bars */}
-    <div className="absolute bottom-10 left-10 right-10 h-32 flex items-end gap-1 px-10">
+    <div className="absolute bottom-10 left-10 right-10 h-32 flex items-end gap-1 px-10 z-10">
       {[...Array(40)].map((_, i) => (
         <motion.div
           key={i}
@@ -145,6 +147,16 @@ export default function AbsoluteAlphaPage() {
     <AuraLayout lang={lang} setLang={setLang}>
       {/* --- HERO: THE CLOSER --- */}
       <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-40 pb-20 overflow-hidden">
+        {/* Background Visual Texture */}
+        <div className="absolute inset-0 z-0">
+          <img
+            src="/images/aura_hero_bg.png"
+            alt=""
+            className="w-full h-full object-cover opacity-20 filter grayscale blur-sm"
+          />
+          <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+        </div>
+
         <div className="max-w-[1700px] mx-auto text-center space-y-12 relative z-20">
           <motion.p
             initial={{ opacity: 0, y: -20 }}
@@ -181,7 +193,7 @@ export default function AbsoluteAlphaPage() {
           </motion.div>
 
           <div className="pt-20 flex justify-center">
-            <RevenueDashboard />
+            <RevenueDashboard revenue={counts.revenue} />
           </div>
         </div>
       </section>
@@ -244,8 +256,16 @@ export default function AbsoluteAlphaPage() {
       </section>
 
       {/* --- COMPARISON: THE DIVIDE --- */}
-      <section className="py-60 px-6 bg-black">
-        <div className="max-w-[1400px] mx-auto">
+      <section className="py-60 px-6 bg-black relative">
+        <div className="absolute inset-0 z-0 overflow-hidden">
+          <img
+            src="/images/aura_clinic_premium.png"
+            alt=""
+            className="w-full h-full object-cover opacity-10 filter grayscale"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black" />
+        </div>
+        <div className="max-w-[1400px] mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-px bg-white/5 rounded-[4rem] overflow-hidden border border-white/5">
             {/* Legacy World */}
             <div className="p-20 bg-black/60 backdrop-blur-3xl space-y-12 opacity-40 hover:opacity-100 transition-opacity group">
@@ -285,7 +305,12 @@ export default function AbsoluteAlphaPage() {
           {t.metrics.map((m, i) => (
             <div key={i} className="space-y-4 group">
               <div className="text-6xl md:text-8xl font-black text-white tracking-tighter shadow-white group-hover:text-[#00F0FF] transition-colors">
-                {m.id === "count1" ? counts.closings : m.id === "count2" ? counts.revenue.toLocaleString() : m.value}
+                <AnimatedNumber
+                  value={m.id === "count1" ? counts.closings : m.id === "count2" ? counts.revenue : 0}
+                  prefix={m.id === "count2" ? "€ " : ""}
+                  suffix={m.id === "count3" ? "12ms" : ""}
+                  format={m.id !== "count3"}
+                />
               </div>
               <div className="text-[10px] font-black text-slate-600 tracking-[0.8em] uppercase whitespace-nowrap">
                 {m.label}
