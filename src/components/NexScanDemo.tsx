@@ -1,8 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "react-hook-form"; // Correcting import if needed, but framer-motion is used below
-import { motion as motionFramer, AnimatePresence as AnimatePresenceFramer } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Upload, X, Check, Brain, Activity } from "lucide-react";
 
 interface NexScanDemoProps {
@@ -36,10 +35,10 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
     };
 
     return (
-        <AnimatePresenceFramer>
+        <AnimatePresence>
             {isOpen && (
                 <div className="fixed inset-0 z-[2000] flex items-center justify-center p-6">
-                    <motionFramer
+                    <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -47,7 +46,7 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                         className="absolute inset-0 bg-black/95 backdrop-blur-2xl"
                     />
 
-                    <motionFramer
+                    <motion.div
                         initial={{ scale: 0.9, opacity: 0, y: 20 }}
                         animate={{ scale: 1, opacity: 1, y: 0 }}
                         exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -80,7 +79,7 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                             {step === 'scanning' && (
                                 <div className="text-center space-y-10 py-6">
                                     <div className="relative w-24 h-24 mx-auto">
-                                        <motionFramer
+                                        <motion.div
                                             animate={{ rotate: 360 }}
                                             transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                                             className="absolute inset-0 border-4 border-[#00F0FF]/20 border-t-[#00F0FF] rounded-full"
@@ -92,7 +91,7 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                                     <div className="space-y-4">
                                         <div className="text-xl font-black text-white italic uppercase tracking-tight font-space text-[12px] tracking-[0.4em]">PİXELLER TARANIYOR... {progress}%</div>
                                         <div className="w-full h-1 bg-white/5 rounded-full overflow-hidden max-w-[200px] mx-auto">
-                                            <motionFramer
+                                            <motion.div
                                                 initial={{ width: 0 }}
                                                 animate={{ width: `${progress}%` }}
                                                 className="h-full bg-[#00F0FF] shadow-[0_0_20px_#00F0FF]"
@@ -135,7 +134,7 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                                     <div className="relative h-20 bg-black/40 rounded-xl border border-white/5 overflow-hidden group">
                                         <div className="absolute inset-x-0 bottom-0 h-full opacity-10 pointer-events-none">
                                             <svg className="w-full h-full" viewBox="0 0 400 100">
-                                                <motionFramer.path
+                                                <motion.path
                                                     d="M0 50 Q 50 10, 100 50 T 200 50 T 300 50 T 400 50"
                                                     fill="transparent"
                                                     stroke="#00F0FF"
@@ -184,9 +183,9 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                                 </div>
                             )}
                         </div>
-                    </motionFramer>
+                    </motion.div>
                 </div>
             )}
-        </AnimatePresenceFramer>
+        </AnimatePresence>
     );
 }
