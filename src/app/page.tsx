@@ -1,333 +1,193 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Brain, Shield, Zap, Globe, Sparkles,
-  ArrowUpRight, Cpu, TrendingUp, X, CheckCircle2,
-  Database, Workflow, Activity, CreditCard, AlertTriangle
-} from "lucide-react";
-import AuraLayout from "@/components/AuraLayout";
-
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
+import { ArrowDown, Cpu, Globe, Rocket, Shield, Zap, ChevronRight, Activity, Radio, Lock, Camera, Workflow, DollarSign } from "lucide-react";
 import Link from "next/link";
+import AuraLayout from "@/components/AuraLayout";
 import AnimatedNumber from "@/components/AnimatedNumber";
-import NeuralCore from "@/components/NeuralCore";
 import NexScanDemo from "@/components/NexScanDemo";
+import LiveTicker from "@/components/LiveTicker";
+import ProblemTable from "@/components/ProblemTable";
 
-// --- NEURAL SALES CONTENT DNA ---
-const CONTENT = {
-  tr: {
-    hero: {
-      tag: "NEXTORIA ALPHA ARCHITECTURE",
-      title: "Yönetmeyi Bırakın.\nKapatmaya Başlayın.",
-      subtitle: "Aura OS, dünyadaki ilk Nöro-Satış motorudur. Randevu vermiyoruz, HBYS ile 12ms hızında konuşup satışı Stripe üzerinden otonom kapatıyoruz.",
-      cta: "Alpha Sürümüne Geçiş Yap"
-    },
-    features: {
-      title: "Otonom Satışın\nÜç Sac Ayağı",
-      subtitle: "Eski CRM'lerinizi çöpe atın. Aura, sadece veri tutmaz; veriyi paraya çevirir.",
-      items: [
-        { icon: <Zap size={32} />, title: "Scarcity Engine™", desc: "Stoklar 2'nin altına düştüğünde, AI otomatik olarak 'Kıtlık Psikolojisi' uygular ve dönüşümü %300 artırır." },
-        { icon: <Brain size={32} />, title: "Nex-Scan™ Triaj", desc: "Hasta fotoğrafını milisaniyeler içinde analiz eder. Doktor görmeden önce Lead Score'u çıkarır." },
-        { icon: <CreditCard size={32} />, title: "Stripe Bridge", desc: "Telefon kapanmadan tahsilat yapılır. 'Sözde randevu' devri biter, 'Ödenmiş Randevu' devri başlar." }
-      ]
-    },
-    comparison: {
-      old: { title: "ESKİ DÜNYA (MEDUAI vb.)", items: ["Sadece Randevu Yönetir", "İnsan Hızında Yanıt (Saatler)", "Leadlerin %40'ı Çöp Olur", "Ödeme Klinikte Alınır"] },
-      aura: { title: "AURA DÜNYASI", items: ["Satışı ve Parayı Yönetir", "12ms Refleks Hızı", "Sadece Kalifiye Hasta Gelir", "Telefonda Tahsilat (No-Show %0)"] }
-    },
-    metrics: [
-      { id: "count1", label: "OTONOM KAPANIŞ", suffix: "" },
-      { id: "count2", label: "TOPLAM CİRO (€)", suffix: "" },
-      { id: "count3", label: "HBYS SENKRONİZASYON", value: "12ms" }
-    ]
-  },
-  en: {
-    hero: {
-      tag: "NEXTORIA ALPHA ARCHITECTURE",
-      title: "Stop Managing.\nStart Closing.",
-      subtitle: "Aura OS is the world's first Neuro-Sales engine. We don't book appointments; we talk to HMS at 12ms and close the sale autonomously via Stripe.",
-      cta: "Upgrade to Alpha Version"
-    },
-    features: {
-      title: "Three Pillars of\nAutonomous Sales",
-      subtitle: "Trash your old CRMs. Aura doesn't just store data; it converts data into capital.",
-      items: [
-        { icon: <Zap size={32} />, title: "Scarcity Engine™", desc: "When stock drops below 2, AI automatically applies 'Scarcity Psychology' increasing conversion by 300%." },
-        { icon: <Brain size={32} />, title: "Nex-Scan™ Triage", desc: "Analyzes patient photos in milliseconds. Generates Lead Score before a doctor even sees it." },
-        { icon: <CreditCard size={32} />, title: "Stripe Bridge", desc: "Collection is done before the call ends. The era of 'fake appointments' ends; 'Paid Appointments' begin." }
-      ]
-    },
-    comparison: {
-      old: { title: "LEGACY WORLD (MEDUAI etc.)", items: ["Manages Appointments Only", "Human Speed Response (Hours)", "40% of Leads Are Wasted", "Payment Taken at Clinic"] },
-      aura: { title: "AURA WORLD", items: ["Manages Sales and Capital", "12ms Reflex Speed", "Only Qualified Patients Arrive", "In-Call Collection (No-Show %0)"] }
-    },
-    metrics: [
-      { id: "count1", label: "AUTONOMOUS CLOSINGS", suffix: "" },
-      { id: "count2", label: "TOTAL REVENUE (€)", suffix: "" },
-      { id: "count3", label: "HMS SYNCHRONIZATION", value: "12ms" }
-    ]
-  },
-  ar: {
-    hero: {
-      tag: "بنية نكستوريا ألفا",
-      title: "توقف عن الإدارة.\nابدأ بالإغلاق.",
-      subtitle: "Aura OS هو أول محرك مبيعات عصبي في العالم. نحن لا نحجز المواعيد؛ نتحدث إلى HMS بسرعة 12 مللي ثانية ونغلق البيع تلقائيًا عبر Stripe.",
-      cta: "الترقية إلى إصدار ألفا"
-    },
-    features: {
-      title: "الركائز الثلاث\nللمبيعات المستقلة",
-      subtitle: "تخلص من أنظمة CRM القديمة. أورا لا يخزن البيانات فحسب؛ بل يحول البيانات إلى رأس مال.",
-      items: [
-        { icon: <Zap size={32} />, title: "Scarcity Engine™", desc: "عندما ينخفض المخزون عن 2، يطبق الذكاء الاصطناعي تلقائيًا 'علم نفس الندرة' مما يزيد التحويل بنسبة 300٪." },
-        { icon: <Brain size={32} />, title: "Nex-Scan™ Triaj", desc: "يحلل صور المرضى في أجزاء من الثانية. يولد درجة العميل المحتمل قبل أن يراها الطبيب." },
-        { icon: <CreditCard size={32} />, title: "Stripe Bridge", desc: "يتم التحصيل قبل انتهاء المكالمة. ينتهي عصر 'المواعيد الوهمية'؛ وتبدأ 'المواعيد المدفوعة'." }
-      ]
-    },
-    comparison: {
-      old: { title: "العالم القديم", items: ["يدير المواعيد فقط", "استجابة بسرعة البشر (ساعات)", "40٪ من العملاء يضيعون", "يتم الدفع في العيادة"] },
-      aura: { title: "عالم أورا", items: ["يدير المبيعات ورأس المال", "سرعة رد فعل 12ms", "يصل المرضى المؤهلون فقط", "التحصيل أثناء المكالمة (No-Show %0)"] }
-    },
-    metrics: [
-      { id: "count1", label: "إغلاق مستقل", suffix: "" },
-      { id: "count2", label: "إجمالي الإيرادات (€)", suffix: "" },
-      { id: "count3", label: "مزامنة HMS", value: "12ms" }
-    ]
-  }
-};
-
-// --- NEURAL CORE NEXUS ---
-const NeuralNexus = ({ revenue }: { revenue: number }) => (
-  <div className="relative flex flex-col items-center justify-center space-y-20">
-    <NeuralCore className="scale-125" />
-
-    <div className="relative z-20 text-center space-y-4">
-      <motion.div
-        animate={{ scale: [1, 1.02, 1], opacity: [0.8, 1, 0.8] }}
-        transition={{ duration: 3, repeat: Infinity }}
-        className="text-6xl md:text-8xl font-black text-white tracking-tighter"
-      >
-        <AnimatedNumber value={revenue} prefix="€ " />
-      </motion.div>
-      <div className="text-[#00F0FF] text-[10px] font-black tracking-[0.8em] uppercase">NEURAL REVENUE FLOW</div>
-    </div>
-  </div>
-);
-
-export default function AbsoluteAlphaPage() {
-  const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
-  const [counts, setCounts] = useState({ closings: 124, revenue: 142500 });
-  const t = CONTENT[lang];
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCounts(prev => ({
-        closings: prev.closings + 1,
-        revenue: prev.revenue + 450
-      }));
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+export default function DeepSpaceHomePage() {
+  const [isNexScanOpen, setIsNexScanOpen] = useState(false);
+  const { scrollYProgress } = useScroll();
+  const dashboardRotate = useTransform(scrollYProgress, [0, 0.5], [15, 0]);
+  const dashboardScale = useTransform(scrollYProgress, [0, 0.5], [0.8, 1]);
 
   return (
-    <AuraLayout lang={lang} setLang={setLang}>
-      {/* --- HERO: THE CLOSER --- */}
-      <section className="relative min-h-screen flex flex-col items-center justify-center px-6 pt-40 pb-20 overflow-hidden">
-        {/* Background Visual Texture */}
-        <div className="absolute inset-0 z-0">
+    <AuraLayout>
+      {/* --- SECTION A: HERO (THE HOOK) --- */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden flex flex-col items-center">
+        {/* Visual Backdrop: Neural Connection */}
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[120%] h-[120%] opacity-20 pointer-events-none z-0">
           <img
-            src="/images/aura_hero_bg.png"
+            src="/images/aura_neural_network_abstract.png"
             alt=""
-            className="w-full h-full object-cover opacity-20 filter grayscale blur-sm"
+            className="w-full h-full object-contain mix-blend-screen"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
         </div>
 
-        <div className="max-w-[1700px] mx-auto text-center space-y-12 relative z-20">
-          <motion.p
-            initial={{ opacity: 0, y: -20 }}
+        <div className="max-w-[1400px] mx-auto text-center relative z-10 space-y-12">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-[#00F0FF] text-[11px] font-black tracking-[0.8em] uppercase"
+            className="inline-flex items-center gap-3 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.5em] text-[#00F0FF]"
           >
-            {t.hero.tag}
-          </motion.p>
+            <Radio size={14} className="animate-pulse" /> NEXTORIA ALPHA OPERASYONU
+          </motion.div>
 
           <motion.h1
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-6xl md:text-[9rem] font-bold text-white uppercase italic leading-[1] md:leading-[0.95] tracking-[-0.08em]"
+            className="text-6xl md:text-[8rem] font-bold tracking-[-0.08em] font-space text-white leading-tight uppercase italic"
           >
-            {t.hero.title.split('\n')[0]}<br />
-            <span className="bg-gradient-to-r from-[#00F0FF] to-white bg-clip-text text-transparent italic">
-              {t.hero.title.split('\n')[1]}
-            </span>
+            Yönetmeyi Bırakın.<br />
+            <span className="text-[#00F0FF]">Kapatmaya Başlayın.</span>
           </motion.h1>
 
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="max-w-3xl mx-auto text-xl md:text-2xl text-slate-400 font-medium leading-relaxed"
+            transition={{ delay: 0.2 }}
+            className="text-xl md:text-2xl font-medium text-[#B0B0B0] max-w-3xl mx-auto leading-relaxed"
           >
-            {t.hero.subtitle}
+            Dünyanın ilk Nöro-Satış Motoru. Randevu vermiyoruz, HBYS ile <span className="text-white">12ms hızında</span> konuşup satışı Stripe üzerinden otonom kapatıyoruz.
           </motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="flex justify-center gap-8 pt-8 relative z-[50]">
-            <Link href="/login" className="px-12 py-6 bg-[#00F0FF] text-black font-black uppercase text-[11px] tracking-[0.3em] rounded-md hover:scale-105 transition-all shadow-[0_0_50px_rgba(0,240,255,0.4)] relative z-[60]">
-              {t.hero.cta}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col md:flex-row items-center justify-center gap-8 pt-6"
+          >
+            <button className="px-12 py-5 bg-transparent border border-[#00F0FF] text-[#00F0FF] rounded-xl text-[12px] font-black uppercase tracking-[0.3em] hover:bg-[#00F0FF] hover:text-black transition-all shadow-[0_0_40px_rgba(0,240,255,0.2)] active:scale-95 duration-500">
+              Alpha Sürümüne Geç
+            </button>
+            <Link href="/calculate-loss" className="text-[12px] font-black uppercase tracking-[0.3em] text-[#B0B0B0] hover:text-white transition-colors flex items-center gap-3 group">
+              Ciro Kaybını Hesapla <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </Link>
           </motion.div>
-
-          <div className="pt-20 flex justify-center">
-            <NeuralNexus revenue={counts.revenue} />
-          </div>
         </div>
       </section>
 
-      {/* --- THE ALPHA FLOW: CLARITY BRIDGE --- */}
-      <section className="py-20 px-6 bg-[#030303] border-y border-white/5 overflow-hidden">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="grid md:grid-cols-4 gap-12">
-            {[
-              { label: "01. INPUT", title: "Global Lead", desc: "Aura tüm kanallardan gelen talepleri 12ms hızda yakalar." },
-              { label: "02. PROCESS", title: "Nex-Scan™", desc: "Nöral ağlar lead niyetini ve medikal profili saniyede analiz eder." },
-              { label: "03. ACTION", title: "Closing Protocol", desc: "Sistem satışı Stripe üzerinden otonom olarak kapatır." },
-              { label: "04. RESULT", title: "Neural Profit", desc: "Ciro doğrudan hesabınıza aktarılır, operasyon otonom tamamlanır." }
-            ].map((step, i) => (
-              <div key={i} className="space-y-6 group">
-                <div className="text-[10px] font-black text-[#00F0FF] tracking-widest">{step.label}</div>
-                <h3 className="text-2xl font-black text-white uppercase italic">{step.title}</h3>
-                <p className="text-slate-500 text-sm font-medium leading-relaxed">{step.desc}</p>
-              </div>
-            ))}
+      {/* Live Data Ticker */}
+      <LiveTicker />
+
+      {/* --- SECTION B: THE PROBLEM (REALITY CHECK) --- */}
+      <section className="py-40 px-6 relative">
+        <div className="max-w-[1400px] mx-auto space-y-24">
+          <div className="text-center space-y-6">
+            <h2 className="text-4xl md:text-6xl font-bold uppercase italic tracking-tighter text-white font-space">Gerçekle Yüzleşin.</h2>
+            <p className="text-[#B0B0B0] max-w-2xl mx-auto text-lg leading-relaxed">Eski nesil CRM'ler yavaş ve pasiftir. Aura OS, otonom bir avcı gibi her fırsatı paraya dönüştürür.</p>
           </div>
+
+          <ProblemTable />
         </div>
       </section>
 
-      {/* --- FEATURES: THE PILLARS --- */}
-      <section className="py-40 px-6 relative bg-[#030303]">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="text-center mb-32 space-y-8">
-            <h2 className="text-6xl md:text-8xl font-black text-white uppercase italic tracking-tighter leading-tight">
-              {t.features.title.split('\n')[0]}<br />
-              <span className="text-slate-700">{t.features.title.split('\n')[1]}</span>
-            </h2>
-            <p className="text-xl md:text-2xl text-slate-500 font-medium max-w-2xl mx-auto">{t.features.subtitle}</p>
-          </div>
+      {/* --- SECTION C: CORE TECHNOLOGY (THE GRID) --- */}
+      <section id="nexscan" className="py-40 px-6 bg-[#030303] relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-px bg-white/5" />
 
-          <div className="grid md:grid-cols-3 gap-12">
-            {t.features.items.map((item, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -10 }}
-                className="p-12 rounded-[3.5rem] bg-white/[0.02] border border-white/5 group hover:border-[#00F0FF]/30 transition-all duration-500"
-              >
-                <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-[#00F0FF] mb-10 group-hover:bg-[#00F0FF] group-hover:text-black transition-all">
-                  {item.icon}
-                </div>
-                <h3 className="text-3xl font-black text-white uppercase italic mb-6">{item.title}</h3>
-                <p className="text-xl text-slate-400 leading-relaxed font-medium">{item.desc}</p>
-                {item.title.includes("Nex-Scan") && (
-                  <NexScanDemo />
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- FEATURE MATRIX: THE 13 PILLARS --- */}
-      <section className="py-60 px-6 bg-[#050505] relative overflow-hidden">
-        <div className="max-w-[1400px] mx-auto">
-          <div className="mb-32 space-y-6">
-            <span className="text-[#00F0FF] text-[10px] font-black tracking-[0.8em] uppercase">Functional Superiority</span>
-            <h2 className="text-5xl md:text-7xl font-black text-white uppercase italic tracking-tighter">
-              Absolute Alpha<br /><span className="text-slate-700">Feature Matrix</span>
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[
-              "Nex-Scan™ Neural Vision", "Closing Protocol 11.0", "Stripe Bridge v2", "Scarcity Engine™",
-              "HBYS 12ms Sync", "Fintech Nexus API", "Lead Scoring Alpha", "GDPR Zero-Knowledge",
-              "Aura Voice AI", "Multi-Currency Bridge", "Auto-Escrow System", "Nex-Report™ Insights",
-              "24/7 Ops-Bot"
-            ].map((feat, i) => (
-              <div key={i} className="p-10 bg-white/[0.01] border border-white/5 rounded-3xl hover:bg-white/[0.03] hover:border-[#00F0FF]/20 transition-all group">
-                <div className="flex items-center gap-4">
-                  <div className="w-2 h-2 bg-[#00F0FF] rounded-full group-hover:shadow-[0_0_10px_#00F0FF]" />
-                  <span className="text-[11px] font-black text-white uppercase tracking-widest">{feat}</span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* --- COMPARISON: THE DIVIDE --- */}
-      <section className="py-60 px-6 bg-black relative">
-        <div className="absolute inset-0 z-0 overflow-hidden">
-          <img
-            src="/images/aura_clinic_premium.png"
-            alt=""
-            className="w-full h-full object-cover opacity-10 filter grayscale"
+        <div className="max-w-[1400px] mx-auto grid lg:grid-cols-3 gap-10">
+          <TechCard
+            id="scarcity"
+            icon={<Activity className="text-[#FF4500]" />}
+            title="Scarcity Engine™"
+            text="Stoklar 2'nin altına düştüğünde, AI otomatik olarak 'Kıtlık Psikolojisi' uygular ve dönüşümü %300 artırır."
+            color="#FF4500"
+            visual={<div className="w-20 h-20 bg-[#FF4500]/10 rounded-full flex items-center justify-center animate-pulse border border-[#FF4500]/20"><DollarSign size={32} /></div>}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black via-transparent to-black" />
-        </div>
-        <div className="max-w-[1400px] mx-auto relative z-10">
-          <div className="grid lg:grid-cols-2 gap-px bg-white/5 rounded-[4rem] overflow-hidden border border-white/5">
-            {/* Legacy World */}
-            <div className="p-20 bg-black/60 backdrop-blur-3xl space-y-12 opacity-40 hover:opacity-100 transition-opacity group">
-              <span className="text-[10px] font-black tracking-[0.5em] text-slate-600 uppercase">
-                {t.comparison.old.title}
-              </span>
-              <div className="space-y-8">
-                {t.comparison.old.items.map((it, idx) => (
-                  <div key={idx} className="flex items-center gap-6 text-2xl font-bold text-slate-700">
-                    <X size={28} className="text-red-900/40" /> {it}
-                  </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Aura World */}
-            <div className="p-20 bg-gradient-to-br from-[#00F0FF]/[0.05] to-transparent space-y-12 relative overflow-hidden group">
-              <div className="absolute top-10 right-10 text-[10px] font-black text-[#00F0FF] tracking-widest animate-pulse">AURA ACTIVE</div>
-              <span className="text-[10px] font-black tracking-[0.5em] text-[#00F0FF] uppercase">
-                {t.comparison.aura.title}
-              </span>
-              <div className="space-y-8">
-                {t.comparison.aura.items.map((it, idx) => (
-                  <div key={idx} className="flex items-center gap-6 text-2xl font-bold text-white italic drop-shadow-[0_0_10px_rgba(0,240,255,0.3)]">
-                    <CheckCircle2 size={28} className="text-[#00F0FF]" /> {it}
-                  </div>
-                ))}
-              </div>
-            </div>
+          <TechCard
+            id="nexscan-tech"
+            icon={<Camera className="text-[#00F0FF]" />}
+            title="Nex-Scan™ Triaj"
+            text="Hasta fotoğrafını (Saç/Diş) milisaniyeler içinde analiz eder. Doktor görmeden önce Lead Score çıkarır."
+            color="#00F0FF"
+            visual={<div className="relative w-24 h-24 border border-[#00F0FF]/20 rounded-xl overflow-hidden group">
+              <motion.div
+                animate={{ y: ["0%", "100%", "0%"] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="absolute top-0 left-0 w-full h-0.5 bg-[#00F0FF] shadow-[0_0_15px_#00F0FF]"
+              />
+              <div className="absolute inset-0 flex items-center justify-center"><Activity size={32} className="text-[#00F0FF]/40" /></div>
+            </div>}
+            onClick={() => setIsNexScanOpen(true)}
+          />
+
+          <TechCard
+            id="stripe"
+            icon={<Lock className="text-white" />}
+            title="Stripe Bridge"
+            text="Telefon kapanmadan kapora tahsilatı yapılır. 'Sözde randevu' biter, 'Ödenmiş Randevu' başlar."
+            color="#FFFFFF"
+            visual={<div className="flex flex-col items-center gap-3">
+              <div className="text-3xl font-bold font-space text-white">$2,500</div>
+              <div className="text-[8px] font-black uppercase tracking-widest text-[#00F0FF]">KAPORA TAHSİL EDİLDİ</div>
+            </div>}
+          />
+        </div>
+      </section>
+
+      {/* --- SECTION D: THE DASHBOARD (THE MATRIX) --- */}
+      <section className="py-40 px-6 relative overflow-hidden">
+        <div className="max-w-[1400px] mx-auto text-center space-y-20">
+          <div className="space-y-6">
+            <div className="text-[#00F0FF] text-[10px] font-black tracking-[0.5em] uppercase">ALPHA INFRASTRUCTURE v12.0</div>
+            <h2 className="text-4xl md:text-7xl font-bold uppercase italic tracking-tighter text-white font-space">Tekil Komuta Merkezi.</h2>
           </div>
+
+          <motion.div
+            style={{ rotateX: dashboardRotate, scale: dashboardScale, perspective: 1000 }}
+            className="relative w-full max-w-6xl mx-auto rounded-[3rem] overflow-hidden border border-white/5 shadow-[0_100px_200px_rgba(0,0,0,0.8)]"
+          >
+            <img
+              src="/images/aura_dashboard_matrix_mockup.png"
+              alt="Aura OS Dashboard"
+              className="w-full h-auto brightness-75 hover:brightness-100 transition-all duration-700"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
+            <div className="absolute bottom-10 left-10 md:bottom-20 md:left-20 text-left space-y-4">
+              <div className="flex items-center gap-4">
+                <span className="w-3 h-3 bg-green-500 rounded-full animate-ping shadow-[0_0_10px_#22c55e]" />
+                <span className="text-[10px] font-black text-white uppercase tracking-widest">Canlı Global İzleme Aktif</span>
+              </div>
+              <div className="text-[#B0B0B0] text-xs font-medium max-w-xs leading-relaxed">Nextoria Alpha veri merkezlerine doğrudan bağlı, 12ms senkronizasyon hızı.</div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* --- METRICS: LIVE PERFORMANCE --- */}
-      <section className="py-40 px-6 border-t border-white/5 bg-[#050505]">
-        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-around items-center gap-20 text-center">
-          {t.metrics.map((m, i) => (
-            <div key={i} className="space-y-4 group">
-              <div className="text-6xl md:text-8xl font-black text-white tracking-tighter shadow-white group-hover:text-[#00F0FF] transition-colors">
-                <AnimatedNumber
-                  value={m.id === "count1" ? counts.closings : m.id === "count2" ? counts.revenue : 0}
-                  prefix={m.id === "count2" ? "€ " : ""}
-                  suffix={m.id === "count3" ? "12ms" : ""}
-                  format={m.id !== "count3"}
-                />
-              </div>
-              <div className="text-[10px] font-black text-slate-600 tracking-[0.8em] uppercase whitespace-nowrap">
-                {m.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
+      <NexScanDemo isOpen={isNexScanOpen} onClose={() => setIsNexScanOpen(false)} />
     </AuraLayout>
+  );
+}
+
+function TechCard({ id, icon, title, text, color, visual, onClick }: { id: string, icon: React.ReactNode, title: string, text: string, color: string, visual: React.ReactNode, onClick?: () => void }) {
+  return (
+    <div
+      id={id}
+      onClick={onClick}
+      className={`p-10 rounded-[3rem] bg-white/[0.02] border border-white/5 hover:border-[#00F0FF]/30 transition-all duration-700 group flex flex-col justify-between min-h-[500px] relative overflow-hidden cursor-pointer`}
+    >
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/[0.01] to-transparent pointer-events-none" />
+
+      <div className="space-y-8 relative z-10">
+        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 group-hover:bg-[#00F0FF]/10 transition-all duration-500">{icon}</div>
+        <h3 className="text-3xl font-bold uppercase italic tracking-tight font-space text-white">{title}</h3>
+        <p className="text-lg text-[#B0B0B0] leading-relaxed font-medium">{text}</p>
+      </div>
+
+      <div className="relative z-10 flex justify-center py-10 opacity-40 group-hover:opacity-100 transition-opacity duration-700">
+        {visual}
+      </div>
+
+      <div className="relative z-10 pt-6 flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-600 group-hover:text-white transition-colors">
+        Detayları Gör <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+      </div>
+    </div>
   );
 }
