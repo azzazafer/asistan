@@ -10,19 +10,19 @@ export default function VisionGodModePage() {
 
     const CONTENT = {
         tr: {
-            tag: "GLOBAL VISION • V11.0",
+            tag: "GLOBAL VISION • V12.0: INFINITE REALITY",
             title: "Yönetim\nBilinci.",
             mission: "Aura OS misyonu; medikal turizm ve fintech süreçlerini pasif araçlar olmaktan çıkarıp, kurumların otonom yönetim bilinci haline getirmektir. Vizyonumuz, pazarın mutlak lideri olmaktır.",
             vision: "Dünyadaki her 3 başarılı sağlık operasyonundan birinin Aura OS sinir ağları tarafından yönetildiği bir gelecek."
         },
         en: {
-            tag: "GLOBAL VISION • V11.0",
+            tag: "GLOBAL VISION • V12.0: INFINITE REALITY",
             title: "Management\nConsciousness.",
             mission: "Aura OS mission is to transform medical tourism and fintech processes from passive tools into an autonomous management consciousness for institutions. Our vision is to be the absolute market leader.",
             vision: "A future where 1 out of every 3 global healthcare operations is managed by Aura OS neural networks."
         },
         ar: {
-            tag: "GLOBAL VISION • V11.0",
+            tag: "GLOBAL VISION • V12.0: INFINITE REALITY",
             title: "وعي\nالإدارة.",
             mission: "مهمة أورا أوس هي تحويل عمليات السياحة العلاجية والتكنولوجيا المالية من أدوات سلبية إلى وعي إداري مستقل للمؤسسات. رؤيتنا هي أن نكون القائد المطلق للسوق.",
             vision: "مستقبل تدار فيه واحدة من كل 3 عمليات رعاية صحية عالمية بواسطة شبكات أورا أوس العصبية."
