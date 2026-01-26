@@ -7,6 +7,7 @@ import Link from "next/link";
 import Script from "next/script";
 
 import ScarcityToast from "./ScarcityToast";
+import BrandBadge from "./BrandBadge";
 
 interface AuraLayoutProps {
     children: React.ReactNode;
@@ -64,9 +65,12 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
                         <div className="w-10 h-10 bg-[#00F0FF] rounded-lg flex items-center justify-center shadow-[0_0_30px_rgba(0,240,255,0.4)] group-hover:scale-110 transition-transform duration-500">
                             <Brain size={22} className="text-black" />
                         </div>
-                        <span className="text-xl md:text-2xl font-black uppercase tracking-[-0.05em] text-white">
-                            AURA <span className="text-[#00F0FF]">OS</span>
-                        </span>
+                        <div className="flex flex-col">
+                            <span className="text-xl md:text-2xl font-black uppercase tracking-[-0.05em] text-white leading-none">
+                                AURA <span className="text-[#00F0FF]">OS</span>
+                            </span>
+                            <span className="text-[7px] font-black text-slate-500 tracking-[0.4em] uppercase mt-1">A NEXTORIA PRODUCT</span>
+                        </div>
                     </Link>
 
                     <div className="hidden lg:flex items-center gap-10">
@@ -112,6 +116,7 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
 
             <main className="relative z-10">{children}</main>
             <ScarcityToast />
+            <BrandBadge />
 
             {/* --- PRESTIGE FOOTER --- */}
             <footer className="py-20 md:py-40 px-8 border-t border-white/5 bg-[#050505] relative z-20 overflow-hidden">

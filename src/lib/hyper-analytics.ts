@@ -38,8 +38,16 @@ export class HyperAnalytics {
     }
 
     private static async flush() {
-        console.log(`[Hyper-Analytics] Flushing ${this.buffer.length} events to Time-Series optimized storage...`);
-        // Implementation for ClickHouse INSERT or Kafka PRODUCE goes here
+        if (this.buffer.length === 0) return;
+
+        console.log(`[Hyper-Analytics] Ingesting ${this.buffer.length} events into Elastic-Supabase...`);
+
+        const { supabase } = await import('./db');
+        if (supabase) {
+            const { error } = await supabase.from('telemetry_events').insert(this.buffer);
+            if (error) console.error('[Hyper-Analytics] Ingestion Failed:', error.message);
+        }
+
         this.buffer = [];
     }
 }

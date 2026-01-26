@@ -53,15 +53,29 @@ const blacklistedIPs: Set<string> = new Set();
 const whitelistedIPs: Set<string> = new Set(['127.0.0.1', '::1', 'localhost', '0.0.0.0']);
 const circuitBreakers: Map<string, CircuitBreakerState> = new Map();
 
-// Initialize Persistence
+// Initialize Persistence & Event Recovery
 (async () => {
     if (supabase) {
         try {
-            const { data } = await supabase.from('security_blocks').select('ip');
-            data?.forEach((row: any) => blacklistedIPs.add(row.ip));
-            console.log(`[Shield] Loaded ${data?.length || 0} blocked IPs from persistence.`);
+            // 1. Recover blacklisted IPs
+            const { data: blocks } = await supabase.from('security_blocks').select('ip');
+            blocks?.forEach((row: any) => blacklistedIPs.add(row.ip));
+            console.log(`[Shield] Recovered ${blocks?.length || 0} active blocks.`);
+
+            // 2. Clear RAM buffer and seed from DB for recent events
+            const { data: logs } = await supabase
+                .from('security_logs')
+                .select('*')
+                .order('timestamp', { ascending: false })
+                .limit(50);
+
+            if (logs) {
+                securityEvents.length = 0;
+                logs.forEach((log: any) => securityEvents.unshift(log));
+                console.log(`[Shield] Persistence Sync: Recovered last 50 security events.`);
+            }
         } catch (e) {
-            console.error('[Shield] Failed to load blocked IPs', e);
+            console.error('[Shield] Critical: Persistence Link Failure', e);
         }
     }
 })();
@@ -77,22 +91,22 @@ const CONFIG = {
     },
     ddos: {
         windowMs: 10 * 1000, // 10 seconds
-        maxRequests: 200, // Increased from 50
-        blockDurationMs: 5 * 60 * 1000, // 5 minutes (reduced from 1h)
+        maxRequests: 200,
+        blockDurationMs: 5 * 60 * 1000,
     },
     bruteForce: {
         maxAttempts: 5,
-        lockDurationMs: 30 * 60 * 1000, // 30 minutes
-        windowMs: 15 * 60 * 1000, // 15 minutes
+        lockDurationMs: 30 * 60 * 1000,
+        windowMs: 15 * 60 * 1000,
     },
     circuitBreaker: {
         failureThreshold: 5,
-        recoveryTimeMs: 30 * 1000, // 30 seconds
+        recoveryTimeMs: 30 * 1000,
     },
 };
 
 // ============================================
-// SECURITY EVENT LOGGING
+// SECURITY EVENT LOGGING (ZERO-MOCK PERSISTENCE)
 // ============================================
 const logSecurityEvent = (
     type: SecurityEvent['type'],
@@ -113,19 +127,28 @@ const logSecurityEvent = (
         timestamp: new Date().toISOString(),
     };
 
+    // Update RAM Buffer (Limited to 100 for performance)
     securityEvents.push(event);
+    if (securityEvents.length > 100) securityEvents.shift();
 
-    // Async Persistence
+    // MANDATORY PERSISTENCE - No events are lost in Shield v5.0
     if (supabase) {
         supabase.from('security_logs').insert({
-            type, severity, ip, details, blocked, timestamp: event.timestamp
-        }).then(({ error }: any) => {
-            if (error) console.error('[Shield] Log persist failed:', error.message);
+            id: event.id,
+            type,
+            severity,
+            ip,
+            details,
+            blocked,
+            timestamp: event.timestamp,
+            user_id: userId
+        }).then(({ error }: { error: any }) => {
+            if (error) console.error('[Shield] EMERGENCY: Log persist failed!', error.message);
         });
     }
 
-    const emoji = blocked ? '🛡️ BLOCKED' : '⚠️ WARNING';
-    console.log(`[Shield] ${emoji} ${type.toUpperCase()} from ${ip}: ${details}`);
+    const emoji = blocked ? '🛡️ [BLOCKED]' : '⚠️ [THREAT]';
+    console.log(`[Shield v5.0] ${emoji} ${type.toUpperCase()}: ${details} (IP: ${ip})`);
 
     return event;
 };

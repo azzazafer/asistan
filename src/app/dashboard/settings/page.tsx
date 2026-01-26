@@ -25,6 +25,7 @@ import toast from "react-hot-toast";
 import Link from "next/link";
 import { supabase } from "@/lib/db";
 import { DoctorsTab } from "@/components/settings/doctors-tab";
+import { hbysBridge } from "@/lib/hbys-bridge";
 
 export default function SettingsPage() {
     const router = useRouter();
@@ -172,6 +173,17 @@ export default function SettingsPage() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleTestConnection = async (type: 'STRIPE' | 'INSTAGRAM' | 'TELEGRAM' | 'HBYS') => {
+        toast.promise(
+            hbysBridge.testInfrastructureConnection(type),
+            {
+                loading: `Testing ${type} Connection...`,
+                success: (res) => res.success ? `Connected! Latency: ${res.latency}` : `Failed: ${res.status}`,
+                error: "System Error during test."
+            }
+        );
     };
 
     return (
@@ -512,6 +524,9 @@ export default function SettingsPage() {
                                         />
                                     </div>
                                 </div>
+                                <button onClick={() => handleTestConnection('STRIPE')} className="text-[10px] font-bold text-indigo-600 hover:text-indigo-800 transition-all uppercase tracking-widest mt-2 flex items-center gap-2">
+                                    <ShieldCheck size={12} /> Test Stripe Link
+                                </button>
                             </div>
 
                             <hr className="border-gray-100" />
@@ -635,6 +650,14 @@ export default function SettingsPage() {
                                                 placeholder="123456:ABC-..."
                                             />
                                         </div>
+                                    </div>
+                                    <div className="flex gap-4 pt-2">
+                                        <button onClick={() => handleTestConnection('INSTAGRAM')} className="text-[10px] font-bold text-pink-600 hover:text-pink-800 transition-all uppercase tracking-widest flex items-center gap-2">
+                                            <ShieldCheck size={12} /> Test Instagram
+                                        </button>
+                                        <button onClick={() => handleTestConnection('TELEGRAM')} className="text-[10px] font-bold text-sky-600 hover:text-sky-800 transition-all uppercase tracking-widest flex items-center gap-2">
+                                            <ShieldCheck size={12} /> Test Telegram
+                                        </button>
                                     </div>
                                 </div>
                             </div>

@@ -11,6 +11,7 @@ import AuraLayout from "@/components/AuraLayout";
 
 import AnimatedNumber from "@/components/AnimatedNumber";
 import NeuralCore from "@/components/NeuralCore";
+import NexScanDemo from "@/components/NexScanDemo";
 
 // --- NEURAL SALES CONTENT DNA ---
 const CONTENT = {
@@ -225,6 +226,9 @@ export default function AbsoluteAlphaPage() {
                 </div>
                 <h3 className="text-3xl font-black text-white uppercase italic mb-6">{item.title}</h3>
                 <p className="text-xl text-slate-400 leading-relaxed font-medium">{item.desc}</p>
+                {item.title.includes("Nex-Scan") && (
+                  <NexScanDemo />
+                )}
               </motion.div>
             ))}
           </div>
