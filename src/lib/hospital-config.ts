@@ -41,11 +41,36 @@ export const DEFAULT_HOSPITAL: HospitalConfig = {
 };
 
 /**
- * Generates a system context string for the AI based on the hospital config.
+ * Generates a system context string for the AI based on the absolute tenant configuration.
+ * Always attempts to fetch live config from Supabase to eliminate hardcoded hallucinations.
  */
-export const getHospitalKnowledge = (config: HospitalConfig = DEFAULT_HOSPITAL): string => {
+export const getHospitalKnowledge = async (tenantId: string = 'default_clinic'): Promise<string> => {
+    const { supabase } = await import('./db');
+
+    let config = DEFAULT_HOSPITAL;
+
+    if (supabase) {
+        const { data, error } = await supabase
+            .from('hospital_config')
+            .select('*')
+            .eq('tenant_id', tenantId)
+            .maybeSingle();
+
+        if (data && !error) {
+            config = {
+                name: data.name,
+                brandName: data.brand_name,
+                location: data.location,
+                departments: data.departments,
+                doctors: data.doctors,
+                services: data.services,
+                phone: data.phone
+            };
+        }
+    }
+
     return `
-BRANŞ VE BİLGİ SETİ:
+BRANŞ VE BİLGİ SETİ (TENANT: ${tenantId}):
 - Kurum Adı: ${config.name} (${config.brandName})
 - Lokasyon: ${config.location}
 - Departmanlar: ${(config.departments || []).join(', ')}

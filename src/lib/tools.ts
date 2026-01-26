@@ -273,7 +273,7 @@ export const handleToolCall = async (toolCall: any, userId: string) => {
 
         return {
             success: true,
-            reportId: `TRG-${Math.random().toString(36).toUpperCase().substring(2, 7)}`,
+            reportId: `TRG-${crypto.randomUUID().substring(0, 8).toUpperCase()}`,
             message: "Klinik verileriniz başarıyla işlendi ve ilgili doktora ön hazırlık raporu olarak iletildi.",
             summary: `Hasta Şikayeti: ${symptoms}, Ağrı Seviyesi: ${painLevel}`
         };

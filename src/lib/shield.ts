@@ -117,7 +117,7 @@ const logSecurityEvent = (
     userId?: string
 ): SecurityEvent => {
     const event: SecurityEvent = {
-        id: `sec_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+        id: `sec_${crypto.randomUUID()}`,
         type,
         severity,
         ip,

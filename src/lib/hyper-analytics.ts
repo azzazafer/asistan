@@ -23,7 +23,7 @@ export class HyperAnalytics {
     static async ingest(event: Omit<HyperEvent, 'event_id' | 'timestamp'>) {
         const fullEvent: HyperEvent = {
             ...event,
-            event_id: `h_evt_${Math.random().toString(36).substr(2, 9)}`,
+            event_id: `h_evt_${crypto.randomUUID()}`,
             timestamp: new Date().toISOString()
         };
 

@@ -389,12 +389,12 @@ export const sendTemplateMessage = async (
 };
 
 // ============================================
-// OTP GENERATION & VERIFICATION
+// OTP GENERATION & VERIFICATION (SECURE PERSISTENCE)
 // ============================================
-const otpStore: Map<string, { otp: string; expiresAt: number }> = new Map();
+import { randomInt } from 'crypto';
 
 export const generateOTP = (): string => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return randomInt(100000, 999999).toString();
 };
 
 export const sendOTP = async (
@@ -402,9 +402,17 @@ export const sendOTP = async (
     language: string = 'en'
 ): Promise<{ success: boolean; error?: string }> => {
     const otp = generateOTP();
-    const expiresAt = Date.now() + 5 * 60 * 1000; // 5 minutes
+    const expiresAt = new Date(Date.now() + 5 * 60 * 1000).toISOString(); // 5 minutes
 
-    otpStore.set(phone, { otp, expiresAt });
+    // Persist OTP to Database
+    if (supabase) {
+        const { error } = await supabase.from('otp_codes').upsert({
+            id: phone,
+            otp,
+            expires_at: expiresAt
+        });
+        if (error) console.error('[OTP] Failed to persist code:', error.message);
+    }
 
     const result = await sendTemplateMessage(
         'sms',
@@ -417,17 +425,25 @@ export const sendOTP = async (
     return { success: result.success, error: result.error };
 };
 
-export const verifyOTP = (phone: string, otp: string): boolean => {
-    const stored = otpStore.get(phone);
+export const verifyOTP = async (phone: string, otp: string): Promise<boolean> => {
+    if (!supabase) return false;
 
-    if (!stored) return false;
-    if (Date.now() > stored.expiresAt) {
-        otpStore.delete(phone);
+    const { data, error } = await supabase
+        .from('otp_codes')
+        .select('*')
+        .eq('id', phone)
+        .eq('otp', otp)
+        .gte('expires_at', new Date().toISOString())
+        .maybeSingle();
+
+    if (error || !data) {
+        console.warn(`[OTP] Verification failed for ${phone}`);
         return false;
     }
-    if (stored.otp !== otp) return false;
 
-    otpStore.delete(phone);
+    // Single-use: Delete after success
+    await supabase.from('otp_codes').delete().eq('id', phone);
+
     return true;
 };
 

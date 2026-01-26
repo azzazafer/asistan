@@ -134,9 +134,10 @@ export class AiOrchestrator {
             }
 
             const cultureConfig = getCultureConfig(culture);
+            const tenantId = profile?.tenant_id || 'default_clinic';
 
-            // Build System Prompt
-            let contextPrompt = ASSISTANT_SYSTEM_PROMPT + getHospitalKnowledge();
+            // Build System Prompt (Dynamic Tenant Knowledge)
+            let contextPrompt = ASSISTANT_SYSTEM_PROMPT + (await getHospitalKnowledge(tenantId));
             contextPrompt += `\n\n[NEURAL DYNAMIC MIRRORING & SALES INTENT]: 
 - Kullanıcının kültürüne (${culture}) ve tonuna (${cultureConfig.tone}) uyum sağla.
 - Platform: ${source.toUpperCase()} ${source === 'instagram' ? '(Görsel, sıcak, emoji kullanımı serbest)' : source === 'telegram' ? '(Hızlı, teknoloji odaklı, direkt)' : '(Profesyonel, net)'}.
