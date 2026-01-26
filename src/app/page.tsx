@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import AuraLayout from "@/components/AuraLayout";
 
+import Link from "next/link";
 import AnimatedNumber from "@/components/AnimatedNumber";
 import NeuralCore from "@/components/NeuralCore";
 import NexScanDemo from "@/components/NexScanDemo";
@@ -171,10 +172,10 @@ export default function AbsoluteAlphaPage() {
             {t.hero.subtitle}
           </motion.p>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="flex justify-center gap-8 pt-8">
-            <button className="px-12 py-6 bg-[#00F0FF] text-black font-black uppercase text-[11px] tracking-[0.3em] rounded-md hover:scale-105 transition-all shadow-[0_0_50px_rgba(0,240,255,0.4)]">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }} className="flex justify-center gap-8 pt-8 relative z-[50]">
+            <Link href="/login" className="px-12 py-6 bg-[#00F0FF] text-black font-black uppercase text-[11px] tracking-[0.3em] rounded-md hover:scale-105 transition-all shadow-[0_0_50px_rgba(0,240,255,0.4)] relative z-[60]">
               {t.hero.cta}
-            </button>
+            </Link>
           </motion.div>
 
           <div className="pt-20 flex justify-center">

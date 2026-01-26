@@ -48,6 +48,11 @@ export class SEOManager {
                 title: 'Aura Health OS | AI-Powered Health Tourism Management',
                 description: 'Digitalize your health tourism operations with cultural intelligence and AI.',
                 keywords: ['health tourism', 'AI healthcare', 'medical CRM'],
+            },
+            ar: {
+                title: 'Aura Health OS | إدارة السياحة الصحية المدعومة بالذكاء الاصطناعي',
+                description: 'قم برقمنة عمليات السياحة الصحية الخاصة بك باستخدام الذكاء الثقافي والذكاء الاصطناعي.',
+                keywords: ['السياحة الصحية', 'الذكاء الاصطناعي', 'إدارة علاقات العملاء الطبية'],
             }
         };
 

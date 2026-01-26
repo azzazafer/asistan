@@ -105,39 +105,87 @@ export default function NexScanDemo() {
                                         </div>
                                     </div>
                                 )}
-
                                 {step === 'result' && (
-                                    <div className="space-y-10">
-                                        <div className="flex items-center gap-6">
-                                            <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center text-black">
-                                                <Check size={32} strokeWidth={3} />
+                                    <div className="space-y-6">
+                                        {/* Header Area */}
+                                        <div className="flex items-center justify-between border-b border-white/5 pb-6">
+                                            <div className="flex items-center gap-4">
+                                                <div className="w-12 h-12 bg-emerald-500 rounded-xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]">
+                                                    <Check size={24} strokeWidth={3} />
+                                                </div>
+                                                <div>
+                                                    <h3 className="text-xl font-black text-white uppercase italic">Analysis Complete</h3>
+                                                    <p className="text-[#00F0FF] text-[9px] font-black tracking-widest uppercase">Lead Score: 98/100</p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <h3 className="text-2xl font-black text-white uppercase italic">Analysis Complete</h3>
-                                                <p className="text-[#00F0FF] text-[10px] font-black tracking-widest uppercase">Lead Score: 98/100 (HIGH CONVERSION)</p>
+                                            <div className="text-right">
+                                                <div className="text-[7px] font-black text-slate-500 uppercase tracking-widest">Latency</div>
+                                                <div className="text-sm font-black text-[#00F0FF]">11.4ms</div>
                                             </div>
                                         </div>
 
+                                        {/* Clinical Intelligence Layer (Medu style) */}
                                         <div className="grid grid-cols-2 gap-4">
-                                            <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-2">
-                                                <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Diagnosis</div>
-                                                <div className="text-sm font-bold text-white uppercase">Norwood Type IV</div>
+                                            <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5 space-y-2">
+                                                <div className="text-[7px] font-black text-slate-500 uppercase tracking-widest">Preliminary Diagnosis</div>
+                                                <div className="text-xs font-bold text-white uppercase tracking-tight">Norwood Type IV</div>
                                             </div>
-                                            <div className="p-6 bg-white/5 rounded-2xl border border-white/5 space-y-2">
-                                                <div className="text-[8px] font-black text-slate-500 uppercase tracking-widest">Graft Est.</div>
-                                                <div className="text-sm font-bold text-white uppercase">3,500 - 4,000 FUE</div>
+                                            <div className="p-4 bg-white/[0.03] rounded-2xl border border-white/5 space-y-2">
+                                                <div className="text-[7px] font-black text-slate-500 uppercase tracking-widest">Surgical Requirement</div>
+                                                <div className="text-xs font-bold text-white uppercase tracking-tight">3,500 - 4,000 FUE</div>
                                             </div>
                                         </div>
 
-                                        <div className="p-8 bg-[#00F0FF]/5 border border-[#00F0FF]/20 rounded-2xl space-y-4">
-                                            <h4 className="text-[10px] font-black text-[#00F0FF] tracking-widest uppercase">Aura Recommendation</h4>
-                                            <p className="text-sm text-slate-400 leading-relaxed font-medium">
-                                                "Patient is highly motivated. Donor area shows 90% viability. Autonomous closing initiated via WhatsApp."
+                                        {/* Pulse Visualization - Made subtle and non-blocking */}
+                                        <div className="relative h-24 bg-black/40 rounded-2xl border border-white/5 overflow-hidden group">
+                                            <div className="absolute inset-x-0 bottom-0 h-full opacity-20 pointer-events-none">
+                                                <svg className="w-full h-full" viewBox="0 0 400 100">
+                                                    <motion.path
+                                                        d="M0 50 Q 50 10, 100 50 T 200 50 T 300 50 T 400 50"
+                                                        fill="transparent"
+                                                        stroke="#00F0FF"
+                                                        strokeWidth="1.5"
+                                                        animate={{
+                                                            d: [
+                                                                "M0 50 Q 50 10, 100 50 T 200 50 T 300 50 T 400 50",
+                                                                "M0 50 Q 50 80, 100 50 T 200 50 T 300 50 T 400 50",
+                                                                "M0 50 Q 50 10, 100 50 T 200 50 T 300 50 T 400 50"
+                                                            ]
+                                                        }}
+                                                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                                                    />
+                                                </svg>
+                                            </div>
+
+                                            <div className="relative z-10 h-full flex items-center justify-around px-2">
+                                                <div className="text-center">
+                                                    <div className="text-[7px] font-black text-slate-600 uppercase tracking-widest mb-1">Viability</div>
+                                                    <div className="text-sm font-black text-white italic">94.2%</div>
+                                                </div>
+                                                <div className="text-center">
+                                                    <div className="text-[7px] font-black text-slate-600 uppercase tracking-widest mb-1">Density</div>
+                                                    <div className="text-sm font-black text-white italic">82/cm²</div>
+                                                </div>
+                                                <div className="text-center">
+                                                    <div className="text-[7px] font-black text-slate-600 uppercase tracking-widest mb-1">Confidence</div>
+                                                    <div className="text-sm font-black text-white italic">0.99</div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Recommendation */}
+                                        <div className="p-6 bg-[#00F0FF]/[0.02] border border-[#00F0FF]/10 rounded-2xl space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <h4 className="text-[8px] font-black text-[#00F0FF] tracking-[0.2em] uppercase">Autonomous Strategy</h4>
+                                                <span className="px-1.5 py-0.5 bg-[#00F0FF]/20 text-[#00F0FF] text-[6px] font-black rounded uppercase border border-[#00F0FF]/20">Auto-Closer Active</span>
+                                            </div>
+                                            <p className="text-[11px] text-slate-400 leading-relaxed font-medium">
+                                                "Patient is highly motivated. Strategic nudge sent to WhatsApp regarding 48h limit."
                                             </p>
                                         </div>
 
-                                        <button onClick={reset} className="w-full py-5 bg-white text-black rounded-2xl font-black uppercase text-[11px] tracking-[0.3em] hover:bg-[#00F0FF] transition-all">
-                                            Close Diagnostic
+                                        <button onClick={reset} className="w-full py-4 bg-white text-black rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-[#00F0FF] transition-all shadow-lg active:scale-[0.98]">
+                                            Close Session
                                         </button>
                                     </div>
                                 )}

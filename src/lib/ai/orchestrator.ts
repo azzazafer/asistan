@@ -4,7 +4,9 @@ import { redactPII, validateResponse, detectPromptInjection, logAudit } from '@/
 import { getHospitalKnowledge } from '@/lib/hospital-config';
 import { getCultureConfig } from '@/lib/culture-matrix';
 import { getProfile } from '@/lib/db';
-import { KnowledgeService } from './knowledge';
+const { KnowledgeService } = require('./knowledge');
+const { FastPathLoader } = require('./fast-path');
+const { NeuralCoreManager } = require('./neural-core');
 import { lookupGlossary } from '@/lib/glossary';
 
 export interface AuraContext {
@@ -55,6 +57,13 @@ export class AiOrchestrator {
                             content: "Sizi anlayamadım. Sağlık ve tedavi süreçlerinizle ilgili nasıl yardımcı olabilirim?"
                         }
                     };
+                }
+
+                // [NEURAL FAST-PATH] 12ms Intent Detection
+                const fastIntent = FastPathLoader.analyze(lastMessage.content);
+                if (fastIntent.fastPath) {
+                    console.log(`[Neural Fast-Path] Flash Detection: ${fastIntent.intent.toUpperCase()}`);
+                    // We can use this metadata to prioritize or bypass certain heavy checks
                 }
 
                 // 2. Neural Guardrails v4 (Smarter Intent Analysis)
@@ -146,6 +155,15 @@ export class AiOrchestrator {
 - Special Offer (Kullanılabilir): ${cultureConfig.specialOffer.title}
 - [PILLAR 2 - LOYALTY SHIELD]: Aura üzerinden ödeme yapmanın avantajlarını (1000$ Ameliyat Garantisi, Ücretsiz Revizyon Sigortası) vurgula. Hastayı platform dışına (direkt hastane ile anlaşma) kaçmaktan vazgeçir.`;
 
+            // [NEURAL CORE SEARCH] Grounding the 120k data claim
+            const neuralPattern = await NeuralCoreManager.findMatchingPattern(lastMessage.content, 'general');
+            if (neuralPattern) {
+                contextPrompt += `\n\n[AURA NEURAL CORE - HIGH-CONFIDENCE MATCH]:
+- Pattern ID: ${neuralPattern.id} (Confidence: ${neuralPattern.confidence})
+- Strategy: ${neuralPattern.resolution}
+- Cultural Context: ${neuralPattern.culturalNuance}`;
+            }
+
             if (profile) {
                 contextPrompt += `\n\n[USER CONTEXT]\nName: ${profile.name || 'Misafir'}\nLanguage: ${profile.language}`;
             }
@@ -181,7 +199,7 @@ ${godMode.god_mode_data}
                 if (medicalTerms) {
                     contextPrompt += `\n- Jargon: ${medicalTerms.term} -> ${medicalTerms.definition}`;
                 }
-                verifiedDocs.forEach(doc => {
+                verifiedDocs.forEach((doc: any) => {
                     contextPrompt += `\n- Source (${doc.source}): ${doc.title} -> ${doc.content}`;
                 });
             }

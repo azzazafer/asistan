@@ -74,11 +74,54 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
                     </Link>
 
                     <div className="hidden lg:flex items-center gap-10">
-                        <div className="flex items-center gap-8 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
-                            <Link href="/solutions/clinics" className="hover:text-white transition-colors">{t.nav.cli}</Link>
-                            <Link href="/solutions/agencies" className="hover:text-white transition-colors">{t.nav.age}</Link>
-                            <Link href="/technology" className="hover:text-white transition-colors">{t.nav.tech}</Link>
-                            <Link href="/vision" className="hover:text-white transition-colors">{t.nav.vision}</Link>
+                        <div className="flex items-center gap-10 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
+                            {/* Solutions Dropdown */}
+                            <div className="relative group/item cursor-pointer py-4">
+                                <span className="hover:text-white transition-colors flex items-center gap-2 uppercase">
+                                    {lang === 'tr' ? 'Çözümler' : lang === 'ar' ? 'الحلول' : 'Solutions'}
+                                </span>
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover/item:opacity-100 group-hover/item:visible transition-all duration-300">
+                                    <div className="bg-black/90 backdrop-blur-3xl border border-white/10 rounded-2xl p-6 w-[280px] shadow-3xl space-y-6">
+                                        <Link href="/solutions/clinics" className="flex items-center gap-4 group/link">
+                                            <div className="p-2 bg-white/5 rounded-lg group-hover/link:bg-[#00F0FF] group-hover/link:text-black transition-all">
+                                                <Award size={14} />
+                                            </div>
+                                            <span className="text-[9px] font-black tracking-widest text-slate-400 group-hover/link:text-white transition-colors">{t.nav.cli}</span>
+                                        </Link>
+                                        <Link href="/solutions/agencies" className="flex items-center gap-4 group/link">
+                                            <div className="p-2 bg-white/5 rounded-lg group-hover/link:bg-[#00F0FF] group-hover/link:text-black transition-all">
+                                                <Globe size={14} />
+                                            </div>
+                                            <span className="text-[9px] font-black tracking-widest text-slate-400 group-hover/link:text-white transition-colors">{t.nav.age}</span>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Tech Dropdown */}
+                            <div className="relative group/item cursor-pointer py-4">
+                                <span className="hover:text-white transition-colors flex items-center gap-2 uppercase">
+                                    {lang === 'tr' ? 'Teknoloji' : lang === 'ar' ? 'التكنولوجيا' : 'Technology'}
+                                </span>
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 pt-4 opacity-0 invisible group-hover/item:opacity-100 group-hover/item:visible transition-all duration-300">
+                                    <div className="bg-black/90 backdrop-blur-3xl border border-white/10 rounded-2xl p-6 w-[280px] shadow-3xl space-y-6">
+                                        <Link href="/technology" className="flex items-center gap-4 group/link">
+                                            <div className="p-2 bg-white/5 rounded-lg group-hover/link:bg-[#00F0FF] group-hover/link:text-black transition-all">
+                                                <Cpu size={14} />
+                                            </div>
+                                            <span className="text-[9px] font-black tracking-widest text-slate-400 group-hover/link:text-white transition-colors">{t.nav.tech}</span>
+                                        </Link>
+                                        <Link href="/security" className="flex items-center gap-4 group/link">
+                                            <div className="p-2 bg-white/5 rounded-lg group-hover/link:bg-[#00F0FF] group-hover/link:text-black transition-all">
+                                                <Shield size={14} />
+                                            </div>
+                                            <span className="text-[9px] font-black tracking-widest text-slate-400 group-hover/link:text-white transition-colors">{lang === 'tr' ? 'Güvenlik' : lang === 'ar' ? 'الأمن' : 'Security'}</span>
+                                        </Link>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <Link href="/vision" className="hover:text-white transition-colors py-4">{t.nav.vision}</Link>
                         </div>
 
                         <div className="h-6 w-px bg-white/10" />
@@ -89,12 +132,14 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
                             ))}
                         </div>
 
-                        <button className="px-8 py-3 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#00F0FF] transition-all duration-500 active:scale-95 shadow-xl">
-                            {t.nav.getStarted}
-                        </button>
+                        <Link href="/login">
+                            <button className="px-8 py-3 bg-white text-black rounded-full text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#00F0FF] transition-all duration-500 active:scale-95 shadow-xl relative z-[1010]">
+                                {t.nav.getStarted}
+                            </button>
+                        </Link>
                     </div>
 
-                    <button className="lg:hidden p-3 bg-white/5 border border-white/10 rounded-xl text-white" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    <button className="lg:hidden p-3 bg-white/5 border border-white/10 rounded-xl text-white relative z-[1001]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                         {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                 </div>
@@ -103,13 +148,23 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
             {/* --- MOBILE OVERLAY --- */}
             <AnimatePresence>
                 {isMenuOpen && (
-                    <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="fixed inset-0 z-[900] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center gap-10 lg:hidden text-white pt-20">
-                        <Link href="/solutions/clinics" className="text-2xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.cli}</Link>
-                        <Link href="/solutions/agencies" className="text-2xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
-                        <Link href="/technology" className="text-2xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
-                        <Link href="/vision" className="text-2xl font-black uppercase tracking-[0.3em]" onClick={() => setIsMenuOpen(false)}>{t.nav.vision}</Link>
+                    <motion.div
+                        initial={{ opacity: 0, x: '100%' }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: '100%' }}
+                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                        className="fixed inset-0 z-[950] bg-black/98 backdrop-blur-3xl flex flex-col items-center justify-center gap-12 lg:hidden text-white"
+                    >
+                        <div className="flex flex-col items-center gap-10">
+                            <Link href="/solutions/clinics" className="text-3xl font-black uppercase tracking-[0.3em] hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.cli}</Link>
+                            <Link href="/solutions/agencies" className="text-3xl font-black uppercase tracking-[0.3em] hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
+                            <Link href="/technology" className="text-3xl font-black uppercase tracking-[0.3em] hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
+                            <Link href="/vision" className="text-3xl font-black uppercase tracking-[0.3em] hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.vision}</Link>
+                        </div>
                         <div className="h-px w-20 bg-white/10" />
-                        <button className="px-10 py-5 bg-[#00F0FF] text-black rounded-full font-black uppercase tracking-widest">{t.nav.getStarted}</button>
+                        <Link href="/login" onClick={() => setIsMenuOpen(false)} className="px-12 py-6 bg-[#00F0FF] text-black rounded-full font-black uppercase tracking-widest shadow-[0_0_30px_rgba(0,240,255,0.3)]">
+                            {t.nav.getStarted}
+                        </Link>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -119,16 +174,19 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
             <BrandBadge />
 
             {/* --- PRESTIGE FOOTER --- */}
-            <footer className="py-20 md:py-40 px-8 border-t border-white/5 bg-[#050505] relative z-20 overflow-hidden">
+            <footer className="py-20 md:py-32 px-8 border-t border-white/5 bg-[#050505] relative z-20 overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#00F0FF]/20 to-transparent" />
-                <div className="max-w-[1600px] mx-auto grid lg:grid-cols-4 gap-20">
-                    <div className="lg:col-span-1 space-y-12">
+                <div className="max-w-[1600px] mx-auto grid lg:grid-cols-5 gap-20">
+                    {/* Brand Column */}
+                    <div className="lg:col-span-2 space-y-12">
                         <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-[#00F0FF] rounded-lg flex items-center justify-center shadow-2xl"><Brain size={30} className="text-black" /></div>
-                            <span className="text-3xl font-black tracking-tighter uppercase italic py-2 text-white leading-none">AURA <span className="text-[#00F0FF]/60">OS</span></span>
+                            <div className="w-12 h-12 bg-[#00F0FF] rounded-lg flex items-center justify-center shadow-2xl">
+                                <Brain size={24} className="text-black" />
+                            </div>
+                            <span className="text-2xl font-black tracking-tighter uppercase italic py-2 text-white leading-none">AURA <span className="text-[#00F0FF]/60">OS</span></span>
                         </div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.6em] text-slate-700 leading-loose max-w-[280px]">
-                            NEXTORIA PRESTIGE INFRASTRUCTURE<br />VERSION 11.0 • GOD-MODE ALPHA<br />GLOBAL REVENUE ENGINE
+                        <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-700 leading-loose max-w-[320px]">
+                            NEXTORIA PRESTIGE INFRASTRUCTURE<br />VERSION 12.0 • GOD-MODE REALITY<br />AUTONOMOUS REVENUE ENGINE
                         </p>
                         <div className="flex gap-4">
                             {['Radio', 'Globe', 'Shield'].map((icon, i) => (
@@ -141,29 +199,41 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
                         </div>
                     </div>
 
-                    <div className="lg:col-span-2 grid grid-cols-2 lg:grid-cols-3 gap-16 md:gap-24">
-                        <div className="space-y-10">
-                            <div className="text-[9px] font-black uppercase tracking-[0.8em] text-[#00F0FF]/80">Pazar Çözümleri</div>
-                            <Link href="/solutions/clinics" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">{t.nav.cli}</Link>
-                            <Link href="/solutions/agencies" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">{t.nav.age}</Link>
+                    {/* Links Columns */}
+                    <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-3 gap-16 md:gap-24">
+                        <div className="space-y-8">
+                            <div className="text-[9px] font-black uppercase tracking-[0.6em] text-[#00F0FF]/80">Çözümler</div>
+                            <nav className="flex flex-col gap-6">
+                                <Link href="/solutions/clinics" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all">{t.nav.cli}</Link>
+                                <Link href="/solutions/agencies" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all">{t.nav.age}</Link>
+                            </nav>
                         </div>
-                        <div className="space-y-10">
-                            <div className="text-[9px] font-black uppercase tracking-[0.8em] text-slate-600">Alpha Core</div>
-                            <Link href="/technology" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">{t.nav.tech}</Link>
-                            <Link href="/security" className="block text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 hover:text-white transition-all">GÜVENLİK</Link>
+                        <div className="space-y-8">
+                            <div className="text-[9px] font-black uppercase tracking-[0.6em] text-slate-600">Teknoloji</div>
+                            <nav className="flex flex-col gap-6">
+                                <Link href="/technology" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all">{t.nav.tech}</Link>
+                                <Link href="/security" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all">GÜVENLİK</Link>
+                                <Link href="/vision" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500 hover:text-white transition-all">{t.nav.vision}</Link>
+                            </nav>
+                        </div>
+                        <div className="space-y-8">
+                            <div className="text-[9px] font-black uppercase tracking-[0.6em] text-slate-600">Nextoria</div>
+                            <div className="space-y-4">
+                                <a href="https://www.nextoriadigital.com" target="_blank" rel="noopener noreferrer" className="block text-[10px] font-black uppercase tracking-[0.4em] text-white/50 leading-tight hover:text-[#00F0FF] transition-colors">{t.footer.signature}</a>
+                                <p className="text-[8px] font-bold text-slate-800 tracking-[0.2em] uppercase leading-relaxed">{t.footer.rights}</p>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div className="lg:col-span-1 text-center lg:text-right space-y-16">
-                        <div className="space-y-4">
-                            <a href="https://www.nextoriadigital.com" target="_blank" rel="noopener noreferrer" className="text-[11px] font-black uppercase tracking-[0.8em] text-white/50 leading-tight hover:text-[#00F0FF] transition-colors">{t.footer.signature}</a>
-                            <p className="text-[9px] font-bold text-slate-800 tracking-[0.4em] uppercase leading-relaxed">{t.footer.rights}</p>
-                        </div>
-                        <div className="flex justify-center lg:justify-end gap-6 opacity-10">
-                            <Award size={40} strokeWidth={1} />
-                            <Workflow size={40} strokeWidth={1} />
-                            <Cpu size={40} strokeWidth={1} />
-                        </div>
+                <div className="mt-32 pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-8 opacity-20">
+                    <div className="flex gap-12">
+                        <Award size={32} strokeWidth={1} />
+                        <Workflow size={32} strokeWidth={1} />
+                        <Cpu size={32} strokeWidth={1} />
+                    </div>
+                    <div className="text-[8px] font-black tracking-[0.5em] uppercase text-slate-500">
+                        Designed for the top 1% health institutions
                     </div>
                 </div>
             </footer>
