@@ -1,119 +1,113 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import AuraLayout from "@/components/AuraLayout";
-import { Shield, Lock, CheckCircle2, Server, EyeOff, Zap, ChevronRight, Activity } from "lucide-react";
+import { Shield, Lock, CheckCircle2, Server, EyeOff, Zap, ChevronRight, Activity, ShieldCheck, Database, HardDrive, Cpu } from "lucide-react";
 import { motion } from "framer-motion";
 
 import AnimatedNumber from "@/components/AnimatedNumber";
 
 export default function SecurityGodModePage() {
-    const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
-
-    const CONTENT = {
-        tr: {
-            tag: "SECURITY ALPHA • V11.0",
-            title: "Finansal Güvenlik\nKalkanı.",
-            subtitle: "Veri sızıntısına sıfır tolerans. Aura OS, veriyi kendi bünyesinde tutmaz; sadece askeri düzeydeki şifreli tünellerden geçirir. Güvenliğimiz, pazarın en üst limitindedir.",
-            grid: [
-                { title: "AES-256 Askeri Standart", desc: "Tüm finansal ve medikal trafik uçtan uca, kırılması imkansız askeri düzey algoritmalarla şifrelenir." },
-                { title: "Zero-Knowledge Protokolü", desc: "Veriniz sadece size aittir. Aura sinir ağları veriyi asla saklamaz veya işlemez." }
-            ]
-        },
-        en: {
-            tag: "SECURITY ALPHA • V11.0",
-            title: "Financial Security\nShield.",
-            subtitle: "Zero-tolerance for data leaks. Aura OS does not store data; it only passes it through military-grade encrypted tunnels. Our security is at the absolute market limit.",
-            grid: [
-                { title: "AES-256 Military Standard", desc: "All financial and medical traffic is encrypted end-to-end with unbreakable military-level algorithms." },
-                { title: "Zero-Knowledge Protocol", desc: "Your data belongs only to you. Aura neural networks never store or process the data permanently." }
-            ]
-        },
-        ar: {
-            tag: "SECURITY ALPHA • V11.0",
-            title: "درع\nالأمان المالي.",
-            subtitle: "عدم التسامح مطلقاً مع تسريب البيانات. أورا أوس لا يخزن البيانات؛ بل يمررها فقط عبر أنفاق مشفرة بمستوى عسكري. أمننا هو الحد المطلق للسوق.",
-            grid: [
-                { title: "معيار AES-256 العسكري", desc: "يتم تشفير جميع حركات البيانات المالية والطبية من طرف إلى طرف بخوارزميات عسكرية مستحيلة الكسر." },
-                { title: "بروتوكول المعرفة الصفرية", desc: "بياناتك ملك لك وحدك. شبكات أورا العصبية لا تخزن أو تعالج البيانات بشكل دائم أبداً." }
-            ]
-        }
-    };
-
-    const t = CONTENT[lang];
-
     return (
-        <AuraLayout lang={lang} setLang={setLang}>
+        <AuraLayout>
             <section className="pt-40 md:pt-60 pb-40 px-6 relative overflow-hidden">
-                <div className="absolute inset-0 z-0 opacity-10 pointer-events-none">
-                    <img src="/images/aura_secure_tech.png" alt="" className="w-full h-full object-cover filter grayscale" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
-                </div>
+                {/* Background Visual Texture */}
+                <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#00F0FF]/10 to-transparent" />
 
-                <div className="max-w-[1600px] mx-auto relative z-10">
-                    <div className="mb-40 space-y-12 text-left">
-                        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="inline-flex items-center gap-4 px-8 py-3 bg-red-500/10 text-red-500 rounded-lg text-[10px] font-black uppercase tracking-[0.5em] border border-red-500/20">
-                            <Shield size={16} /> {t.tag}
+                <div className="max-w-[1400px] mx-auto space-y-40">
+                    {/* --- HERO: THE SHIELD --- */}
+                    <div className="space-y-12 max-w-5xl">
+                        <motion.div
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            className="inline-flex items-center gap-4 px-8 py-3 bg-red-500/10 text-red-500 rounded-lg text-[10px] font-black uppercase tracking-[0.5em] border border-red-500/20 shadow-[0_0_30px_rgba(239,68,68,0.1)]"
+                        >
+                            <Shield size={16} className="animate-pulse" /> SECURITY ALPHA • V12.0
                         </motion.div>
-                        <h1 className="text-6xl md:text-[10rem] font-bold tracking-[-0.08em] leading-[0.85] text-white uppercase italic">{t.title}</h1>
-                        <p className="text-2xl text-slate-500 max-w-4xl font-medium leading-relaxed italic">"{t.subtitle}"</p>
+                        <h1 className="text-6xl md:text-[11rem] font-bold tracking-[-0.08em] leading-[0.85] text-white uppercase italic font-space">
+                            Finansal Güvenlik<br />
+                            <span className="text-red-500 transition-colors duration-1000">Kalkanı.</span>
+                        </h1>
+                        <p className="text-2xl md:text-3xl font-bold text-[#B0B0B0] max-w-4xl leading-relaxed italic border-l-2 border-red-500/20 pl-10">
+                            "Veri sızıntısına sıfır tolerans. Aura OS, veriyi kendi bünyesinde tutmaz; sadece askeri düzeydeki şifreli tünellerden geçirir. Güvenliğimiz, pazarın en üst limitindedir."
+                        </p>
                     </div>
 
-                    <div className="grid lg:grid-cols-12 gap-20 mb-40 items-center">
-                        <div className="lg:col-span-12 xl:col-span-7 relative group rounded-[4rem] overflow-hidden">
-                            <motion.div initial={{ rotateX: 10 }} whileInView={{ rotateX: -5 }} transition={{ duration: 1.5 }} className="relative z-10 rounded-[4rem] overflow-hidden border border-white/5 shadow-[0_50px_100px_-20px_rgba(239,68,68,0.15)] bg-black/40 min-h-[500px] flex items-center justify-center">
-                                <img src="/images/aura_hero_bg.png" alt="" className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale group-hover:grayscale-0 transition-all duration-[2000ms]" />
-                                <div className="relative z-20 flex flex-col items-center gap-8">
-                                    <Lock size={120} className="text-red-500/40" />
-                                    <div className="text-center">
-                                        <div className="text-6xl md:text-9xl font-black text-white tracking-tighter">
-                                            <AnimatedNumber value={256} prefix="AES-" format={false} />
-                                        </div>
-                                        <div className="text-red-500 text-[10px] font-black tracking-[1em] mt-4">ACTIVE SHIELD</div>
+                    {/* --- SECURITY MATRIX --- */}
+                    <div className="grid lg:grid-cols-12 gap-20 items-center">
+                        <div className="lg:col-span-12 xl:col-span-7 relative group rounded-[4rem] overflow-hidden border border-white/5 bg-black/40 p-12 md:p-24 shadow-[0_50px_100px_-20px_rgba(239,68,68,0.1)]">
+                            <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-20 transition-opacity"><ShieldCheck size={200} /></div>
+                            <div className="relative z-20 flex flex-col items-center gap-10">
+                                <Lock size={120} className="text-red-500/40 group-hover:text-red-500 transition-colors duration-1000" />
+                                <div className="text-center">
+                                    <div className="text-6xl md:text-[10rem] font-black text-white tracking-tighter font-space">
+                                        AES-256
                                     </div>
+                                    <div className="text-red-500 text-[10px] font-black tracking-[1em] mt-6">ACTIVE SHIELD TUNNEL</div>
                                 </div>
-                            </motion.div>
+                            </div>
                         </div>
-                        <div className="lg:col-span-12 xl:col-span-5 space-y-12">
-                            {t.grid.map((it, i) => (
-                                <div key={i} className="p-16 rounded-[4rem] bg-white/[0.01] border border-white/5 space-y-8 hover:border-red-500/30 hover:bg-white/[0.02] transition-all relative overflow-hidden group">
-                                    <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-red-500/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <div className="flex items-center gap-6">
-                                        <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500 border border-white/10 shadow-2xl group-hover:bg-red-500 group-hover:text-black transition-all"><CheckCircle2 size={24} /></div>
-                                        <h3 className="text-4xl font-bold uppercase text-white tracking-tighter italic">{it.title}</h3>
-                                    </div>
-                                    <p className="text-2xl text-slate-500 font-medium leading-relaxed">{it.desc}</p>
-                                </div>
-                            ))}
+
+                        <div className="lg:col-span-12 xl:col-span-5 space-y-10">
+                            <SecurityItem
+                                title="Zero-Knowledge"
+                                text="Veriniz sadece size aittir. Aura sinir ağları veriyi asla saklamaz veya işlemez; sadece iletir."
+                            />
+                            <SecurityItem
+                                title="GDPR & HIPAA"
+                                text="Küresel sağlık ve veri koruma standartlarına %100 uyum. Veri trafiği her an denetlenebilir."
+                            />
+                            <SecurityItem
+                                title="Fail-Safe Bridge"
+                                text="Olası bir teknik aksaklıkta, finansal köprüler otonom olarak 'Safe-Mode'a geçer ve işlemler korunur."
+                            />
                         </div>
                     </div>
 
-                    {/* Live Security Pulse */}
-                    <div className="p-12 md:p-20 rounded-[4rem] bg-black/40 border border-white/5 flex flex-col md:flex-row items-center justify-between gap-12 group">
+                    {/* --- STATUS PULSE --- */}
+                    <div className="p-10 md:p-20 rounded-[4rem] bg-white/[0.01] border border-white/5 flex flex-col md:flex-row items-center justify-between gap-10">
                         <div className="flex items-center gap-8">
-                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-red-500 group-hover:animate-pulse"><Activity size={32} /></div>
-                            <div>
-                                <div className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-600 mb-2">Network Status</div>
-                                <div className="text-3xl font-bold text-white uppercase italic tracking-tighter">Encrypted Alpha Tunnel Active</div>
+                            <div className="w-16 h-16 bg-red-500/5 rounded-full flex items-center justify-center text-red-500 animate-pulse border border-red-500/20"><Activity size={32} /></div>
+                            <div className="space-y-1">
+                                <div className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-700">AURA ENCRYPTION NODE</div>
+                                <div className="text-2xl font-bold text-white italic font-space">Askeri Düzey Tünel Aktif</div>
                             </div>
                         </div>
-                        <div className="flex items-center gap-12">
-                            <div className="text-right">
-                                <div className="text-3xl font-black text-white">
-                                    <AnimatedNumber value={99} suffix="%" duration={1} />
-                                </div>
-                                <div className="text-[9px] font-black text-slate-600 uppercase tracking-widest">Efficiency</div>
+                        <div className="px-12 py-5 bg-black rounded-2xl border border-white/5 flex items-center gap-8">
+                            <div className="text-center">
+                                <div className="text-xs font-black text-slate-600 uppercase tracking-widest">Sızıntı</div>
+                                <div className="text-xl font-bold text-white">0.00%</div>
                             </div>
-                            <div className="px-10 py-5 bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] font-black uppercase tracking-[0.5em] rounded-full">FORT KNOX CERTIFIED</div>
+                            <div className="w-px h-8 bg-white/10" />
+                            <div className="text-center">
+                                <div className="text-xs font-black text-slate-600 uppercase tracking-widest">Gecikme</div>
+                                <div className="text-xl font-bold text-white">0.4ms</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <section className="py-20 px-6 bg-[#030303] text-center border-t border-white/5">
-                <p className="text-[10px] font-black uppercase tracking-[1.2em] text-white/10 mb-4">Aura Security Operations</p>
-                <a href="https://www.nextoriadigital.com" target="_blank" rel="noopener noreferrer" className="text-3xl font-bold text-white uppercase italic tracking-tighter hover:text-red-500 transition-colors">WWW.NEXTORIADIGITAL.COM</a>
-            </section>
+            <footer className="py-20 px-6 bg-[#030303] text-center border-t border-white/5">
+                <div className="text-[10px] font-black uppercase tracking-[1em] text-slate-800 mb-8">SECURE INFRASTRUCTURE • ALPHA 2026</div>
+                <div className="flex justify-center gap-12 opacity-10">
+                    <Database size={24} />
+                    <HardDrive size={24} />
+                    <Cpu size={24} />
+                </div>
+            </footer>
         </AuraLayout>
+    );
+}
+
+function SecurityItem({ title, text }: { title: string, text: string }) {
+    return (
+        <div className="p-10 rounded-[3rem] bg-white/[0.01] border border-white/5 hover:border-red-500/20 transition-all group relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-red-500/20 to-transparent" />
+            <div className="space-y-4 relative z-10">
+                <h3 className="text-3xl font-bold uppercase italic text-white tracking-tighter font-space">{title}</h3>
+                <p className="text-lg text-[#B0B0B0] font-medium leading-relaxed">{text}</p>
+            </div>
+        </div>
     );
 }
