@@ -10,6 +10,7 @@ import {
 import AuraLayout from "@/components/AuraLayout";
 
 import AnimatedNumber from "@/components/AnimatedNumber";
+import NeuralCore from "@/components/NeuralCore";
 
 // --- NEURAL SALES CONTENT DNA ---
 const CONTENT = {
@@ -93,39 +94,22 @@ const CONTENT = {
   }
 };
 
-// --- REVENUE FLUX DASHBOARD (3D) ---
-const RevenueDashboard = ({ revenue }: { revenue: number }) => (
-  <motion.div
-    initial={{ rotateX: 15, y: 50, opacity: 0 }}
-    animate={{ rotateX: 15, y: 0, opacity: 1 }}
-    transition={{ duration: 1.5, ease: "easeOut" }}
-    className="relative w-full max-w-[800px] h-[450px] bg-white/[0.02] border border-white/10 rounded-[2.5rem] backdrop-blur-3xl p-10 flex flex-col items-center justify-center shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] perspective-[1000px] overflow-hidden"
-  >
-    <div className="absolute inset-0 bg-gradient-to-br from-[#00F0FF]/[0.05] to-transparent rounded-[2.5rem]" />
+// --- NEURAL CORE NEXUS ---
+const NeuralNexus = ({ revenue }: { revenue: number }) => (
+  <div className="relative flex flex-col items-center justify-center space-y-20">
+    <NeuralCore className="scale-125" />
 
     <div className="relative z-20 text-center space-y-4">
       <motion.div
-        animate={{ scale: [1, 1.02, 1] }}
+        animate={{ scale: [1, 1.02, 1], opacity: [0.8, 1, 0.8] }}
         transition={{ duration: 3, repeat: Infinity }}
         className="text-6xl md:text-8xl font-black text-white tracking-tighter"
       >
         <AnimatedNumber value={revenue} prefix="€ " />
       </motion.div>
-      <div className="text-[#00F0FF] text-[10px] font-black tracking-[0.8em] uppercase">GÜNCEL CİRO AKIŞI</div>
+      <div className="text-[#00F0FF] text-[10px] font-black tracking-[0.8em] uppercase">NEURAL REVENUE FLOW</div>
     </div>
-
-    {/* Live Audio Visualizer Bars */}
-    <div className="absolute bottom-10 left-10 right-10 h-32 flex items-end gap-1 px-10 z-10">
-      {[...Array(40)].map((_, i) => (
-        <motion.div
-          key={i}
-          animate={{ height: [`${20 + Math.random() * 60}%`, `${30 + Math.random() * 60}%`, `${20 + Math.random() * 60}%`] }}
-          transition={{ duration: 0.5 + Math.random() * 1, repeat: Infinity }}
-          className={`flex-1 bg-[#00F0FF] opacity-30 ${i === 20 ? 'shadow-[0_0_30px_#00F0FF] opacity-100' : ''}`}
-        />
-      ))}
-    </div>
-  </motion.div>
+  </div>
 );
 
 export default function AbsoluteAlphaPage() {
@@ -193,7 +177,27 @@ export default function AbsoluteAlphaPage() {
           </motion.div>
 
           <div className="pt-20 flex justify-center">
-            <RevenueDashboard revenue={counts.revenue} />
+            <NeuralNexus revenue={counts.revenue} />
+          </div>
+        </div>
+      </section>
+
+      {/* --- THE ALPHA FLOW: CLARITY BRIDGE --- */}
+      <section className="py-20 px-6 bg-[#030303] border-y border-white/5 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto">
+          <div className="grid md:grid-cols-4 gap-12">
+            {[
+              { label: "01. INPUT", title: "Global Lead", desc: "Aura tüm kanallardan gelen talepleri 12ms hızda yakalar." },
+              { label: "02. PROCESS", title: "Nex-Scan™", desc: "Nöral ağlar lead niyetini ve medikal profili saniyede analiz eder." },
+              { label: "03. ACTION", title: "Closing Protocol", desc: "Sistem satışı Stripe üzerinden otonom olarak kapatır." },
+              { label: "04. RESULT", title: "Neural Profit", desc: "Ciro doğrudan hesabınıza aktarılır, operasyon otonom tamamlanır." }
+            ].map((step, i) => (
+              <div key={i} className="space-y-6 group">
+                <div className="text-[10px] font-black text-[#00F0FF] tracking-widest">{step.label}</div>
+                <h3 className="text-2xl font-black text-white uppercase italic">{step.title}</h3>
+                <p className="text-slate-500 text-sm font-medium leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
