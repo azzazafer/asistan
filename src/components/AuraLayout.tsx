@@ -139,35 +139,34 @@ export default function AuraLayout({ children, lang, setLang }: AuraLayoutProps)
                         </Link>
                     </div>
 
-                    <button className="lg:hidden p-3 bg-white/5 border border-white/10 rounded-xl text-white relative z-[1001]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                    <button className="lg:hidden p-3 bg-white/5 border border-white/10 rounded-xl text-white relative z-[1001] active:scale-95 transition-transform" onClick={() => setIsMenuOpen(!isMenuOpen)}>
                         {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
                     </button>
                 </div>
-            </nav>
 
-            {/* --- MOBILE OVERLAY --- */}
-            <AnimatePresence>
-                {isMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, x: '100%' }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: '100%' }}
-                        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                        className="fixed inset-0 z-[950] bg-black/98 backdrop-blur-3xl flex flex-col items-center justify-center gap-12 lg:hidden text-white"
-                    >
-                        <div className="flex flex-col items-center gap-10">
-                            <Link href="/solutions/clinics" className="text-3xl font-black uppercase tracking-[0.3em] hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.cli}</Link>
-                            <Link href="/solutions/agencies" className="text-3xl font-black uppercase tracking-[0.3em] hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
-                            <Link href="/technology" className="text-3xl font-black uppercase tracking-[0.3em] hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
-                            <Link href="/vision" className="text-3xl font-black uppercase tracking-[0.3em] hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.vision}</Link>
-                        </div>
-                        <div className="h-px w-20 bg-white/10" />
-                        <Link href="/login" onClick={() => setIsMenuOpen(false)} className="px-12 py-6 bg-[#00F0FF] text-black rounded-full font-black uppercase tracking-widest shadow-[0_0_30px_rgba(0,240,255,0.3)]">
-                            {t.nav.getStarted}
-                        </Link>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                {/* --- MOBILE DROPDOWN MENU --- */}
+                <AnimatePresence>
+                    {isMenuOpen && (
+                        <motion.div
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            className="absolute top-full left-4 right-4 mt-4 bg-black/95 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 lg:hidden z-[999] shadow-[0_40px_80px_rgba(0,0,0,0.9)]"
+                        >
+                            <nav className="flex flex-col gap-8">
+                                <Link href="/solutions/clinics" className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.cli}</Link>
+                                <Link href="/solutions/agencies" className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.age}</Link>
+                                <Link href="/technology" className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.tech}</Link>
+                                <Link href="/vision" className="text-sm font-black uppercase tracking-[0.2em] text-slate-400 hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>{t.nav.vision}</Link>
+                                <div className="h-px bg-white/5 w-full" />
+                                <Link href="/login" onClick={() => setIsMenuOpen(false)} className="w-full py-4 bg-[#00F0FF] text-black rounded-xl font-black uppercase tracking-widest text-center shadow-lg active:scale-[0.98] transition-transform">
+                                    {t.nav.getStarted}
+                                </Link>
+                            </nav>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </nav>
 
             <main className="relative z-10">{children}</main>
             <ScarcityToast />

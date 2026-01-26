@@ -155,7 +155,7 @@ export default function AbsoluteAlphaPage() {
           <motion.h1
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-6xl md:text-[10rem] font-bold text-white uppercase italic leading-[0.85] tracking-[-0.08em]"
+            className="text-6xl md:text-[9rem] font-bold text-white uppercase italic leading-[1] md:leading-[0.95] tracking-[-0.08em]"
           >
             {t.hero.title.split('\n')[0]}<br />
             <span className="bg-gradient-to-r from-[#00F0FF] to-white bg-clip-text text-transparent italic">
@@ -205,14 +205,14 @@ export default function AbsoluteAlphaPage() {
       </section>
 
       {/* --- FEATURES: THE PILLARS --- */}
-      <section className="py-60 px-6 relative bg-[#030303]">
+      <section className="py-40 px-6 relative bg-[#030303]">
         <div className="max-w-[1400px] mx-auto">
-          <div className="text-center mb-40 space-y-8">
-            <h2 className="text-6xl md:text-8xl font-black text-white uppercase italic tracking-tighter leading-none">
+          <div className="text-center mb-32 space-y-8">
+            <h2 className="text-6xl md:text-8xl font-black text-white uppercase italic tracking-tighter leading-tight">
               {t.features.title.split('\n')[0]}<br />
               <span className="text-slate-700">{t.features.title.split('\n')[1]}</span>
             </h2>
-            <p className="text-2xl text-slate-500 font-medium">{t.features.subtitle}</p>
+            <p className="text-xl md:text-2xl text-slate-500 font-medium max-w-2xl mx-auto">{t.features.subtitle}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-12">
