@@ -9,6 +9,10 @@ import { getLeadByPhone, addLead } from '@/lib/leads';
 import { getMessageHistory } from '@/lib/messaging';
 import { getAgentByCode } from '@/lib/agents';
 
+/**
+ * Aura OS Omnichannel Bridge - Version 12.1 [STABLE]
+ * Handles routing and normalization for all messaging channels.
+ */
 export type MessageSource = 'whatsapp' | 'instagram' | 'telegram' | 'web';
 
 export interface NormalizedMessage {
