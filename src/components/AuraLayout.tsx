@@ -64,7 +64,7 @@ export default function AuraLayout({ children }: AuraLayoutProps) {
                         <Link href="/login" className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-white transition-colors">
                             Giriş Yap
                         </Link>
-                        <Link href="/login">
+                        <Link href="/signup">
                             <button className="px-8 py-3 bg-transparent border border-[#00F0FF]/40 text-[#00F0FF] rounded-lg text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#00F0FF] hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(0,240,255,0.1)] active:scale-95">
                                 Operasyonu Başlat
                             </button>
@@ -92,7 +92,7 @@ export default function AuraLayout({ children }: AuraLayoutProps) {
                                 <Link href="/technology" className="text-lg font-bold tracking-tight text-white font-space" onClick={() => setIsMenuOpen(false)}>Teknoloji</Link>
                                 <Link href="/vision" className="text-lg font-bold tracking-tight text-white font-space" onClick={() => setIsMenuOpen(false)}>Vizyon</Link>
                                 <div className="h-px bg-white/5 w-full" />
-                                <Link href="/login" onClick={() => setIsMenuOpen(false)} className="w-full py-4 bg-[#00F0FF] text-black rounded-xl font-black uppercase tracking-widest text-center shadow-lg">
+                                <Link href="/signup" onClick={() => setIsMenuOpen(false)} className="w-full py-4 bg-[#00F0FF] text-black rounded-xl font-black uppercase tracking-widest text-center shadow-lg">
                                     Operasyonu Başlat
                                 </Link>
                             </nav>
@@ -116,7 +116,7 @@ export default function AuraLayout({ children }: AuraLayoutProps) {
                         </Link>
                         <p className="text-[10px] font-bold uppercase tracking-[0.4em] text-slate-600 leading-relaxed">
                             NEXTORIA ALPHA INFRASTRUCTURE<br />
-                            VERSION 12.0 • GLOBAL HUB<br />
+                            VERSION 13.0 • GLOBAL HUB<br />
                             AUTONOMOUS REVENUE ENGINE
                         </p>
                     </div>

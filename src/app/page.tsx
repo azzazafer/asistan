@@ -21,11 +21,11 @@ export default function DeepSpaceHomePage() {
       {/* --- SECTION A: HERO (THE HOOK) --- */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden flex flex-col items-center">
         {/* Visual Backdrop: Neural Connection */}
-        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[120%] h-[120%] opacity-20 pointer-events-none z-0">
+        <div className="absolute inset-x-0 top-0 h-full opacity-30 pointer-events-none z-0 flex items-center justify-center">
           <img
             src="/images/aura_neural_network_abstract.png"
             alt=""
-            className="w-full h-full object-contain mix-blend-screen"
+            className="w-full max-w-[1200px] h-full object-contain mix-blend-screen animate-pulse"
           />
         </div>
 
@@ -92,14 +92,16 @@ export default function DeepSpaceHomePage() {
         <div className="absolute top-0 left-0 w-full h-px bg-white/5" />
 
         <div className="max-w-[1400px] mx-auto grid lg:grid-cols-3 gap-10">
-          <TechCard
-            id="scarcity"
-            icon={<Activity className="text-[#FF4500]" />}
-            title="Scarcity Engine™"
-            text="Stoklar 2'nin altına düştüğünde, AI otomatik olarak 'Kıtlık Psikolojisi' uygular ve dönüşümü %300 artırır."
-            color="#FF4500"
-            visual={<div className="w-20 h-20 bg-[#FF4500]/10 rounded-full flex items-center justify-center animate-pulse border border-[#FF4500]/20"><DollarSign size={32} /></div>}
-          />
+          <Link href="/technology" className="flex">
+            <TechCard
+              id="scarcity"
+              icon={<Activity className="text-[#FF4500]" />}
+              title="Scarcity Engine™"
+              text="Stoklar 2'nin altına düştüğünde, AI otomatik olarak 'Kıtlık Psikolojisi' uygular ve dönüşümü %300 artırır."
+              color="#FF4500"
+              visual={<div className="w-20 h-20 bg-[#FF4500]/10 rounded-full flex items-center justify-center animate-pulse border border-[#FF4500]/20"><DollarSign size={32} /></div>}
+            />
+          </Link>
 
           <TechCard
             id="nexscan-tech"
@@ -118,17 +120,19 @@ export default function DeepSpaceHomePage() {
             onClick={() => setIsNexScanOpen(true)}
           />
 
-          <TechCard
-            id="stripe"
-            icon={<Lock className="text-white" />}
-            title="Stripe Bridge"
-            text="Telefon kapanmadan kapora tahsilatı yapılır. 'Sözde randevu' biter, 'Ödenmiş Randevu' başlar."
-            color="#FFFFFF"
-            visual={<div className="flex flex-col items-center gap-3">
-              <div className="text-3xl font-bold font-space text-white">$2,500</div>
-              <div className="text-[8px] font-black uppercase tracking-widest text-[#00F0FF]">KAPORA TAHSİL EDİLDİ</div>
-            </div>}
-          />
+          <Link href="/technology" className="flex">
+            <TechCard
+              id="stripe"
+              icon={<Lock className="text-white" />}
+              title="Stripe Bridge"
+              text="Telefon kapanmadan kapora tahsilatı yapılır. 'Sözde randevu' biter, 'Ödenmiş Randevu' başlar."
+              color="#FFFFFF"
+              visual={<div className="flex flex-col items-center gap-3">
+                <div className="text-3xl font-bold font-space text-white">$2,500</div>
+                <div className="text-[8px] font-black uppercase tracking-widest text-[#00F0FF]">KAPORA TAHSİL EDİLDİ</div>
+              </div>}
+            />
+          </Link>
         </div>
       </section>
 
@@ -136,7 +140,7 @@ export default function DeepSpaceHomePage() {
       <section className="py-40 px-6 relative overflow-hidden">
         <div className="max-w-[1400px] mx-auto text-center space-y-20">
           <div className="space-y-6">
-            <div className="text-[#00F0FF] text-[10px] font-black tracking-[0.5em] uppercase">ALPHA INFRASTRUCTURE v12.0</div>
+            <div className="text-[#00F0FF] text-[10px] font-black tracking-[0.5em] uppercase">ALPHA INFRASTRUCTURE v13.0</div>
             <h2 className="text-4xl md:text-7xl font-bold uppercase italic tracking-tighter text-white font-space">Tekil Komuta Merkezi.</h2>
           </div>
 
