@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Camera, Upload, X, Check, Brain, Activity } from "lucide-react";
+import Link from "next/link";
 
 interface NexScanDemoProps {
     isOpen: boolean;
@@ -68,10 +69,13 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                                     </div>
                                     <div
                                         onClick={startScan}
-                                        className="border-2 border-dashed border-white/10 rounded-[1.5rem] p-10 hover:border-[#00F0FF]/40 cursor-pointer transition-all group"
+                                        className="relative border-2 border-dashed border-white/10 rounded-[1.5rem] p-16 hover:border-[#00F0FF]/40 cursor-pointer transition-all group overflow-hidden"
                                     >
-                                        <Upload className="mx-auto text-slate-700 group-hover:text-[#00F0FF] transition-colors mb-4" size={32} />
-                                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-600 font-space">FOTOĞRAF BIRAKIN VEYA TIKLAYIN</span>
+                                        <div className="absolute inset-0 bg-[#00F0FF]/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <div className="relative z-10 text-center">
+                                            <Upload className="mx-auto text-slate-700 group-hover:text-[#00F0FF] transition-colors mb-4" size={40} />
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-slate-600 font-space block">FOTOĞRAF BIRAKIN VEYA TIKLAYIN</span>
+                                        </div>
                                     </div>
                                 </div>
                             )}
@@ -177,9 +181,11 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                                         </p>
                                     </div>
 
-                                    <button onClick={reset} className="w-full py-4 bg-white text-black rounded-xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-[#00F0FF] transition-all shadow-xl active:scale-[0.98]">
-                                        OTURUMU SONLANDIR
-                                    </button>
+                                    <Link href="/signup" onClick={onClose} className="block w-full">
+                                        <button className="w-full py-5 bg-white text-black rounded-xl font-black uppercase text-[11px] tracking-[0.3em] hover:bg-[#00F0FF] transition-all shadow-xl active:scale-[0.98]">
+                                            OTURUMU SONLANDIR VE KURULUMA BAŞLA
+                                        </button>
+                                    </Link>
                                 </div>
                             )}
                         </div>

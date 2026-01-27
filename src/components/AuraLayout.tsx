@@ -52,11 +52,11 @@ export default function AuraLayout({ children }: AuraLayoutProps) {
                     </Link>
 
                     {/* Center Links (Desktop) */}
-                    <div className="hidden lg:flex items-center gap-12 text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">
-                        <Link href="/solutions/clinics" className="hover:text-white transition-colors">Klinikler</Link>
-                        <Link href="/solutions/agencies" className="hover:text-white transition-colors">Acenteler</Link>
-                        <Link href="/technology" className="hover:text-white transition-colors">Teknoloji</Link>
-                        <Link href="/vision" className="hover:text-white transition-colors">Vizyon</Link>
+                    <div className="hidden lg:flex items-center gap-20 text-[11px] font-black uppercase tracking-[0.4em] text-slate-400">
+                        <Link href="/solutions/clinics" className="hover:text-[#00F0FF] transition-colors py-2">Klinikler</Link>
+                        <Link href="/solutions/agencies" className="hover:text-[#00F0FF] transition-colors py-2">Acenteler</Link>
+                        <Link href="/technology" className="hover:text-[#00F0FF] transition-colors py-2">Teknoloji</Link>
+                        <Link href="/vision" className="hover:text-[#00F0FF] transition-colors py-2">Vizyon</Link>
                     </div>
 
                     {/* Right Actions */}
@@ -123,21 +123,25 @@ export default function AuraLayout({ children }: AuraLayoutProps) {
 
                     {/* Ürün Column */}
                     <div className="space-y-8">
-                        <div className="text-[9px] font-black uppercase tracking-[0.6em] text-[#00F0FF]/80">Ürün</div>
+                        <div className="text-[9px] font-black uppercase tracking-[0.6em] text-[#00F0FF]/80">Otonom Ürünler</div>
                         <nav className="flex flex-col gap-5">
                             <Link href="/#scarcity" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Scarcity Engine™</Link>
                             <Link href="/#nexscan" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Nex-Scan™ Triaj</Link>
                             <Link href="/#stripe" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Stripe Bridge</Link>
+                            <Link href="/calculate-loss" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">ROI Hesaplayıcı</Link>
+                            <Link href="/onboarding" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Hızlı Kurulum Klavuzu</Link>
                         </nav>
                     </div>
 
                     {/* Kurumsal Column */}
                     <div className="space-y-8">
-                        <div className="text-[9px] font-black uppercase tracking-[0.6em] text-slate-600">Kurumsal</div>
+                        <div className="text-[9px] font-black uppercase tracking-[0.6em] text-slate-600">Kurumsal & Hukuk</div>
                         <nav className="flex flex-col gap-5">
                             <Link href="/vision" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Vizyon 2026</Link>
                             <Link href="/investors" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Yatırımcı İlişkileri</Link>
-                            <Link href="/security" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Güvenlik (GDPR/HIPAA)</Link>
+                            <Link href="/security" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Güvenlik Standartları</Link>
+                            <Link href="/privacy" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">KVKK & Gizlilik</Link>
+                            <Link href="/help" className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-colors">Destek Merkezi</Link>
                         </nav>
                     </div>
 

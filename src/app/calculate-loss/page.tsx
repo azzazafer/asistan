@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { DollarSign, TrendingDown, ArrowRight, Shield, Zap } from "lucide-react";
+import Link from "next/link";
 import AuraLayout from "@/components/AuraLayout";
 
 export default function CalculateLossPage() {
@@ -74,9 +75,11 @@ export default function CalculateLossPage() {
                 </div>
 
                 <div className="flex justify-center">
-                    <button className="px-12 py-5 bg-[#00F0FF] text-black rounded-xl text-[12px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_0_40px_rgba(0,240,255,0.4)]">
-                        Kayıpları Durdur: Alpha'ya Katıl
-                    </button>
+                    <Link href="/signup">
+                        <button className="px-12 py-5 bg-[#00F0FF] text-black rounded-xl text-[12px] font-black uppercase tracking-[0.3em] hover:scale-105 transition-all shadow-[0_0_40px_rgba(0,240,255,0.4)]">
+                            Kayıpları Durdur: Alpha'ya Katıl
+                        </button>
+                    </Link>
                 </div>
             </div>
         </AuraLayout>
