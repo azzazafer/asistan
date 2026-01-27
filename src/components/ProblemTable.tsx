@@ -7,7 +7,7 @@ export default function ProblemTable() {
     return (
         <div className="w-full max-w-6xl mx-auto grid md:grid-cols-2 gap-px bg-white/5 border border-white/5 rounded-[3rem] overflow-hidden shadow-3xl">
             {/* Eski Dünya */}
-            <div className="p-12 md:p-20 bg-[#050505] space-y-12 opacity-40 hover:opacity-100 transition-opacity duration-700 group">
+            <div className="p-6 md:p-12 lg:p-20 bg-[#050505] space-y-12 opacity-40 hover:opacity-100 transition-opacity duration-700 group">
                 <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-500 border border-white/5">
                         <Minus size={24} />
@@ -26,7 +26,7 @@ export default function ProblemTable() {
             </div>
 
             {/* Aura Dünyası */}
-            <div className="p-12 md:p-20 bg-[#080808] space-y-12 relative overflow-hidden group">
+            <div className="p-6 md:p-12 lg:p-20 bg-[#080808] space-y-12 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#00F0FF]/[0.05] blur-[100px] rounded-full pointer-events-none" />
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#00F0FF]/40 to-transparent" />
 

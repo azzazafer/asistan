@@ -65,8 +65,19 @@ body {
   font-family: var(--font-main);
   letter-spacing: var(--tracking-tight);
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;
+  overflow-x: clip; 
+  max-width: 100vw;
+  width: 100%;
 }
+
+/* Fluid Typography Engine */
+.text-4xl { font-size: clamp(1.8rem, 5vw, 2.25rem); line-height: 1.2; }
+.text-5xl { font-size: clamp(2rem, 8vw, 3rem); line-height: 1.1; }
+.text-6xl { font-size: clamp(2.5rem, 10vw, 3.75rem); line-height: 1; }
+.text-7xl { font-size: clamp(3rem, 12vw, 4.5rem); line-height: 0.9; }
+.text-8xl { font-size: clamp(3.5rem, 15vw, 6rem); line-height: 0.85; }
+.text-9xl { font-size: clamp(4rem, 20vw, 8rem); line-height: 0.85; }
+.fluid-hero { font-size: clamp(3rem, 14vw, 8rem); line-height: 0.9; }
 
 /* Mesh Backdrop for Dashboard */
 .mesh-bg {

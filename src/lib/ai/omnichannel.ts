@@ -135,6 +135,28 @@ export class OmnichannelBridge {
 
         // 4. RESPONSE DELIVERY
         if (auraResponse && auraResponse.message.content) {
+
+            // Financial Intent Detection & CRM Sync (Ruthless Audit: Phase 3)
+            try {
+                const payTriggers = ['ödeme', 'pay', 'hesap no', 'iban', 'fiyat', 'kapora', 'deposit'];
+                const hasPayIntent = payTriggers.some(t => message.content.toLowerCase().includes(t));
+
+                if (hasPayIntent) {
+                    console.log(`[Bridge] High-Intent Financial Trigger Detected for ${message.userId}. Updating CRM status...`);
+                    const lead = await getLeadByPhone(message.userId, tenantId);
+                    if (lead) {
+                        await addLead({
+                            ...lead,
+                            status: 'Ödeme Bekliyor',
+                            last_message: message.content,
+                            last_message_at: new Date().toISOString()
+                        });
+                    }
+                }
+            } catch (finErr) {
+                console.error("[Bridge] Financial Status Sync Error:", finErr);
+            }
+
             const isVoiceRequest = message.content.includes('[Voice Message]') ||
                 message.content.toLowerCase().includes('sesli');
 

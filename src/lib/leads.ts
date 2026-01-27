@@ -3,7 +3,7 @@ import { calculateRank } from './gamification';
 import { calculateLeadScore } from './scoring';
 import { saveLeadLocally } from './persistence';
 import { Lead, SubjectRank } from './types';
-import { encryptAES256, decryptAES256 } from './security';
+import { encryptAES256, decryptAES256, redactPII } from './security';
 
 // Global Lead Memory Removed to enforce database integrity in production.
 
@@ -82,12 +82,17 @@ export const addLead = async (lead: Lead) => {
 
 
     if (supabase) {
-        // ENCRYPTION LAYER (HIPAA/GDPR Hardening)
+        // ENCRYPTION & SCRUBBING LAYER (HIPAA/GDPR Hardening)
         const securedLead = {
             ...lead,
             name: encryptAES256(lead.name),
             phone: encryptAES256(lead.phone),
-            last_message: lead.last_message ? encryptAES256(lead.last_message) : lead.last_message
+            last_message: lead.last_message ? encryptAES256(lead.last_message) : lead.last_message,
+            // Scrub History for extra security before persistent storage
+            history: lead.history ? lead.history.map(h => ({
+                ...h,
+                content: redactPII(h.content)
+            })) : undefined
         };
 
         const { error } = await supabase.from('leads').upsert(securedLead);

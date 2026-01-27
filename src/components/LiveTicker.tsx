@@ -25,8 +25,8 @@ export default function LiveTicker() {
     const item = MOCK_DATA[index];
 
     return (
-        <div className="w-full bg-[#0A0A0A]/40 border-y border-white/5 py-4 overflow-hidden backdrop-blur-sm relative">
-            <div className="max-w-[1400px] mx-auto px-6 flex items-center gap-10">
+        <div className="w-full bg-[#0A0A0A]/40 border-y border-white/5 py-4 overflow-x-auto no-scrollbar backdrop-blur-sm relative">
+            <div className="max-w-[1400px] mx-auto px-6 flex items-center gap-4 md:gap-10 min-w-max">
                 <div className="flex items-center gap-3 shrink-0">
                     <div className="w-2 h-2 bg-[#00F0FF] rounded-full animate-pulse shadow-[0_0_10px_#00F0FF]" />
                     <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#00F0FF]/60 hover:text-[#00F0FF] transition-colors cursor-default">

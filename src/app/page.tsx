@@ -41,7 +41,7 @@ export default function DeepSpaceHomePage() {
           <motion.h1
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="text-6xl md:text-[8rem] font-bold tracking-[-0.08em] font-space text-white leading-tight uppercase italic"
+            className="fluid-hero font-bold tracking-[-0.08em] font-space text-white leading-tight uppercase italic"
           >
             Yönetmeyi Bırakın.<br />
             <span className="text-[#00F0FF]">Kapatmaya Başlayın.</span>

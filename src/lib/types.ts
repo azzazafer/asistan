@@ -6,7 +6,7 @@ export interface Lead {
     name: string;
     phone: string;
     email?: string;
-    status: 'Beklemede' | 'İletişime Geçildi' | 'Randevu Alındı' | 'Tedavi Tamamlandı' | 'İptal';
+    status: 'Beklemede' | 'İletişime Geçildi' | 'Randevu Alındı' | 'Randevu Onaylandı' | 'Ödeme Bekliyor' | 'Tedavi Tamamlandı' | 'İptal';
     treatment: string;
     source: string;
     channel: 'WhatsApp' | 'Instagram' | 'Telegram' | 'Web';
