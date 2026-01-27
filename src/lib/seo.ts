@@ -63,13 +63,58 @@ export class SEOManager {
             description: base.description,
             keywords: (base.keywords || []).join(', '),
             metadataBase: new URL(SEO_CONFIG.siteUrl),
+            alternates: {
+                canonical: SEO_CONFIG.siteUrl,
+                languages: {
+                    'tr-TR': `${SEO_CONFIG.siteUrl}?lang=tr`,
+                    'en-US': `${SEO_CONFIG.siteUrl}?lang=en`,
+                    'ar-SA': `${SEO_CONFIG.siteUrl}?lang=ar`,
+                }
+            },
             openGraph: {
                 title: `${base.title} | ${tenantId.toUpperCase()}`,
                 description: base.description,
                 url: SEO_CONFIG.siteUrl,
                 siteName: 'Aura Health OS',
                 type: 'website',
+                images: [{ url: '/og-image.png', width: 1200, height: 630 }]
             },
+            twitter: {
+                card: 'summary_large_image',
+                title: base.title,
+                description: base.description,
+                images: ['/og-image.png'],
+            }
+        };
+    }
+
+    /**
+     * Generates structured data (JSON-LD) for SEO dominance.
+     */
+    static generateSchema(lang: string = 'tr'): any {
+        return {
+            "@context": "https://schema.org",
+            "@type": "MedicalWebPage",
+            "name": "Aura OS - Autonomous Health Tourism Engine",
+            "url": SEO_CONFIG.siteUrl,
+            "description": "The world's first AI-powered autonomous sales engine for medical tourism.",
+            "provider": {
+                "@type": "Organization",
+                "name": "Aura Health Technologies",
+                "url": SEO_CONFIG.siteUrl,
+                "logo": `${SEO_CONFIG.siteUrl}/logo.png`,
+                "sameAs": [
+                    "https://linkedin.com/company/auraos",
+                    "https://instagram.com/aura_os"
+                ]
+            },
+            "medicalSpecialty": "Health Tourism Automation",
+            "mainEntity": {
+                "@type": "SoftwareApplication",
+                "name": "Aura OS",
+                "applicationCategory": "BusinessApplication",
+                "operatingSystem": "Web-Cloud"
+            }
         };
     }
 }

@@ -101,13 +101,25 @@ export class OmnichannelBridge {
             console.error("[Bridge] Referral Error:", error);
         }
 
-        // 3. MEDIA HANDLING (Standardization)
-        let imageData: string | undefined;
-        if (message.content.includes('[Image Attached]') || message.content.includes('http')) {
-            // In a real scenario, we would download the image or pass the URL
-            // For now, we signal to the orchestrator that there's an image to analyze
-            console.log(`[Bridge] Image detected from ${message.userId}. Requesting Vision Analysis...`);
-            imageData = 'simulation_active';
+        // 3. MEDIA HANDLING (Neural Vision Integration)
+        let imageData: any = null;
+        if (message.mediaUrl || message.content.includes('[Image Attached]') || message.content.includes('http')) {
+            const { VisionAnalysisService } = require('@/lib/vision');
+            console.log(`[Bridge] Media detected from ${message.userId}. Executing Neural Vision Analysis...`);
+
+            // In production, we pass the real mediaUrl or base64
+            imageData = message.mediaUrl || 'processing_media';
+
+            try {
+                const analysis = await VisionAnalysisService.analyzeMedicalImage(imageData);
+                if (analysis && analysis.type !== 'unsupported') {
+                    console.log(`[Bridge] Vision Analysis Success: ${analysis.diagnosis}`);
+                    // We enrich the message context with vision results for the orchestrator
+                    message.content += `\n[SYSTEM-VISION-ATTACHED]: ${JSON.stringify(analysis)}`;
+                }
+            } catch (visionError) {
+                console.error("[Bridge] Vision Engine Error:", visionError);
+            }
         }
 
         // 4. AI ORCHESTRATION (Context-Aware)
@@ -236,10 +248,22 @@ export class OmnichannelBridge {
         };
 
         this.retryQueue.push(queued);
+
+        // Critical: Persist to Supabase for durability (HIPAA/GDPR Reliability)
         if (supabase) {
+            await supabase.from('queued_messages').upsert({
+                id: id,
+                target: target,
+                source: source,
+                content: content,
+                attempts: 0,
+                status: 'pending',
+                created_at: queued.created_at
+            });
+
             await supabase.from('debug_logs').insert({
                 event_name: 'omni_message_queued',
-                severity: 'low',
+                severity: 'medium',
                 data: queued,
                 source: 'bridge'
             });

@@ -13,6 +13,13 @@ interface NexScanDemoProps {
 export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
     const [step, setStep] = useState<'upload' | 'scanning' | 'result'>('upload');
     const [progress, setProgress] = useState(0);
+    const [analysis, setAnalysis] = useState<any>(null);
+
+    const patterns = [
+        { diag: "Norwood Tip IV", greft: "3,500 - 4,000 FUE", advice: "Başarı oranı %94. Safir uç önerilir.", score: 98 },
+        { diag: "Gingival Resesyon", greft: "Zirkonyum Tam Rest.", advice: "DSD protokolü ile 24 saatte gülüş tasarımı.", score: 96 },
+        { diag: "Maksiller Deviasyon", greft: "İmplant + Kuron", advice: "Sinus lifting gerekebilir. Alpha hekim onayı şart.", score: 92 }
+    ];
 
     const startScan = () => {
         setStep('scanning');
@@ -22,6 +29,7 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
             setProgress(p);
             if (p >= 100) {
                 clearInterval(interval);
+                setAnalysis(patterns[Math.floor(Math.random() * patterns.length)]);
                 setStep('result');
             }
         }, 30);
@@ -127,11 +135,11 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                                     <div className="grid grid-cols-2 gap-3">
                                         <div className="p-4 bg-white/[0.02] rounded-xl border border-white/5 space-y-1">
                                             <div className="text-[6px] font-black text-slate-600 uppercase tracking-widest">TEŞHİS</div>
-                                            <div className="text-[10px] font-bold text-white uppercase tracking-tight font-space">Norwood Tip IV</div>
+                                            <div className="text-[10px] font-bold text-white uppercase tracking-tight font-space">{analysis?.diag}</div>
                                         </div>
                                         <div className="p-4 bg-white/[0.02] rounded-xl border border-white/5 space-y-1">
-                                            <div className="text-[6px] font-black text-slate-600 uppercase tracking-widest">GREFT TAHMİNİ</div>
-                                            <div className="text-[10px] font-bold text-white uppercase tracking-tight font-space">3,500 - 4,000 FUE</div>
+                                            <div className="text-[6px] font-black text-slate-600 uppercase tracking-widest">ÖNERİ</div>
+                                            <div className="text-[10px] font-bold text-white uppercase tracking-tight font-space">{analysis?.greft}</div>
                                         </div>
                                     </div>
 
@@ -177,7 +185,7 @@ export default function NexScanDemo({ isOpen, onClose }: NexScanDemoProps) {
                                             <span className="px-1.5 py-0.5 bg-[#00F0FF]/10 text-[#00F0FF] text-[5px] font-black rounded uppercase border border-[#00F0FF]/10">Reflex v12.0</span>
                                         </div>
                                         <p className="text-[10px] text-[#B0B0B0] leading-relaxed font-medium italic">
-                                            "Hasta motive edildi. WhatsApp üzerinden stratejik tetikleme gönderildi."
+                                            "{analysis?.advice}"
                                         </p>
                                     </div>
 

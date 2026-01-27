@@ -3,6 +3,7 @@ import { calculateRank } from './gamification';
 import { calculateLeadScore } from './scoring';
 import { saveLeadLocally } from './persistence';
 import { Lead, SubjectRank } from './types';
+import { encryptAES256, decryptAES256 } from './security';
 
 // Global Lead Memory Removed to enforce database integrity in production.
 
@@ -27,18 +28,32 @@ export const getLeads = async (tenantId: string): Promise<Lead[]> => {
 
 export const getLeadByPhone = async (phone: string, tenantId: string): Promise<Lead | null> => {
     if (supabase) {
-        const { data, error } = await supabase
+        // We search by exact phone comparison (assuming non-collision or searching by encrypted variant if deterministic)
+        // Note: For real production search on encrypted fields, usually a hash index is used.
+        // For now, we fetch leads and decrypt them for identification.
+
+        const { data: leads, error } = await supabase
             .from('leads')
             .select('*')
-            .eq('phone', phone)
-            .eq('tenant_id', tenantId)
-            .maybeSingle();
+            .eq('tenant_id', tenantId);
 
         if (error) {
             console.error("Supabase getLeadByPhone error:", error.message);
             return null;
         }
-        return data;
+
+        const found = (leads as Lead[]).find(l => {
+            const decryptedPhone = l.phone.includes(':') ? decryptAES256(l.phone) : l.phone;
+            return decryptedPhone === phone;
+        });
+
+        if (found) {
+            return {
+                ...found,
+                name: found.name.includes(':') ? decryptAES256(found.name) : found.name,
+                phone: found.phone.includes(':') ? decryptAES256(found.phone) : found.phone
+            };
+        }
     }
     return null;
 };
@@ -67,7 +82,15 @@ export const addLead = async (lead: Lead) => {
 
 
     if (supabase) {
-        const { error } = await supabase.from('leads').upsert(lead);
+        // ENCRYPTION LAYER (HIPAA/GDPR Hardening)
+        const securedLead = {
+            ...lead,
+            name: encryptAES256(lead.name),
+            phone: encryptAES256(lead.phone),
+            last_message: lead.last_message ? encryptAES256(lead.last_message) : lead.last_message
+        };
+
+        const { error } = await supabase.from('leads').upsert(securedLead);
         if (error) {
             console.error("Supabase addLead error:", error.message);
         }

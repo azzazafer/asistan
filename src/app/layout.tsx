@@ -5,21 +5,14 @@ import Script from "next/script";
 
 const outfitClassName = "font-sans";
 
-import { getMetadata } from "@/lib/seo";
+import { getMetadata, SEOManager } from "@/lib/seo";
 
 // Default to English for root layout, dynamic pages will use generateMetadata
+const siteMetadata = getMetadata('tr'); // Default to TR since it's a TR-focused brand with global ops
+
 export const metadata: Metadata = {
-  title: "Aura OS | AI-Powered Health Tourism Revenue Engine",
-  description: "The world's first autonomous sales engine for health tourism. Increase your lead conversion by 40% with AI-driven diagnostics and integrated payments.",
-  keywords: ["Health Tourism AI", "Medical Sales Automation", "Surgical Vision AI", "Aura OS", "Lead Optimization"],
-  openGraph: {
-    title: "Aura OS | The Healthcare Revenue Engine",
-    description: "Convert leads into deposits 24/7 with Aura Intelligence.",
-    url: "https://getauraos.com",
-    siteName: "Aura OS",
-    locale: "en_US",
-    type: "website",
-  },
+  ...siteMetadata,
+  metadataBase: new URL("https://getauraos.com"),
 };
 
 export const viewport: Viewport = {
@@ -40,6 +33,11 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
+        {/* SEO Dominance - JSON-LD Schema */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(SEOManager.generateSchema('tr')) }}
+        />
       </head>
       <body className="font-sans antialiased text-slate-100 bg-[#050505]">
         <Toaster position="top-right" />

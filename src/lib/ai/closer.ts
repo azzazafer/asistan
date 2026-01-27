@@ -75,7 +75,7 @@ export class SalesCloser {
 
         try {
             const response = await openai.chat.completions.create({
-                model: 'gpt-4o',
+                model: 'gpt-4o', // Higher intelligence for drop-off analysis
                 messages: [
                     {
                         role: 'system',
@@ -84,6 +84,7 @@ export class SalesCloser {
                         - PRICE_SHOCK (User saw price and stopped)
                         - PHOTO_HESITATION (Asked for photos, user stopped)
                         - TRUST_DOUBT (User asked about safety/results)
+                        - STRIPE_ABANDONED (Clicked pay link but didn't finish)
                         - BUSY/NO_REPLY (Just stopped randomly)
                         - GHOSTED_EARLY (Stopped after greeting)
                         
