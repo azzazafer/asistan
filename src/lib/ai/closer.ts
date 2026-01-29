@@ -57,7 +57,7 @@ export class SalesCloser {
                     history: lead.history,
                     drop_off_reason: analysis.reason,
                     suggested_nudge: nudge,
-                    lang: lead.culture === 'Turkey' ? 'tr' : 'en' // Simplification
+                    lang: lead.culture || 'Global'
                 });
             }
         }
@@ -133,7 +133,7 @@ export class SalesCloser {
                     - If reason is PRICE_SHOCK, offer a "Limited Time VIP Consultation Slot" or mention a premium benefit.
                     - If reason is TRUST_DOUBT, mention a specific success metric or "Patient Results Gallery".
                     
-                    Language: ${lead.culture === 'Turkey' ? 'Turkish' : 'English'}.`
+                    Language Setting: ${lead.lang || 'Global'}. (Use the appropriate language for this culture, e.g., Arabic for Middle East, German for DACH).`
                 },
                 { role: 'user', content: "Generate the conversion nudge." }
             ]

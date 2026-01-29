@@ -1,24 +1,24 @@
 :root {
-  /* Absolute Alpha Palette (Neural Sales Engine) */
+  /* Premium Neon Palette (Aura 2026 Engine) */
   --neon-teal: #00F0FF;
-  --neon-purple: #BC13FE;
+  --neon-violet: #8A2BE2;
   --alert-orange: #FF4500;
   --bg-deep: #050505;
 
-  --primary: #000000;
-  --primary-hover: #1a1a1a;
-  --secondary: #333333;
+  --primary: var(--neon-teal);
+  --primary-hover: #00D7E6;
+  --secondary: var(--neon-violet);
 
   --background: var(--bg-deep);
   --foreground: #ffffff;
 
-  /* Luxury Glass Tokens */
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
-  --glass-blur: 32px;
+  /* Luxury Glass Transition Tokens */
+  --glass-bg: rgba(0, 0, 0, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-blur: 40px;
 
-  /* Typography */
-  --font-main: 'SF Pro Display', 'Inter', system-ui, sans-serif;
+  /* Typography Architecture */
+  --font-main: 'Inter', system-ui, sans-serif;
   --font-display: 'Space Grotesk', sans-serif;
   --tracking-tight: -0.02em;
   --tracking-tighter: -0.05em;
@@ -65,19 +65,63 @@ body {
   font-family: var(--font-main);
   letter-spacing: var(--tracking-tight);
   -webkit-font-smoothing: antialiased;
-  overflow-x: clip; 
+  overflow-x: clip;
   max-width: 100vw;
   width: 100%;
 }
 
+.text-4xl,
+.text-5xl,
+.text-6xl,
+.text-7xl,
+.text-8xl,
+.text-9xl,
+.fluid-hero {
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  hyphens: auto;
+}
+
 /* Fluid Typography Engine */
-.text-4xl { font-size: clamp(1.8rem, 5vw, 2.25rem); line-height: 1.2; }
-.text-5xl { font-size: clamp(2rem, 8vw, 3rem); line-height: 1.1; }
-.text-6xl { font-size: clamp(2.5rem, 10vw, 3.75rem); line-height: 1; }
-.text-7xl { font-size: clamp(3rem, 12vw, 4.5rem); line-height: 0.9; }
-.text-8xl { font-size: clamp(3.5rem, 15vw, 6rem); line-height: 0.85; }
-.text-9xl { font-size: clamp(4rem, 20vw, 8rem); line-height: 0.85; }
-.fluid-hero { font-size: clamp(3rem, 14vw, 8rem); line-height: 0.9; }
+.text-4xl {
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  line-height: 1.2;
+}
+
+.text-5xl {
+  font-size: clamp(1.8rem, 8vw, 3rem);
+  line-height: 1.1;
+}
+
+.text-6xl {
+  font-size: clamp(2.2rem, 10vw, 3.75rem);
+  line-height: 1;
+}
+
+.aspect-video {
+  aspect-ratio: 16 / 9;
+}
+
+.text-7xl {
+  font-size: clamp(2.5rem, 12vw, 4.5rem);
+  line-height: 0.9;
+}
+
+.text-8xl {
+  font-size: clamp(2.8rem, 15vw, 6rem);
+  line-height: 0.85;
+}
+
+.text-9xl {
+  font-size: clamp(3rem, 20vw, 8rem);
+  line-height: 0.85;
+}
+
+.fluid-hero {
+  font-size: clamp(2.5rem, 14vw, 8rem);
+  line-height: 0.9;
+}
 
 /* Mesh Backdrop for Dashboard */
 .mesh-bg {
@@ -207,6 +251,18 @@ body {
   gap: 2.5rem;
 }
 
+.gap-12 {
+  gap: 3rem;
+}
+
+.gap-16 {
+  gap: 4rem;
+}
+
+.gap-20 {
+  gap: 5rem;
+}
+
 .grid {
   display: grid;
 }
@@ -246,80 +302,110 @@ body {
     flex-direction: row !important;
   }
 
-  /* Specific Sidebar Hardening */
-  .aura-sidebar-desktop {
+  .lg\:gap-8 {
+    gap: 2rem !important;
+  }
+
+  .lg\:gap-12 {
+    gap: 3rem !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .xl\:flex {
     display: flex !important;
-    position: sticky !important;
-    top: 0 !important;
-    height: 100vh !important;
-    width: 20rem !important;
-    min-width: 320px !important;
-    flex-shrink: 0 !important;
-    background: transparent !important;
-    z-index: 50 !important;
   }
 
-  .aura-main-content {
-    flex: 1 !important;
-    min-width: 0 !important;
-    width: auto !important;
+  .xl\:hidden {
+    display: none !important;
   }
 
-  .lg\:w-80 {
-    width: 20rem !important;
+  .xl\:gap-8 {
+    gap: 2rem !important;
   }
 
-  .lg\:min-w-\[320px\] {
-    min-width: 320px !important;
+  .xl\:gap-12 {
+    gap: 3rem !important;
   }
 
-  .lg\:sticky {
-    position: sticky !important;
+  .xl\:text-\[11px\] {
+    font-size: 11px !important;
   }
+}
 
-  .lg\:top-0 {
-    top: 0 !important;
-  }
+/* Specific Sidebar Hardening */
+.aura-sidebar-desktop {
+  display: flex !important;
+  position: sticky !important;
+  top: 0 !important;
+  height: 100vh !important;
+  width: 20rem !important;
+  min-width: 320px !important;
+  flex-shrink: 0 !important;
+  background: transparent !important;
+  z-index: 50 !important;
+}
 
-  .lg\:h-screen {
-    height: 100vh !important;
-  }
+.aura-main-content {
+  flex: 1 !important;
+  min-width: 0 !important;
+  width: auto !important;
+}
 
-  .lg\:bg-transparent {
-    background-color: transparent !important;
-  }
+.lg\:w-80 {
+  width: 20rem !important;
+}
 
-  .lg\:h-full {
-    height: 100% !important;
-  }
+.lg\:min-w-\[320px\] {
+  min-width: 320px !important;
+}
 
-  .lg\:p-8 {
-    padding: 2rem !important;
-  }
+.lg\:sticky {
+  position: sticky !important;
+}
 
-  .lg\:p-12 {
-    padding: 3rem !important;
-  }
+.lg\:top-0 {
+  top: 0 !important;
+}
 
-  .lg\:p-20 {
-    padding: 5rem !important;
-  }
+.lg\:h-screen {
+  height: 100vh !important;
+}
 
-  .lg\:flex-none {
-    flex: none !important;
-  }
+.lg\:bg-transparent {
+  background-color: transparent !important;
+}
 
-  .lg\:col-span-8 {
-    grid-column: span 8 / span 8 !important;
-  }
+.lg\:h-full {
+  height: 100% !important;
+}
 
-  .lg\:col-span-4 {
-    grid-column: span 4 / span 4 !important;
-  }
+.lg\:p-8 {
+  padding: 2rem !important;
+}
 
-  .lg\:col-span-12 {
-    grid-column: span 12 / span 12 !important;
-  }
+.lg\:p-12 {
+  padding: 3rem !important;
+}
+
+.lg\:p-20 {
+  padding: 5rem !important;
+}
+
+.lg\:flex-none {
+  flex: none !important;
+}
+
+.lg\:col-span-8 {
+  grid-column: span 8 / span 8 !important;
+}
+
+.lg\:col-span-4 {
+  grid-column: span 4 / span 4 !important;
+}
+
+.lg\:col-span-12 {
+  grid-column: span 12 / span 12 !important;
 }
 
 .flex-nowrap {
@@ -564,6 +650,30 @@ body {
   font-size: 0.75rem;
 }
 
+.text-\[8px\] {
+  font-size: 8px;
+}
+
+.text-\[9px\] {
+  font-size: 9px;
+}
+
+.text-\[10px\] {
+  font-size: 10px;
+}
+
+.text-\[11px\] {
+  font-size: 11px;
+}
+
+.text-\[12px\] {
+  font-size: 12px;
+}
+
+.text-\[14px\] {
+  font-size: 14px;
+}
+
 .text-xl {
   font-size: 1.25rem;
 }
@@ -758,6 +868,22 @@ body {
 
 .tracking-tighter {
   letter-spacing: -0.05em;
+}
+
+.tracking-\[0\.2em\] {
+  letter-spacing: 0.2em;
+}
+
+.tracking-\[0\.3em\] {
+  letter-spacing: 0.3em;
+}
+
+.tracking-\[0\.4em\] {
+  letter-spacing: 0.4em;
+}
+
+.tracking-\[0\.5em\] {
+  letter-spacing: 0.5em;
 }
 
 .text-4xl {

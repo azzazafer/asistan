@@ -27,12 +27,24 @@ export default function InvestorsPage() {
                     <StatCard label="Net Kar Hedefi" value="%240" sub="Yıllık Tahmini" />
                 </div>
 
-                <div className="p-20 bg-white/[0.02] border border-white/5 rounded-[4rem] flex flex-col items-center text-center space-y-10">
-                    <h2 className="text-4xl font-bold uppercase italic font-space text-white">Yatırımcı Sunumuna Erişim</h2>
-                    <p className="text-[#B0B0B0] max-w-xl mx-auto">NDA kapsamında Aura OS Alpha mimarisi ve finansal projeksiyonları incelemek için yetki talep edin.</p>
-                    <button className="px-12 py-5 bg-white text-black rounded-xl text-[12px] font-black uppercase tracking-[0.3em] hover:bg-[#00F0FF] transition-all">
+                <div className="p-20 bg-white/[0.02] border border-white/5 rounded-[4rem] flex flex-col items-center text-center space-y-10 group relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#00F0FF]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <h2 className="text-4xl md:text-6xl font-black uppercase italic font-space text-white tracking-tighter">Yatırımcı Sunumuna Erişim</h2>
+                    <p className="text-xl text-[#B0B0B0] max-w-xl mx-auto">NDA kapsamında Aura OS Alpha mimarisi ve finansal projeksiyonları incelemek için yetki talep edin.</p>
+                    <button
+                        onClick={() => {
+                            if (typeof window !== 'undefined') {
+                                (window as any).dispatchEvent(new CustomEvent('openNexScan'));
+                            }
+                        }}
+                        className="px-12 py-5 bg-white text-black rounded-xl text-[12px] font-black uppercase tracking-[0.3em] hover:bg-[#00F0FF] transition-all hover:scale-105 active:scale-95 shadow-2xl relative z-10">
                         Yetki Talep Et <ArrowUpRight size={16} className="inline ml-2" />
                     </button>
+
+                    {/* Visual Anchor */}
+                    <div className="absolute -bottom-10 -right-10 opacity-5 group-hover:opacity-10 transition-opacity">
+                        <TrendingUp size={300} text-white />
+                    </div>
                 </div>
             </div>
         </AuraLayout>

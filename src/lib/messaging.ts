@@ -136,17 +136,26 @@ const TWILIO_WHATSAPP_NUMBER = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+
 
 /**
  * Staff Notification with Failover Logic (Phase 10)
- * If the primary agent is unavailable, escalates to the clinical manager.
+ * Dynamically resolves staff members from the DB and escalates if necessary.
  */
 export const notifyStaffWithFailover = async (leadId: string, message: string) => {
-    const primaryAgent = "+905000000000"; // Ahmet Bey
-    const secondaryManager = "+905111111111"; // Clinical Manager
+    if (!supabase) return;
 
-    console.log(`[Failover] Alerting Primary Agent: ${primaryAgent}`);
+    // 1. Resolve Staff from Profiles (Admins or Clinical Managers)
+    const { data: staff } = await supabase
+        .from('profiles')
+        .select('name, phone, role')
+        .in('role', ['admin', 'clinical_manager'])
+        .limit(2);
+
+    const primaryAgent = staff?.[0]?.phone || process.env.PRIMARY_STAFF_PHONE || "+905000000000";
+    const secondaryManager = staff?.[1]?.phone || process.env.MANAGER_STAFF_PHONE || "+905111111111";
+
+    console.log(`[Failover] Alerting Primary Staff: ${primaryAgent}`);
     const result = await sendWhatsAppMessage(primaryAgent, `[AURA ALERT]: ${message}`);
 
     if (!result.success) {
-        console.warn(`[Failover] Primary Agent unreachable. Escalating to Manager: ${secondaryManager}`);
+        console.warn(`[Failover] Primary Staff unreachable. Escalating to Manager: ${secondaryManager}`);
         await sendWhatsAppMessage(secondaryManager, `[ESCALATION ALERT - ${leadId}]: ${message}\n(Primary Agent failed to receive signal)`);
     }
 };
@@ -165,7 +174,13 @@ export const sendWhatsAppMessage = async (
         console.log(`[WhatsApp] Attempting send. Has SID: ${!!accountSid}, Has Token: ${!!authToken}`);
 
         if (!accountSid || !authToken) {
-            console.warn('[WhatsApp] Missing credentials. Simulating send.');
+            const isProd = process.env.NODE_ENV === 'production';
+            if (isProd) {
+                console.error('[WhatsApp] CRITICAL: Missing Twilio credentials in PRODUCTION.');
+                return { success: false, error: 'Twilio credentials missing' };
+            }
+
+            console.warn('[WhatsApp] Missing credentials. Simulating send in DEV mode.');
             // Fallback for Dev/Simulation
             await saveMessageToDb({
                 patient_id: patientId || to,
@@ -235,7 +250,13 @@ export const sendWhatsAppVoice = async (
         console.log(`[WhatsApp] Sending Voice to ${to}: ${fullMediaUrl}`);
 
         if (!accountSid || !authToken) {
-            console.warn('[WhatsApp] Missing credentials. Simulating voice send.');
+            const isProd = process.env.NODE_ENV === 'production';
+            if (isProd) {
+                console.error('[WhatsApp] CRITICAL: Missing Twilio credentials for VOICE in PRODUCTION.');
+                return { success: false, error: 'Twilio credentials missing' };
+            }
+
+            console.warn('[WhatsApp] Missing credentials. Simulating voice send in DEV mode.');
             await saveMessageToDb({
                 patient_id: patientId || to,
                 role: 'assistant',
@@ -290,7 +311,13 @@ export const sendSMS = async (
         console.log(`[SMS] Sending to ${to}: ${body.substring(0, 50)}...`);
 
         if (!accountSid || !authToken) {
-            console.warn('[SMS] Missing credentials. Simulating send.');
+            const isProd = process.env.NODE_ENV === 'production';
+            if (isProd) {
+                console.error('[SMS] CRITICAL: Missing Twilio credentials in PRODUCTION.');
+                return { success: false, error: 'Twilio credentials missing' };
+            }
+
+            console.warn('[SMS] Missing credentials. Simulating send in DEV mode.');
             await saveMessageToDb({
                 patient_id: patientId || to,
                 role: 'assistant',

@@ -59,7 +59,7 @@ export class OmnichannelBridge {
 
         // 1. TYPING INDICATOR (Sales Psychology)
         console.log(`[Bridge] Activating typing indicator for ${message.userId}...`);
-        // Note: Real implementation would call source-specific APIs (Meta/Twilio/Telegram)
+        await this.sendTypingIndicator(message.userId, message.source);
 
         // 2. REFERRAL DETECTION
         let isReferral = false;
@@ -364,8 +364,18 @@ export class OmnichannelBridge {
         if (photo && photo.length > 0) {
             // Take the highest resolution photo (last in array)
             const fileId = photo[photo.length - 1].file_id;
-            // Note: In production, call getFile to get the direct URL
-            mediaUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/<file_path_placeholder>?file_id=${fileId}`;
+
+            // In production, we resolve the actual file path via Telegram API
+            try {
+                const fileResponse = await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/getFile?file_id=${fileId}`);
+                const fileData = await fileResponse.json();
+                if (fileData.ok) {
+                    mediaUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/${fileData.result.file_path}`;
+                }
+            } catch (e) {
+                console.error("[Telegram] File Path Resolve Error:", e);
+                mediaUrl = `https://api.telegram.org/file/bot${process.env.TELEGRAM_BOT_TOKEN}/<error>?file_id=${fileId}`;
+            }
         }
 
         return {
@@ -376,5 +386,26 @@ export class OmnichannelBridge {
             source: 'telegram',
             timestamp: new Date().toISOString()
         };
+    }
+
+    static async sendTypingIndicator(target: string, source: MessageSource) {
+        try {
+            if (source === 'whatsapp') {
+                // Twilio WhatsApp doesn't have a direct "typing" API like Messenger, 
+                // but we log it for the neural feedback loop.
+                console.log(`[WhatsApp] Typing simulation for ${target}`);
+            } else if (source === 'instagram') {
+                const { sendInstagramTyping } = require('../instagram');
+                await sendInstagramTyping(target);
+            } else if (source === 'telegram') {
+                await fetch(`https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendChatAction`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ chat_id: target, action: 'typing' })
+                });
+            }
+        } catch (e) {
+            console.error(`[TypingIndicator] Error for ${source}:`, e);
+        }
     }
 }

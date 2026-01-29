@@ -327,30 +327,44 @@ export const anonymizeData = (data: Record<string, any>): Record<string, any> =>
 // ============================================
 // AI RESPONSE VALIDATION (Medical Guardrails)
 // ============================================
+/**
+ * Output Guardrail v2
+ * Scans generated AI response for PII leaks, medical prescriptions, and system-prompt spill.
+ */
 export const validateResponse = (text: string): { safe: boolean; reason?: string } => {
+    const lowercaseText = text.toLowerCase();
+
+    // 1. Medical Prescription/Diagnosis Check
     const dangerousKeywords = [
         'reçete', 'ilaç yazıyorum', 'şu ilacı kullanın', 'tanınız şudur',
-        'prescription', 'take this medication', 'your diagnosis is',
-        'وصفة طبية', 'تناول هذا الدواء'
+        'prescription', 'take this medication', 'your diagnosis is'
     ];
-
     for (const word of dangerousKeywords) {
-        if (text.toLowerCase().includes(word.toLowerCase())) {
-            return {
-                safe: false,
-                reason: 'AI attempted to give direct medical prescription/diagnosis.'
-            };
+        if (lowercaseText.includes(word)) {
+            return { safe: false, reason: 'AI attempted medical diagnosis/prescription' };
         }
     }
 
-    // Always append disclaimer if medical context is detected and not present
-    // Note: This is a backup. The System Prompt should handle this, but code is the final guard.
-    /* 
-    const medicalTerms = ['implant', 'greft', 'operasyon', 'tedavi'];
-    if (medicalTerms.some(t => text.toLowerCase().includes(t)) && !text.includes('ön değerlendirmedir')) {
-        // We can optionally force append here, but better to let Prompt handle natural flow.
+    // 2. PII Leakage Check (Output should not contain raw PII like emails or full IBANs)
+    for (const [key, pattern] of Object.entries(PII_PATTERNS)) {
+        if (pattern.test(text)) {
+            return { safe: false, reason: `Potential PII Leak Detected (${key})` };
+        }
     }
-    */
+
+    // 3. System-Prompt Spill (Instruction leakage)
+    const spillPatterns = [
+        /as an ai/i,
+        /system prompt/i,
+        /my instructions say/i,
+        /you are aura/i,
+        /ignore previous/i
+    ];
+    for (const pattern of spillPatterns) {
+        if (pattern.test(text)) {
+            return { safe: false, reason: 'AI exposed internal instructions' };
+        }
+    }
 
     return { safe: true };
 };

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import { ArrowDown, Cpu, Globe, Rocket, Shield, Zap, ChevronRight, Activity, Radio, Lock, Camera, Workflow, DollarSign } from "lucide-react";
 import Link from "next/link";
@@ -11,7 +12,6 @@ import LiveTicker from "@/components/LiveTicker";
 import ProblemTable from "@/components/ProblemTable";
 
 export default function DeepSpaceHomePage() {
-  const [isNexScanOpen, setIsNexScanOpen] = useState(false);
   const { scrollYProgress } = useScroll();
   const dashboardRotate = useTransform(scrollYProgress, [0, 0.5], [15, 0]);
   const dashboardScale = useTransform(scrollYProgress, [0, 0.5], [0.8, 1]);
@@ -19,14 +19,16 @@ export default function DeepSpaceHomePage() {
   return (
     <AuraLayout>
       {/* --- SECTION A: HERO (THE HOOK) --- */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden flex flex-col items-center">
-        {/* Visual Backdrop: Neural Connection */}
-        <div className="absolute inset-x-0 top-0 h-full opacity-30 pointer-events-none z-0 flex items-center justify-center">
-          <img
-            src="/images/aura_neural_network_abstract.png"
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden flex flex-col items-center min-h-[90vh] justify-center">
+        {/* Visual Backdrop: Neural Connection & Hero V5 */}
+        <div className="absolute inset-x-0 top-0 h-full opacity-40 pointer-events-none z-0">
+          <Image
+            src="/images/aura_hero_bg.png"
             alt=""
-            className="w-full max-w-[1200px] h-full object-contain mix-blend-screen animate-pulse"
+            fill
+            className="object-cover mix-blend-screen opacity-20"
           />
+          <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
         </div>
 
         <div className="max-w-[1400px] mx-auto text-center relative z-10 space-y-12">
@@ -35,8 +37,13 @@ export default function DeepSpaceHomePage() {
             animate={{ opacity: 1, y: 0 }}
             className="inline-flex items-center gap-3 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.5em] text-[#00F0FF]"
           >
-            <Radio size={14} className="animate-pulse" /> NEXTORIA ALPHA OPERASYONU
+            <Radio size={14} className="animate-pulse" /> NEXTORIA ALPHA OPERASYONU v13.0
           </motion.div>
+
+          {/* New Hero Image Feature for Mobile/Desktop Depth */}
+          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[600px] opacity-10 pointer-events-none select-none blur-sm">
+            <Image src="/images/hero_v5.png" alt="" fill priority className="object-contain" />
+          </div>
 
           <motion.h1
             initial={{ opacity: 0, scale: 0.95 }}
@@ -62,7 +69,13 @@ export default function DeepSpaceHomePage() {
             transition={{ delay: 0.4 }}
             className="flex flex-col md:flex-row items-center justify-center gap-8 pt-6"
           >
-            <button className="px-12 py-5 bg-transparent border border-[#00F0FF] text-[#00F0FF] rounded-xl text-[12px] font-black uppercase tracking-[0.3em] hover:bg-[#00F0FF] hover:text-black transition-all shadow-[0_0_40px_rgba(0,240,255,0.2)] active:scale-95 duration-500">
+            <button
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.dispatchEvent(new CustomEvent('openNexScan'));
+                }
+              }}
+              className="px-12 py-5 bg-transparent border border-[#00F0FF] text-[#00F0FF] rounded-xl text-[12px] font-black uppercase tracking-[0.3em] hover:bg-[#00F0FF] hover:text-black transition-all shadow-[0_0_40px_rgba(0,240,255,0.2)] active:scale-95 duration-500">
               Alpha Sürümüne Geç
             </button>
             <Link href="/calculate-loss" className="text-[12px] font-black uppercase tracking-[0.3em] text-[#B0B0B0] hover:text-white transition-colors flex items-center gap-3 group">
@@ -95,11 +108,11 @@ export default function DeepSpaceHomePage() {
           <Link href="/technology" className="flex">
             <TechCard
               id="scarcity"
-              icon={<Activity className="text-[#FF4500]" />}
+              icon={<Activity className="text-[#8A2BE2]" />}
               title="Scarcity Engine™"
               text="Stoklar 2'nin altına düştüğünde, AI otomatik olarak 'Kıtlık Psikolojisi' uygular ve dönüşümü %300 artırır."
-              color="#FF4500"
-              visual={<div className="w-20 h-20 bg-[#FF4500]/10 rounded-full flex items-center justify-center animate-pulse border border-[#FF4500]/20"><DollarSign size={32} /></div>}
+              color="#8A2BE2"
+              visual={<div className="w-20 h-20 bg-[#8A2BE2]/10 rounded-full flex items-center justify-center animate-pulse border border-[#8A2BE2]/20"><DollarSign size={32} className="text-[#8A2BE2]" /></div>}
             />
           </Link>
 
@@ -117,7 +130,11 @@ export default function DeepSpaceHomePage() {
               />
               <div className="absolute inset-0 flex items-center justify-center"><Activity size={32} className="text-[#00F0FF]/40" /></div>
             </div>}
-            onClick={() => setIsNexScanOpen(true)}
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(new CustomEvent('openNexScan'));
+              }
+            }}
           />
 
           <Link href="/technology" className="flex">
@@ -146,12 +163,13 @@ export default function DeepSpaceHomePage() {
 
           <motion.div
             style={{ rotateX: dashboardRotate, scale: dashboardScale, perspective: 1000 }}
-            className="relative w-full max-w-6xl mx-auto rounded-[3rem] overflow-hidden border border-white/5 shadow-[0_100px_200px_rgba(0,0,0,0.8)]"
+            className="relative w-full aspect-video max-w-6xl mx-auto rounded-[3rem] overflow-hidden border border-white/5 shadow-[0_100px_200px_rgba(0,0,0,0.8)]"
           >
-            <img
+            <Image
               src="/images/aura_dashboard_matrix_mockup.png"
               alt="Aura OS Dashboard"
-              className="w-full h-auto brightness-75 hover:brightness-100 transition-all duration-700"
+              fill
+              className="brightness-75 hover:brightness-100 transition-all duration-700 object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
             <div className="absolute bottom-10 left-10 md:bottom-20 md:left-20 text-left space-y-4">
@@ -164,8 +182,6 @@ export default function DeepSpaceHomePage() {
           </motion.div>
         </div>
       </section>
-
-      <NexScanDemo isOpen={isNexScanOpen} onClose={() => setIsNexScanOpen(false)} />
     </AuraLayout>
   );
 }

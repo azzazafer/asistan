@@ -35,12 +35,30 @@ export default function SecurityGodModePage() {
 
                     {/* --- SECURITY MATRIX --- */}
                     <div className="grid lg:grid-cols-12 gap-20 items-center">
-                        <div className="lg:col-span-12 xl:col-span-7 relative group rounded-[4rem] overflow-hidden border border-white/5 bg-black/40 p-12 md:p-24 shadow-[0_50px_100px_-20px_rgba(239,68,68,0.1)]">
-                            <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-20 transition-opacity"><ShieldCheck size={200} /></div>
-                            <div className="relative z-20 flex flex-col items-center gap-10">
-                                <Lock size={120} className="text-red-500/40 group-hover:text-red-500 transition-colors duration-1000" />
+                        <div className="lg:col-span-12 xl:col-span-7 relative group rounded-[4rem] overflow-hidden border border-white/5 bg-black/40 p-12 md:p-2 shadow-[0_50px_100px_-20px_rgba(239,68,68,0.1)] aspect-video">
+                            <img
+                                src="/images/aura_security_nexus_vault.png"
+                                alt="Aura Security Vault"
+                                className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-110 transition-transform duration-[5000ms] grayscale hover:grayscale-0"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+
+                            {/* Additional Security Layer Visual */}
+                            <img
+                                src="/images/security_vault.png"
+                                alt="Security Core"
+                                className="absolute bottom-10 right-10 w-48 h-48 object-contain opacity-40 mix-blend-screen animate-pulse pointer-events-none"
+                            />
+
+                            <div className="relative z-20 flex flex-col items-center justify-center h-full gap-10">
+                                <motion.div
+                                    animate={{ scale: [1, 1.1, 1], opacity: [0.3, 1, 0.3] }}
+                                    transition={{ duration: 3, repeat: Infinity }}
+                                >
+                                    <Lock size={80} className="text-red-500" />
+                                </motion.div>
                                 <div className="text-center">
-                                    <div className="text-6xl md:text-[10rem] font-black text-white tracking-tighter font-space">
+                                    <div className="text-6xl md:text-[8rem] font-black text-white tracking-tighter font-space">
                                         AES-256
                                     </div>
                                     <div className="text-red-500 text-[10px] font-black tracking-[1em] mt-6">ACTIVE SHIELD TUNNEL</div>

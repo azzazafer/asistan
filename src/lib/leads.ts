@@ -3,7 +3,8 @@ import { calculateRank } from './gamification';
 import { calculateLeadScore } from './scoring';
 import { saveLeadLocally } from './persistence';
 import { Lead, SubjectRank } from './types';
-import { encryptAES256, decryptAES256, redactPII } from './security';
+import { encrypt, decrypt } from './crypto';
+import { redactPII } from './security';
 
 // Global Lead Memory Removed to enforce database integrity in production.
 
@@ -43,15 +44,15 @@ export const getLeadByPhone = async (phone: string, tenantId: string): Promise<L
         }
 
         const found = (leads as Lead[]).find(l => {
-            const decryptedPhone = l.phone.includes(':') ? decryptAES256(l.phone) : l.phone;
+            const decryptedPhone = l.phone.includes(':') ? decrypt(l.phone) : l.phone;
             return decryptedPhone === phone;
         });
 
         if (found) {
             return {
                 ...found,
-                name: found.name.includes(':') ? decryptAES256(found.name) : found.name,
-                phone: found.phone.includes(':') ? decryptAES256(found.phone) : found.phone
+                name: found.name.includes(':') ? decrypt(found.name) : found.name,
+                phone: found.phone.includes(':') ? decrypt(found.phone) : found.phone
             };
         }
     }
@@ -85,9 +86,9 @@ export const addLead = async (lead: Lead) => {
         // ENCRYPTION & SCRUBBING LAYER (HIPAA/GDPR Hardening)
         const securedLead = {
             ...lead,
-            name: encryptAES256(lead.name),
-            phone: encryptAES256(lead.phone),
-            last_message: lead.last_message ? encryptAES256(lead.last_message) : lead.last_message,
+            name: encrypt(lead.name),
+            phone: encrypt(lead.phone),
+            last_message: lead.last_message ? encrypt(lead.last_message) : lead.last_message,
             // Scrub History for extra security before persistent storage
             history: lead.history ? lead.history.map(h => ({
                 ...h,

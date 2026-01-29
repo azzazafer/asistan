@@ -30,7 +30,7 @@ export default function TechnologyPage() {
                         description="AI, havuzdaki aktif lead sayısını ve klinikteki boş slotları eş zamanlı analiz eder. Kritik eşiğin altına düşüldüğünde mesajlaşma tonunu 'Aciliyet' moduna geçirerek dönüşümü %300 artırır."
                         icon={<Activity className="text-[#FF4500]" />}
                         color="#FF4500"
-                        image="/images/aura_financial_dominance_graph.png"
+                        image="/images/aura_revenue_flux.png"
                     />
 
                     <TechSection
@@ -49,7 +49,7 @@ export default function TechnologyPage() {
                         description="AI satış temsilcisi, hasta ikna olduğu anda Stripe üzerinden güvenli ödeme linki oluşturur. Ödeme yapıldığı anda HBYS sisteminde (Fonet/Tiga) ilgili slotu dondurur ve operasyonu kesinleştirir."
                         icon={<Lock className="text-white" />}
                         color="#FFFFFF"
-                        image="/images/aura_secure_tech_alpha.png"
+                        image="/images/aura_secure_tech.png"
                     />
                 </div>
 

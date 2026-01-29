@@ -11,8 +11,14 @@ import { getMetadata, SEOManager } from "@/lib/seo";
 const siteMetadata = getMetadata('tr'); // Default to TR since it's a TR-focused brand with global ops
 
 export const metadata: Metadata = {
-  ...siteMetadata,
+  title: "Aura OS | The First Autonomous Sales Engine for Medical Tourism",
+  description: "Stop managing leads. Start closing them. Aura OS syncs with HBYS in 12ms and closes sales via Stripe autonomously.",
   metadataBase: new URL("https://getauraos.com"),
+  openGraph: {
+    title: "Aura OS | The First Autonomous Sales Engine for Medical Tourism",
+    description: "Stop managing leads. Start closing them. Aura OS syncs with HBYS in 12ms and closes sales via Stripe autonomously.",
+    images: ["/images/og-preview.jpg"],
+  },
 };
 
 export const viewport: Viewport = {

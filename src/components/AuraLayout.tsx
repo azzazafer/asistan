@@ -1,31 +1,34 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Menu, X, ArrowUpRight, Globe, Shield, MessageSquare, Radio, Cpu, Award, Workflow, Lock } from "lucide-react";
+import Navbar from "./ui/Navbar";
+import { Brain, Shield, Lock } from "lucide-react";
 import Link from "next/link";
-import Script from "next/script";
 
 import ScarcityToast from "./ScarcityToast";
 import BrandBadge from "./BrandBadge";
+import NexScanDemo from "./NexScanDemo";
 
 interface AuraLayoutProps {
     children: React.ReactNode;
 }
 
 export default function AuraLayout({ children }: AuraLayoutProps) {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isScrolled, setIsScrolled] = useState(false);
+    const [isNexScanOpen, setIsNexScanOpen] = useState(false);
 
     useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 20);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
+        // GLOBAL LISTENER FOR DEMO
+        const toggleNexScan = () => setIsNexScanOpen(true);
+        window.addEventListener('openNexScan', toggleNexScan);
+
+        return () => {
+            window.removeEventListener('openNexScan', toggleNexScan);
+        };
     }, []);
 
     return (
         <div className="min-h-screen bg-[#050505] text-[#E0E0E0] selection:bg-[#00F0FF]/40 overflow-x-hidden font-inter">
-            {/* --- GLOBAL DESIGN DNA: BACKGROUND LAYER --- */}
+            {/* ... Background Layer ... */}
             <div className="fixed inset-0 z-0 pointer-events-none">
                 <div className="absolute top-0 right-0 w-[1000px] h-[1000px] bg-[#00F0FF]/[0.03] blur-[250px] rounded-full" />
                 <div className="absolute bottom-0 left-0 w-[800px] h-[800px] bg-indigo-500/[0.03] blur-[200px] rounded-full" />
@@ -33,77 +36,12 @@ export default function AuraLayout({ children }: AuraLayoutProps) {
                 <div className="absolute inset-0 opacity-[0.05] bg-[linear-gradient(to_right,#ffffff12_1px,transparent_1px),linear-gradient(to_bottom,#ffffff12_1px,transparent_1px)] bg-[size:80px_80px]" />
             </div>
 
-            {/* --- STICKY HEADER (FINTECH STYLE) --- */}
-            <nav className={`fixed top-0 w-full z-[1000] transition-all duration-500 ${isScrolled ? 'py-4 bg-[#050505]/80 backdrop-blur-2xl border-b border-white/5 shadow-2xl' : 'py-8 bg-transparent border-b border-transparent'}`}>
-                <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">
-                    {/* Logo: Minimalist Neural Knot */}
-                    <Link href="/" className="flex items-center gap-4 group">
-                        <div className="w-10 h-10 flex items-center justify-center relative">
-                            <motion.div
-                                animate={{ rotate: 360 }}
-                                transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                                className="absolute inset-0 border border-[#00F0FF]/20 rounded-lg"
-                            />
-                            <Brain size={22} className="text-[#00F0FF] relative z-10" />
-                        </div>
-                        <span className="text-2xl font-bold tracking-tighter text-white font-space">
-                            AURA <span className="text-[#00F0FF]">OS</span>
-                        </span>
-                    </Link>
-
-                    {/* Center Links (Desktop) */}
-                    <div className="hidden lg:flex items-center gap-20 text-[11px] font-black uppercase tracking-[0.4em] text-slate-400">
-                        <Link href="/solutions/clinics" className="hover:text-[#00F0FF] transition-colors py-2">Klinikler</Link>
-                        <Link href="/solutions/agencies" className="hover:text-[#00F0FF] transition-colors py-2">Acenteler</Link>
-                        <Link href="/technology" className="hover:text-[#00F0FF] transition-colors py-2">Teknoloji</Link>
-                        <Link href="/vision" className="hover:text-[#00F0FF] transition-colors py-2">Vizyon</Link>
-                    </div>
-
-                    {/* Right Actions */}
-                    <div className="hidden lg:flex items-center gap-8">
-                        <Link href="/login" className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400 hover:text-white transition-colors">
-                            Giriş Yap
-                        </Link>
-                        <Link href="/signup">
-                            <button className="px-8 py-3 bg-transparent border border-[#00F0FF]/40 text-[#00F0FF] rounded-lg text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#00F0FF] hover:text-black transition-all duration-500 shadow-[0_0_20px_rgba(0,240,255,0.1)] active:scale-95">
-                                Operasyonu Başlat
-                            </button>
-                        </Link>
-                    </div>
-
-                    {/* Mobile Menu Toggle */}
-                    <button className="lg:hidden p-3 bg-white/5 border border-white/10 rounded-xl text-white relative z-[1001]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                        {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
-                    </button>
-                </div>
-
-                {/* --- MOBILE DROPDOWN --- */}
-                <AnimatePresence>
-                    {isMenuOpen && (
-                        <motion.div
-                            initial={{ opacity: 0, y: -20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            className="absolute top-full left-4 right-4 mt-4 bg-[#050505]/95 backdrop-blur-3xl border border-white/10 rounded-3xl p-8 lg:hidden z-[999] shadow-3xl"
-                        >
-                            <nav className="flex flex-col gap-8">
-                                <Link href="/solutions/clinics" className="text-lg font-bold tracking-tight text-white font-space" onClick={() => setIsMenuOpen(false)}>Klinikler</Link>
-                                <Link href="/solutions/agencies" className="text-lg font-bold tracking-tight text-white font-space" onClick={() => setIsMenuOpen(false)}>Acenteler</Link>
-                                <Link href="/technology" className="text-lg font-bold tracking-tight text-white font-space" onClick={() => setIsMenuOpen(false)}>Teknoloji</Link>
-                                <Link href="/vision" className="text-lg font-bold tracking-tight text-white font-space" onClick={() => setIsMenuOpen(false)}>Vizyon</Link>
-                                <div className="h-px bg-white/5 w-full" />
-                                <Link href="/signup" onClick={() => setIsMenuOpen(false)} className="w-full py-4 bg-[#00F0FF] text-black rounded-xl font-black uppercase tracking-widest text-center shadow-lg">
-                                    Operasyonu Başlat
-                                </Link>
-                            </nav>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </nav>
+            <Navbar />
 
             <main className="relative z-10">{children}</main>
             <ScarcityToast />
             <BrandBadge />
+            <NexScanDemo isOpen={isNexScanOpen} onClose={() => setIsNexScanOpen(false)} />
 
             {/* --- PRESTIGE FOOTER (TRUST ANCHOR) --- */}
             <footer className="py-32 px-8 border-t border-white/5 bg-[#050505] relative z-20">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { Rocket, CheckCircle2, MessageCircle, Database, ShieldCheck } from 'lucide-react';
 
 function OnboardingContent() {
     const searchParams = useSearchParams();
@@ -16,7 +17,7 @@ function OnboardingContent() {
                 setLoading(false);
             }, 2000);
         } else {
-            setError('Invalid session');
+            // No session, but we allow viewing the setup guide
             setLoading(false);
         }
     }, [sessionId]);
@@ -48,17 +49,21 @@ function OnboardingContent() {
             <div className="max-w-2xl w-full">
                 {/* Success Message */}
                 <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center mb-8">
-                    <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6">
-                        <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
+                    <div className={`w-20 h-20 ${sessionId ? 'bg-green-500' : 'bg-blue-500'} rounded-full flex items-center justify-center mx-auto mb-6`}>
+                        {sessionId ? (
+                            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                        ) : (
+                            <Rocket className="w-12 h-12 text-white" />
+                        )}
                     </div>
 
                     <h1 className="text-4xl font-bold text-white mb-4">
-                        Hoş Geldiniz! 🎉
+                        {sessionId ? 'Hoş Geldiniz! 🎉' : 'Sistem Kurulum Rehberi'}
                     </h1>
                     <p className="text-xl text-purple-200 mb-8">
-                        Ödemeniz başarıyla alındı. Aura OS hesabınız aktif edildi!
+                        {sessionId ? 'Ödemeniz başarıyla alındı. Aura OS hesabınız aktif edildi!' : 'Aura OS operasyonunuzu başlatmak için aşağıdaki adımları takip edin.'}
                     </p>
                 </div>
 

@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import { PACKAGES } from '@/lib/stripe';
+import AuraLayout from "@/components/AuraLayout";
+import { Check, Shield, Zap, Globe, Cpu, ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
@@ -12,7 +15,7 @@ export default function PricingPage() {
     const [signupData, setSignupData] = useState<any>(null);
     const [formData, setFormData] = useState({
         hospitalName: '',
-        email: '',
+        userEmail: '',
     });
 
     useEffect(() => {
@@ -22,13 +25,13 @@ export default function PricingPage() {
             setSignupData(data);
             setFormData({
                 hospitalName: data.hospitalName,
-                email: data.email
+                userEmail: data.email
             });
         }
     }, []);
 
     const handleCheckout = async (packageType: string) => {
-        if (!formData.hospitalName || !formData.email) {
+        if (!formData.hospitalName || !formData.userEmail) {
             alert('Lütfen hastane adı ve email girin');
             return;
         }
@@ -42,9 +45,8 @@ export default function PricingPage() {
                 body: JSON.stringify({
                     packageType,
                     hospitalName: formData.hospitalName,
-                    email: formData.email,
+                    email: formData.userEmail,
                     fullName: signupData?.fullName || '',
-                    // We don't send password to stripe, we handle it via session tokens or separate verification
                 })
             });
 
@@ -68,185 +70,148 @@ export default function PricingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 py-12 px-4">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h1 className="text-5xl font-bold text-white mb-4">
-                        Aura OS Fiyatlandırma
-                    </h1>
-                    <p className="text-xl text-purple-200">
-                        Sağlık turizmi işinizi büyütmek için doğru paketi seçin
-                    </p>
+        <AuraLayout>
+            <section className="pt-40 pb-40 px-6 relative overflow-hidden">
+                {/* Visual Backdrop */}
+                <div className="absolute inset-0 pointer-events-none opacity-20 select-none">
+                    <img src="/images/hero_elite.png" alt="" className="w-full h-full object-cover grayscale" />
+                    <div className="absolute inset-0 bg-[#050505]/80" />
                 </div>
 
-                {/* Contact Form or Signup Info */}
-                {!signupData ? (
-                    <div className="max-w-md mx-auto mb-12 bg-white/10 backdrop-blur-lg rounded-2xl p-6">
-                        <h3 className="text-white text-lg font-semibold mb-4">İletişim Bilgileri</h3>
-                        <input
-                            type="text"
-                            placeholder="Hastane Adı"
-                            className="w-full px-4 py-3 rounded-lg mb-3 bg-white/20 text-white placeholder-purple-200 border border-white/30"
-                            value={formData.hospitalName}
-                            onChange={(e) => setFormData({ ...formData, hospitalName: e.target.value })}
-                        />
-                        <input
-                            type="email"
-                            placeholder="Email"
-                            className="w-full px-4 py-3 rounded-lg bg-white/20 text-white placeholder-purple-200 border border-white/30"
-                            value={formData.email}
-                            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        />
-                    </div>
-                ) : (
-                    <div className="max-w-md mx-auto mb-12 bg-white/10 backdrop-blur-lg rounded-2xl p-6 text-center">
-                        <p className="text-purple-200 text-sm mb-1 uppercase tracking-widest font-bold">Kayıt Bilgileri</p>
-                        <h3 className="text-white text-xl font-bold">{signupData.hospitalName}</h3>
-                        <p className="text-purple-300">{signupData.email}</p>
-                        <button
-                            onClick={() => {
-                                sessionStorage.removeItem("aura_pending_registration");
-                                setSignupData(null);
-                            }}
-                            className="mt-4 text-[10px] text-white/40 hover:text-white uppercase tracking-widest"
-                        >
-                            Bilgileri Değiştir
-                        </button>
-                    </div>
-                )}
-
-                {/* Pricing Cards */}
-                <div className="grid md:grid-cols-3 gap-8">
-                    {/* Starter */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-purple-400 transition-all">
-                        <div className="text-center mb-6">
-                            <h3 className="text-2xl font-bold text-white mb-2">Starter</h3>
-                            <div className="text-5xl font-bold text-purple-300 mb-2">
-                                ${PACKAGES.starter.price}
-                            </div>
-                            <p className="text-purple-200">/ay</p>
+                <div className="max-w-[1400px] mx-auto space-y-24 relative z-10">
+                    {/* Header */}
+                    <div className="text-center space-y-6">
+                        <div className="inline-flex items-center gap-3 px-4 py-2 bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-[#00F0FF]">
+                            ADAPTIVE LICENSING • v13.0
                         </div>
+                        <h1 className="text-6xl md:text-[8rem] font-bold uppercase italic tracking-tighter text-white font-space leading-[0.85]">
+                            Kazanmaya <br />
+                            <span className="text-[#00F0FF]">Yatırım Yapın.</span>
+                        </h1>
+                        <p className="text-xl md:text-2xl text-[#B0B0B0] max-w-3xl mx-auto leading-relaxed">
+                            Aura OS bir maliyet değil, operasyonunuzun otonom kar motorudur. %15+ dönüşüm garantili altyapıya bugün geçin.
+                        </p>
+                    </div>
 
-                        <ul className="space-y-3 mb-8">
-                            {PACKAGES.starter.features.map((feature, i) => (
-                                <li key={i} className="flex items-center text-white">
-                                    <svg className="w-5 h-5 text-green-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    {feature}
-                                </li>
-                            ))}
-                        </ul>
+                    {/* Registration Context */}
+                    {!signupData ? (
+                        <div className="max-w-2xl mx-auto bg-white/[0.02] border border-white/5 p-10 rounded-[3rem] backdrop-blur-3xl space-y-8">
+                            <div className="text-center">
+                                <h3 className="text-xl font-bold text-white uppercase italic font-space">Hızlı Başlangıç Verileri</h3>
+                                <p className="text-xs text-slate-500 mt-2 uppercase tracking-widest">Lisans tanımlaması için lütfen klinik bilgilerinizi doğrulayın.</p>
+                            </div>
+                            <div className="grid md:grid-cols-2 gap-6">
+                                <input
+                                    type="text"
+                                    placeholder="Hastane / Klinik Adı"
+                                    className="w-full px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:border-[#00F0FF] outline-none transition-colors"
+                                    value={formData.hospitalName}
+                                    onChange={(e) => setFormData({ ...formData, hospitalName: e.target.value })}
+                                />
+                                <input
+                                    type="email"
+                                    placeholder="Operasyonel Email"
+                                    className="w-full px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:border-[#00F0FF] outline-none transition-colors"
+                                    value={formData.userEmail}
+                                    onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
+                                />
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="max-w-md mx-auto bg-[#00F0FF]/5 border border-[#00F0FF]/20 p-8 rounded-[2rem] text-center shadow-[0_0_50px_rgba(0,240,255,0.05)]">
+                            <div className="text-[10px] font-black text-[#00F0FF] uppercase tracking-widest mb-2">Hazır Lisans Sahibi</div>
+                            <h3 className="text-2xl font-bold text-white italic font-space tracking-tight">{signupData.hospitalName}</h3>
+                            <p className="text-sm text-slate-500 mt-1">{signupData.email}</p>
+                            <button
+                                onClick={() => {
+                                    sessionStorage.removeItem("aura_pending_registration");
+                                    setSignupData(null);
+                                }}
+                                className="mt-6 text-[9px] font-black text-slate-600 hover:text-white uppercase tracking-[0.2em] transition-colors border-b border-transparent hover:border-white pb-1"
+                            >
+                                Başka Bir Lisans Kullan
+                            </button>
+                        </div>
+                    )}
 
-                        <button
+                    {/* Pricing Cards Grid */}
+                    <div className="grid md:grid-cols-3 gap-10">
+                        <PriceCard
+                            type="starter"
+                            title="Starter"
+                            price={PACKAGES.starter.price}
+                            features={PACKAGES.starter.features}
+                            loading={loading === 'starter'}
                             onClick={() => handleCheckout('starter')}
-                            disabled={loading !== null}
-                            className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold transition-colors disabled:opacity-50"
-                        >
-                            {loading === 'starter' ? 'Yükleniyor...' : 'Başla'}
-                        </button>
-                    </div>
-
-                    {/* Professional */}
-                    <div className="bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl p-8 border-2 border-yellow-400 relative transform scale-105 shadow-2xl">
-                        <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-yellow-400 text-purple-900 px-4 py-1 rounded-full text-sm font-bold">
-                            ÖNERİLEN
-                        </div>
-
-                        <div className="text-center mb-6">
-                            <h3 className="text-2xl font-bold text-white mb-2">Professional</h3>
-                            <div className="text-5xl font-bold text-white mb-2">
-                                ${PACKAGES.professional.price}
-                            </div>
-                            <p className="text-purple-100">/ay</p>
-                        </div>
-
-                        <ul className="space-y-3 mb-8">
-                            {PACKAGES.professional.features.map((feature, i) => (
-                                <li key={i} className="flex items-center text-white">
-                                    <svg className="w-5 h-5 text-yellow-300 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    {feature}
-                                </li>
-                            ))}
-                        </ul>
-
-                        <button
+                        />
+                        <PriceCard
+                            type="professional"
+                            title="Professional"
+                            price={PACKAGES.professional.price}
+                            features={PACKAGES.professional.features}
+                            loading={loading === 'professional'}
                             onClick={() => handleCheckout('professional')}
-                            disabled={loading !== null}
-                            className="w-full py-3 bg-white text-purple-600 hover:bg-purple-50 rounded-lg font-semibold transition-colors disabled:opacity-50"
-                        >
-                            {loading === 'professional' ? 'Yükleniyor...' : 'Başla'}
-                        </button>
-                    </div>
-
-                    {/* Enterprise */}
-                    <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 border border-white/20 hover:border-indigo-400 transition-all">
-                        <div className="text-center mb-6">
-                            <h3 className="text-2xl font-bold text-white mb-2">Enterprise</h3>
-                            <div className="text-5xl font-bold text-indigo-300 mb-2">
-                                Custom
-                            </div>
-                            <p className="text-indigo-200">İletişime geçin</p>
-                        </div>
-
-                        <ul className="space-y-3 mb-8">
-                            {PACKAGES.enterprise.features.map((feature, i) => (
-                                <li key={i} className="flex items-center text-white">
-                                    <svg className="w-5 h-5 text-blue-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                    </svg>
-                                    {feature}
-                                </li>
-                            ))}
-                        </ul>
-
-                        <button
+                            recommended
+                        />
+                        <PriceCard
+                            type="enterprise"
+                            title="Enterprise"
+                            price="Custom"
+                            features={PACKAGES.enterprise.features}
                             onClick={handleContactSales}
-                            className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors"
-                        >
-                            Satış Ekibiyle İletişime Geç
-                        </button>
+                        />
                     </div>
                 </div>
+            </section>
+        </AuraLayout>
+    );
+}
 
-                {/* FAQ */}
-                <div className="mt-16 max-w-3xl mx-auto">
-                    <h2 className="text-3xl font-bold text-white text-center mb-8">
-                        Sık Sorulan Sorular
-                    </h2>
-                    <div className="space-y-4">
-                        <details className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
-                            <summary className="text-white font-semibold cursor-pointer">
-                                14 günlük ücretsiz deneme var mı?
-                            </summary>
-                            <p className="text-purple-200 mt-3">
-                                Evet! Tüm paketlerde 14 günlük ücretsiz deneme sunuyoruz. Kredi kartı gerekmez.
-                            </p>
-                        </details>
+function PriceCard({ type, title, price, features, loading, onClick, recommended }: any) {
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className={`p-12 rounded-[3.5rem] border ${recommended ? 'border-[#00F0FF]/30 bg-[#00F0FF]/5 shadow-[0_0_60px_rgba(0,240,255,0.05)]' : 'border-white/5 bg-white/[0.01]'} space-y-10 relative overflow-hidden group`}
+        >
+            {recommended && (
+                <div className="absolute top-8 right-8 bg-[#00F0FF] text-black text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter shadow-xl">
+                    POPÜLER ALPHA
+                </div>
+            )}
 
-                        <details className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
-                            <summary className="text-white font-semibold cursor-pointer">
-                                İstediğim zaman iptal edebilir miyim?
-                            </summary>
-                            <p className="text-purple-200 mt-3">
-                                Evet, istediğiniz zaman iptal edebilirsiniz. Dönem sonuna kadar erişiminiz devam eder.
-                            </p>
-                        </details>
-
-                        <details className="bg-white/10 backdrop-blur-lg rounded-lg p-6">
-                            <summary className="text-white font-semibold cursor-pointer">
-                                Paket yükseltme/düşürme yapabilir miyim?
-                            </summary>
-                            <p className="text-purple-200 mt-3">
-                                Evet, istediğiniz zaman paket değişikliği yapabilirsiniz. Fark ücret orantılı olarak hesaplanır.
-                            </p>
-                        </details>
-                    </div>
+            <div className="space-y-4">
+                <h3 className="text-3xl font-bold text-white uppercase italic font-space tracking-tight">{title}</h3>
+                <div className="flex items-baseline gap-2">
+                    <span className="text-5xl font-black text-white font-space tracking-tighter">
+                        {typeof price === 'number' ? `$${price}` : price}
+                    </span>
+                    {typeof price === 'number' && <span className="text-slate-500 text-sm font-bold uppercase tracking-widest">/AY</span>}
                 </div>
             </div>
-        </div>
+
+            <div className="space-y-4 pt-4">
+                {features.map((f: string, i: number) => (
+                    <div key={i} className="flex items-center gap-4 group/item">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${recommended ? 'bg-[#00F0FF]/20 text-[#00F0FF]' : 'bg-white/5 text-slate-500'}`}>
+                            <Check size={12} />
+                        </div>
+                        <span className="text-sm font-medium text-slate-400 group-hover/item:text-white transition-colors">{f}</span>
+                    </div>
+                ))}
+            </div>
+
+            <button
+                onClick={onClick}
+                disabled={loading}
+                className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-4 ${recommended
+                        ? 'bg-[#00F0FF] text-black hover:bg-white'
+                        : 'bg-white/5 text-white border border-white/10 hover:border-white'
+                    }`}
+            >
+                {loading ? 'Processing...' : (type === 'enterprise' ? 'İletişime Geç' : 'ALPHA LİSANS AL')}
+                <ArrowRight size={14} />
+            </button>
+        </motion.div>
     );
 }
