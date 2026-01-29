@@ -14,6 +14,10 @@ export const metadata: Metadata = {
   title: "Aura OS | The First Autonomous Sales Engine for Medical Tourism",
   description: "Stop managing leads. Start closing them. Aura OS syncs with HBYS in 12ms and closes sales via Stripe autonomously.",
   metadataBase: new URL("https://getauraos.com"),
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
   openGraph: {
     title: "Aura OS | The First Autonomous Sales Engine for Medical Tourism",
     description: "Stop managing leads. Start closing them. Aura OS syncs with HBYS in 12ms and closes sales via Stripe autonomously.",
@@ -36,7 +40,8 @@ export default function RootLayout({
   return (
     <html lang="tr" suppressHydrationWarning>
       <head>
-        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
+        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/favicon.png" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="mobile-web-app-capable" content="yes" />
         {/* SEO Dominance - JSON-LD Schema */}

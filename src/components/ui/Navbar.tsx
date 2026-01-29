@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Brain, Menu, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Navbar() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -20,17 +21,28 @@ export default function Navbar() {
             <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-4 group">
-                    <div className="w-10 h-10 flex items-center justify-center relative">
+                    <div className="w-12 h-12 flex items-center justify-center relative">
                         <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                            className="absolute inset-0 border border-[#00F0FF]/30 rounded-lg group-hover:border-[#00F0FF] transition-colors"
-                        />
-                        <Brain size={22} className="text-[#00F0FF] relative z-10" />
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            whileHover={{ scale: 1.1, rotate: 5 }}
+                            className="relative w-full h-full p-1 bg-gradient-to-br from-[#00F0FF]/20 to-transparent rounded-xl border border-white/10 backdrop-blur-md overflow-hidden"
+                        >
+                            <Image
+                                src="/aura-logo.png"
+                                alt="Aura OS Logo"
+                                fill
+                                className="object-cover p-1.5"
+                                priority
+                            />
+                        </motion.div>
                     </div>
-                    <span className="text-2xl font-bold tracking-tighter text-white font-space uppercase">
-                        AURA <span className="text-[#00F0FF]">OS</span>
-                    </span>
+                    <div className="flex flex-col -gap-1">
+                        <span className="text-2xl font-bold tracking-tighter text-white font-space uppercase">
+                            AURA <span className="text-[#00F0FF]">OS</span>
+                        </span>
+                        <span className="text-[7px] tracking-[0.4em] text-[#00F0FF]/60 font-black uppercase">Autonomous Logic</span>
+                    </div>
                 </Link>
 
                 {/* Desktop Menu */}
