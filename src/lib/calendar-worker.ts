@@ -7,7 +7,9 @@ const getRedis = () => {
         console.warn('⚠️ [CalendarWorker] REDIS_URL missing.');
         return null;
     }
-    return new Redis(url);
+    const client = new Redis(url);
+    client.on('error', () => { }); // Silence connection errors
+    return client;
 };
 
 const getSupabase = () => {

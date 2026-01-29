@@ -49,6 +49,7 @@ export async function GET() {
                 maxRetriesPerRequest: 1,
                 commandTimeout: 2000
             });
+            redis.on('error', () => { }); // Silence connection errors
 
             try {
                 const ping = await redis.ping();

@@ -7,7 +7,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
     apiVersion: '2025-01-27.acacia' as any,
 });
 
-const redis = new Redis(process.env.REDIS_URL || '');
+const getRedis = () => {
+    if (!process.env.REDIS_URL) return null;
+    try {
+        const client = new Redis(process.env.REDIS_URL);
+        client.on('error', () => { });
+        return client;
+    } catch { return null; }
+};
+
+const redis = getRedis();
 export const dynamic = 'force-dynamic';
 
 /**
@@ -33,10 +42,14 @@ export async function POST(req: Request) {
 
     // 1. IDEMPOTENCY CHECK (Redis)
     const eventId = event.id;
-    const isProcessed = await redis.get(`webhook:processed:${eventId}`);
-    if (isProcessed) {
-        console.log(`[Webhook] Event ${eventId} already processed. Skipping.`);
-        return NextResponse.json({ received: true });
+    if (!redis) {
+        console.warn('[Webhook] Redis unavailable. Skipping idempotency check.');
+    } else {
+        const isProcessed = await redis.get(`webhook:processed:${eventId}`);
+        if (isProcessed) {
+            console.log(`[Webhook] Event ${eventId} already processed. Skipping.`);
+            return NextResponse.json({ received: true });
+        }
     }
 
     // 2. Handle the event
@@ -66,7 +79,9 @@ export async function POST(req: Request) {
         }
 
         // 3. Mark as processed (TTL 24h)
-        await redis.set(`webhook:processed:${eventId}`, 'true', 'EX', 86400);
+        if (redis) {
+            await redis.set(`webhook:processed:${eventId}`, 'true', 'EX', 86400);
+        }
 
         return NextResponse.json({ received: true });
 

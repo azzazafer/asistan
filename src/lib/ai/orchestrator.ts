@@ -4,9 +4,21 @@ import { redactPII, validateResponse, detectPromptInjection, logAudit } from '@/
 import { RagService } from './rag-service';
 import { funnelMachine } from './funnel-machine';
 import Redis from 'ioredis';
-
 const MAX_SESSION_COST = 1.50; // USD
-const redis = new Redis(process.env.REDIS_URL!);
+
+const getRedis = () => {
+    if (!process.env.REDIS_URL) return null;
+    try {
+        const client = new Redis(process.env.REDIS_URL);
+        client.on('error', () => { }); // Silence connection errors
+        return client;
+    } catch {
+        return null;
+    }
+};
+
+const redis = getRedis();
+export const dynamic = 'force-dynamic';
 
 export interface AuraResponse {
     message: {
@@ -159,6 +171,7 @@ Strategy: Act as a Closer. Redirect to booking.`;
 
     private static async getSessionCost(userId: string): Promise<number> {
         try {
+            if (!redis) return 0;
             const cost = await redis.get(`cost:${userId}`);
             return cost ? parseFloat(cost) : 0;
         } catch { return 0; }
@@ -166,6 +179,7 @@ Strategy: Act as a Closer. Redirect to booking.`;
 
     private static async incrementSessionCost(userId: string, amount: number): Promise<void> {
         try {
+            if (!redis) return;
             await redis.incrbyfloat(`cost:${userId}`, amount);
             await redis.expire(`cost:${userId}`, 3600);
         } catch { }
