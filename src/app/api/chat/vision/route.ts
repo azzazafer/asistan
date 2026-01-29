@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { VisionAnalysisService } from '@/lib/vision';
 import { AiOrchestrator } from '@/lib/ai/orchestrator';
 
+export const dynamic = 'force-dynamic';
+
 export const maxDuration = 60; // Allow 60s for Vision analysis
 
 export async function POST(req: NextRequest) {

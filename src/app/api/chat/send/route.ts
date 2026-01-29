@@ -3,6 +3,8 @@ import { sendWhatsAppMessage } from '@/lib/messaging';
 import { sendTelegramMessage } from '@/lib/telegram';
 import { addLead, getLeadByPhone } from '@/lib/leads';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Unified Chat Sender
  * Allows the Dashboard to send messages via WhatsApp or Telegram.

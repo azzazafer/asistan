@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { AiOrchestrator } from '@/lib/ai/orchestrator';
 import { supabase } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(req: Request) {
     try {
         const { userId } = await req.json();
