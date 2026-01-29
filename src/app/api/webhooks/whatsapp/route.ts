@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OmnichannelBridge } from '@/lib/ai/omnichannel';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Twilio WhatsApp Webhook
  * Handles incoming messages from WhatsApp users via Twilio.

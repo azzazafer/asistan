@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OmnichannelBridge } from '@/lib/ai/omnichannel';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Telegram Webhook
  * Handles incoming messages from Telegram Bot API.

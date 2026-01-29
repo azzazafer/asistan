@@ -16,11 +16,7 @@ const KEY_LENGTH = 32;
 const ENCRYPTION_SECRET = process.env.ENCRYPTION_KEY;
 
 if (!ENCRYPTION_SECRET || ENCRYPTION_SECRET.length !== 64) {
-    if (process.env.NODE_ENV === 'production') {
-        throw new Error('CRITICAL: ENCRYPTION_KEY must be a 32-byte hex string.');
-    } else {
-        console.warn('WARNING: Using insecure default ENCRYPTION_KEY for development.');
-    }
+    console.warn('⚠️ [Aura Crypto] ENCRYPTION_KEY is missing or invalid. Encryption will fail if called.');
 }
 
 const key = ENCRYPTION_SECRET

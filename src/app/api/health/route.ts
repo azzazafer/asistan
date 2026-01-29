@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase-client';
 import Redis from 'ioredis';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
     const healthStatus: any = {
@@ -13,18 +15,32 @@ export async function GET() {
     };
 
     try {
-        // 1. Check Supabase
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.SUPABASE_SERVICE_ROLE_KEY!
-        );
-        const { error: sbError } = await supabase.from('tenants').select('id').limit(1);
-
-        if (sbError) {
-            healthStatus.services.supabase = `unhealthy: ${sbError.message}`;
+        let sbError: any = null;
+        if (!supabase) {
+            healthStatus.services.supabase = 'unhealthy: client not initialized';
             healthStatus.status = 'degraded';
         } else {
-            healthStatus.services.supabase = 'healthy';
+            const { error } = await supabase.from('tenants').select('id').limit(1);
+            sbError = error;
+            if (sbError) {
+                healthStatus.services.supabase = `unhealthy: ${sbError.message}`;
+                healthStatus.status = 'degraded';
+            } else {
+                healthStatus.services.supabase = 'healthy';
+            }
+        }
+
+        if (sbError) {
+            console.warn('[Health Check] Supabase error:', sbError.message);
+        } else {
+            // This else block is reached if sbError is null.
+            // If supabase was null, healthStatus.services.supabase would already be set to 'unhealthy: client not initialized'.
+            // If supabase was available and no error, it would be 'healthy'.
+            // This line ensures it's 'healthy' if no error occurred and supabase was initialized.
+            // If supabase was not initialized, the previous 'unhealthy' status should persist.
+            if (healthStatus.services.supabase === 'checking') { // Only set to healthy if it hasn't been set to unhealthy by client not initialized
+                healthStatus.services.supabase = 'healthy';
+            }
         }
 
         // 2. Check Redis

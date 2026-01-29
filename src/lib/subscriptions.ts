@@ -1,10 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
 import { stripe, PackageType, PACKAGES } from './stripe';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || 'dummy_key';
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+const supabase = (supabaseUrl && supabaseServiceKey)
+    ? createClient(supabaseUrl, supabaseServiceKey)
+    : null as any;
 
 export interface Subscription {
     id: string;
@@ -33,6 +35,7 @@ export interface Tenant {
  * Get subscription by tenant ID
  */
 export async function getSubscriptionByTenant(tenantId: string): Promise<Subscription | null> {
+    if (!supabase) return null;
     const { data, error } = await supabase
         .from('subscriptions')
         .select('*')

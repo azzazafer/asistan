@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
+import { supabase } from '@/lib/supabase-client';
 import Redis from 'ioredis';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '', {
     apiVersion: '2025-01-27.acacia' as any,
 });
 
-const redis = new Redis(process.env.REDIS_URL!);
-const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const redis = new Redis(process.env.REDIS_URL || '');
+export const dynamic = 'force-dynamic';
 
 /**
  * Idempotent Stripe Webhook Handler
