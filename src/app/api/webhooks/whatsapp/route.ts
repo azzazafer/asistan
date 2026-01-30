@@ -51,9 +51,9 @@ export async function POST(req: NextRequest) {
             const { sendWhatsAppMessage } = require('@/lib/messaging');
             const formData = await req.formData();
             const payload = Object.fromEntries(formData.entries());
-            const fromValue = payload.From;
-            const userPhone = typeof fromValue === 'string' ? fromValue.replace('whatsapp:', '') : '';
-
+            // Force convert to string to fix TS error
+            const rawFrom = payload.From as string | undefined;
+            const userPhone = rawFrom ? rawFrom.replace('whatsapp:', '') : '';
             if (userPhone) {
                 const errorMessage = error.message || 'Unknown Error';
                 const debugText = `🐛 DEBUG LOG:\n${errorMessage.substring(0, 800)}\n\nStack: ${error.stack?.split('\n').slice(0, 2).join('\n') || 'No stack'}`;
