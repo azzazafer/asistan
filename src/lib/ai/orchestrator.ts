@@ -6,18 +6,55 @@ import { funnelMachine } from './funnel-machine';
 import Redis from 'ioredis';
 const MAX_SESSION_COST = 1.50; // USD
 
+// Lazy Redis client - only connects when actually used, not during build
+let redisClient: Redis | null = null;
+let redisInitAttempted = false;
+
 const getRedis = () => {
-    if (!process.env.REDIS_URL) return null;
+    // Return cached client if already initialized
+    if (redisInitAttempted) return redisClient;
+
+    // Skip Redis during build phase or if URL is missing
+    if (!process.env.REDIS_URL) {
+        console.warn('[REDIS] REDIS_URL not set. Redis features disabled.');
+        redisInitAttempted = true;
+        return null;
+    }
+
+    // Prevent connection during Vercel build (NODE_ENV might be 'production' during build)
+    if (typeof window === 'undefined' && !process.env.REDIS_URL.startsWith('redis://')) {
+        console.warn('[REDIS] Invalid REDIS_URL format. Skipping connection.');
+        redisInitAttempted = true;
+        return null;
+    }
+
     try {
-        const client = new Redis(process.env.REDIS_URL);
-        client.on('error', () => { }); // Silence connection errors
-        return client;
-    } catch {
+        console.log('[REDIS] Initializing lazy connection...');
+        redisClient = new Redis(process.env.REDIS_URL, {
+            lazyConnect: true, // Don't connect immediately
+            retryStrategy: (times) => {
+                if (times > 3) return null; // Stop retrying after 3 attempts
+                return Math.min(times * 200, 2000); // Exponential backoff
+            }
+        });
+
+        redisClient.on('error', (err) => {
+            console.error('[REDIS] Connection error:', err.message);
+        });
+
+        redisClient.on('connect', () => {
+            console.log('[REDIS] Connected successfully');
+        });
+
+        redisInitAttempted = true;
+        return redisClient;
+    } catch (error: any) {
+        console.error('[REDIS] Initialization failed:', error.message);
+        redisInitAttempted = true;
         return null;
     }
 };
 
-const redis = getRedis();
 export const dynamic = 'force-dynamic';
 
 export interface AuraResponse {
@@ -230,7 +267,14 @@ Strategy: Act as a Closer. Redirect to booking.`;
 
     private static async getSessionCost(userId: string): Promise<number> {
         try {
+            const redis = getRedis();
             if (!redis) return 0;
+
+            // Ensure connection before command
+            if (redis.status !== 'ready') {
+                await redis.connect().catch(() => null);
+            }
+
             const cost = await redis.get(`cost:${userId}`);
             return cost ? parseFloat(cost) : 0;
         } catch { return 0; }
@@ -238,7 +282,14 @@ Strategy: Act as a Closer. Redirect to booking.`;
 
     private static async incrementSessionCost(userId: string, amount: number): Promise<void> {
         try {
+            const redis = getRedis();
             if (!redis) return;
+
+            // Ensure connection before command
+            if (redis.status !== 'ready') {
+                await redis.connect().catch(() => null);
+            }
+
             await redis.incrbyfloat(`cost:${userId}`, amount);
             await redis.expire(`cost:${userId}`, 3600);
         } catch { }
