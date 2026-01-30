@@ -45,6 +45,25 @@ export async function POST(req: NextRequest) {
             message: error.message,
             stack: error.stack?.split('\n').slice(0, 3)
         });
+
+        // 🚨 DEBUG MODE: Send the actual error to WhatsApp for diagnosis
+        try {
+            const { sendWhatsAppMessage } = require('@/lib/messaging');
+            const formData = await req.formData();
+            const payload = Object.fromEntries(formData.entries());
+            const userPhone = payload.From?.replace('whatsapp:', '');
+
+            if (userPhone) {
+                const errorMessage = error.message || 'Unknown Error';
+                const debugText = `🐛 DEBUG LOG:\n${errorMessage.substring(0, 800)}\n\nStack: ${error.stack?.split('\n').slice(0, 2).join('\n') || 'No stack'}`;
+
+                await sendWhatsAppMessage(userPhone, debugText);
+                console.log('[DEBUG] Error sent to user:', userPhone);
+            }
+        } catch (innerError: any) {
+            console.error('[DEBUG] Failed to send error to WhatsApp:', innerError.message);
+        }
+
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }

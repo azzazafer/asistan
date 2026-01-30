@@ -183,7 +183,7 @@ Strategy: Act as a Closer. Redirect to booking.`;
             console.log(`[ORCHESTRATOR] Calling OpenAI with ${formattedMessages.length} messages, model: gpt-4o`);
 
             let response = await openai.chat.completions.create({
-                model: 'gpt-4o-mini', // DIAGNOSTIC: Testing with cheaper model for quota issues
+                model: 'gpt-4o', // Reverted from mini for full vision capability
                 messages: formattedMessages,
                 tools: tools as any,
                 tool_choice: 'auto',
@@ -212,7 +212,7 @@ Strategy: Act as a Closer. Redirect to booking.`;
                 }
 
                 const secondaryResponse = await openai.chat.completions.create({
-                    model: 'gpt-4o-mini',
+                    model: 'gpt-4o',
                     messages: [
                         { role: 'system', content: enrichedPrompt },
                         ...messages.map(m => ({ role: m.role, content: m.content })),
