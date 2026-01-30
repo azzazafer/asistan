@@ -51,7 +51,8 @@ export async function POST(req: NextRequest) {
             const { sendWhatsAppMessage } = require('@/lib/messaging');
             const formData = await req.formData();
             const payload = Object.fromEntries(formData.entries());
-            const userPhone = payload.From?.replace('whatsapp:', '');
+            const fromValue = payload.From;
+            const userPhone = typeof fromValue === 'string' ? fromValue.replace('whatsapp:', '') : '';
 
             if (userPhone) {
                 const errorMessage = error.message || 'Unknown Error';
