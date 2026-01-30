@@ -244,10 +244,10 @@ Strategy: Act as a Closer. Redirect to booking.`;
                 status: error.response?.status,
                 stack: error.stack?.split('\n').slice(0, 3)
             });
-            return {
-                message: { role: 'assistant', content: "Sistemde geçici bir sorun oluştu. Lütfen tekrar deneyin." },
-                error: error.message
-            };
+
+            // 🚨 DEBUG MODE: THROW the error so webhook can catch and display it
+            // DO NOT return a polite message - we need to see the real error!
+            throw new Error(`Orchestrator Failed: ${error.message || JSON.stringify(error)}`);
         }
     }
 
