@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { OmnichannelBridge } from '@/lib/ai/omnichannel';
 
 export const dynamic = 'force-dynamic';
+export const maxDuration = 60; // Allow up to 60 seconds for vision processing
 
 /**
  * Twilio WhatsApp Webhook

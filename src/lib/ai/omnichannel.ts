@@ -326,6 +326,7 @@ export class OmnichannelBridge {
         let content = payload.Body || '';
         const mediaUrl = payload['MediaUrl0'];
         const mediaContentType = payload['MediaContentType0'];
+        let processedMediaUrl: string | undefined = undefined;
 
         // Handle audio transcription
         if (mediaUrl && mediaContentType?.startsWith('audio/')) {
@@ -333,17 +334,52 @@ export class OmnichannelBridge {
             content = transcription ? `[Voice Message]: ${transcription}` : '[Voice Message]';
         }
 
-        // Handle images - add context to content
+        // Handle images - DOWNLOAD AND CONVERT TO BASE64
         if (mediaUrl && mediaContentType?.startsWith('image/')) {
             content = content || 'Please analyze this image.';
             console.log(`[WhatsApp] Image detected: ${mediaUrl}`);
+
+            try {
+                // CRITICAL: Download image from Twilio with auth
+                const accountSid = process.env.TWILIO_ACCOUNT_SID;
+                const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+                if (accountSid && authToken) {
+                    console.log('[WhatsApp] Downloading image from Twilio...');
+                    const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
+
+                    const imageResponse = await fetch(mediaUrl, {
+                        headers: {
+                            'Authorization': `Basic ${auth}`
+                        }
+                    });
+
+                    if (!imageResponse.ok) {
+                        throw new Error(`Twilio fetch failed: ${imageResponse.status}`);
+                    }
+
+                    const arrayBuffer = await imageResponse.arrayBuffer();
+                    const base64Image = Buffer.from(arrayBuffer).toString('base64');
+
+                    // Create data URL for OpenAI
+                    processedMediaUrl = `data:${mediaContentType};base64,${base64Image}`;
+                    console.log(`[WhatsApp] Image converted to base64 (${Math.round(base64Image.length / 1024)}KB)`);
+                } else {
+                    console.warn('[WhatsApp] Missing Twilio credentials, cannot download image');
+                    content = 'Görseli işlemek için Twilio kimlik bilgileri eksik.';
+                }
+            } catch (imageError: any) {
+                console.error('[WhatsApp] Image download failed:', imageError.message);
+                content = 'Görseli Twilio\'dan indirirken sorun yaşadım. Lütfen tekrar gönderin.';
+                processedMediaUrl = undefined;
+            }
         }
 
         return {
             userId: payload.From?.replace('whatsapp:', '') || 'unknown',
             receiverId: payload.To?.replace('whatsapp:', '') || 'unknown',
             content,
-            mediaUrl: mediaUrl, // CRITICAL FIX: Always return mediaUrl if present
+            mediaUrl: processedMediaUrl, // Base64 data URL instead of raw URL
             source: 'whatsapp',
             timestamp: new Date().toISOString()
         };
