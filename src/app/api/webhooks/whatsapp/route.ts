@@ -9,10 +9,17 @@ export const maxDuration = 60; // Allow up to 60 seconds for vision processing
  * Handles incoming messages from WhatsApp users via Twilio.
  */
 export async function POST(req: NextRequest) {
+    // Extract phone OUTSIDE try block so catch can access it without re-reading stream
+    let userPhone = '';
+
     try {
         // Twilio sends form-urlencoded data, not JSON
         const formData = await req.formData();
         const payload = Object.fromEntries(formData.entries());
+
+        // Extract phone immediately
+        const rawFrom = payload.From as string | undefined;
+        userPhone = rawFrom ? rawFrom.replace('whatsapp:', '') : '';
 
         console.log(`[WHATSAPP WEBHOOK] Incoming from ${payload.From}`);
 
