@@ -94,35 +94,59 @@ Strategy: Act as a Closer. Redirect to booking.`;
                 { role: 'system', content: enrichedPrompt }
             ];
 
-            // Add conversation history
-            for (let i = 0; i < messages.length; i++) {
-                const msg = messages[i];
+            // Add conversation history with robust error handling
+            try {
+                for (let i = 0; i < messages.length; i++) {
+                    const msg = messages[i];
 
-                // If this is the last user message and we have imageData, use vision format
-                if (i === messages.length - 1 && msg.role === 'user' && imageData) {
-                    formattedMessages.push({
-                        role: 'user',
-                        content: [
-                            { type: "text", text: msg.content },
-                            {
-                                type: "image_url",
-                                image_url: {
-                                    url: imageData.startsWith('http') ? imageData : `data:image/jpeg;base64,${imageData}`
-                                }
-                            }
-                        ]
-                    });
-                } else {
-                    // Standard text message
-                    formattedMessages.push({
-                        role: msg.role,
-                        content: msg.content
-                    });
+                    // If this is the last user message and we have valid imageData, use vision format
+                    if (i === messages.length - 1 && msg.role === 'user' && imageData && typeof imageData === 'string') {
+                        try {
+                            // Sanitize image URL - ensure it's a valid HTTP URL or base64
+                            const imageUrl = imageData.startsWith('http')
+                                ? imageData
+                                : `data:image/jpeg;base64,${imageData}`;
+
+                            console.log(`[ORCHESTRATOR] Adding vision to message. URL type: ${imageData.startsWith('http') ? 'HTTP' : 'Base64'}`);
+
+                            formattedMessages.push({
+                                role: 'user',
+                                content: [
+                                    { type: "text", text: msg.content },
+                                    {
+                                        type: "image_url",
+                                        image_url: {
+                                            url: imageUrl
+                                        }
+                                    }
+                                ]
+                            });
+                        } catch (imgError: any) {
+                            console.error('[ORCHESTRATOR] Image URL construction failed:', imgError.message);
+                            // Fallback to text-only if image fails
+                            formattedMessages.push({
+                                role: msg.role,
+                                content: msg.content
+                            });
+                        }
+                    } else {
+                        // Standard text message
+                        formattedMessages.push({
+                            role: msg.role,
+                            content: msg.content
+                        });
+                    }
                 }
+            } catch (formatError: any) {
+                console.error('[ORCHESTRATOR] Message formatting error:', formatError.message);
+                // Fallback: use simple text format
+                formattedMessages.push(...messages.map(m => ({ role: m.role, content: m.content })));
             }
 
+            console.log(`[ORCHESTRATOR] Calling OpenAI with ${formattedMessages.length} messages, model: gpt-4o`);
+
             let response = await openai.chat.completions.create({
-                model: 'gpt-4o',
+                model: 'gpt-4o', // HARDCODED: Only gpt-4o supports vision reliably
                 messages: formattedMessages,
                 tools: tools as any,
                 tool_choice: 'auto',
@@ -177,6 +201,12 @@ Strategy: Act as a Closer. Redirect to booking.`;
 
         } catch (error: any) {
             console.error('[AI ORCHESTRATOR ERROR]', error);
+            console.error('❌ OPENAI CRASH DETAILS:', {
+                message: error.message,
+                response: error.response?.data,
+                status: error.response?.status,
+                stack: error.stack?.split('\n').slice(0, 3)
+            });
             return {
                 message: { role: 'assistant', content: "Sistemde geçici bir sorun oluştu. Lütfen tekrar deneyin." },
                 error: error.message

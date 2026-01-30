@@ -40,6 +40,10 @@ export async function POST(req: NextRequest) {
 
     } catch (error: any) {
         console.error('[WHATSAPP WEBHOOK ERROR]', error.message);
+        console.error('❌ WEBHOOK CRASH:', {
+            message: error.message,
+            stack: error.stack?.split('\n').slice(0, 3)
+        });
         return NextResponse.json({ error: error.message }, { status: 500 });
     }
 }
