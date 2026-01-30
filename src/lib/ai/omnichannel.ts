@@ -325,14 +325,27 @@ export class OmnichannelBridge {
     static async normalizeWhatsApp(payload: any): Promise<NormalizedMessage> {
         let content = payload.Body || '';
         const mediaUrl = payload['MediaUrl0'];
-        if (mediaUrl && payload['MediaContentType0']?.startsWith('audio/')) {
+        const mediaContentType = payload['MediaContentType0'];
+
+        // Handle audio transcription
+        if (mediaUrl && mediaContentType?.startsWith('audio/')) {
             const transcription = await transcribeAudio(mediaUrl);
             content = transcription ? `[Voice Message]: ${transcription}` : '[Voice Message]';
         }
+
+        // Handle images - add context to content
+        if (mediaUrl && mediaContentType?.startsWith('image/')) {
+            content = content || 'Please analyze this image.';
+            console.log(`[WhatsApp] Image detected: ${mediaUrl}`);
+        }
+
         return {
             userId: payload.From?.replace('whatsapp:', '') || 'unknown',
             receiverId: payload.To?.replace('whatsapp:', '') || 'unknown',
-            content, source: 'whatsapp', timestamp: new Date().toISOString()
+            content,
+            mediaUrl: mediaUrl, // CRITICAL FIX: Always return mediaUrl if present
+            source: 'whatsapp',
+            timestamp: new Date().toISOString()
         };
     }
 
@@ -391,9 +404,32 @@ export class OmnichannelBridge {
     static async sendTypingIndicator(target: string, source: MessageSource) {
         try {
             if (source === 'whatsapp') {
-                // Twilio WhatsApp doesn't have a direct "typing" API like Messenger, 
-                // but we log it for the neural feedback loop.
-                console.log(`[WhatsApp] Typing simulation for ${target}`);
+                // Send actual typing indicator via Twilio
+                const accountSid = process.env.TWILIO_ACCOUNT_SID;
+                const authToken = process.env.TWILIO_AUTH_TOKEN;
+                const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
+
+                if (accountSid && authToken) {
+                    const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
+                    const formData = new URLSearchParams();
+                    formData.append('To', target.startsWith('whatsapp:') ? target : `whatsapp:${target}`);
+                    formData.append('From', fromNumber);
+                    formData.append('Body', '⏳ Analyzing...'); // Optimistic feedback message
+
+                    // Send a quick acknowledgment message
+                    await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Basic ${auth}`,
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData
+                    }).catch(e => console.error('[Typing] Failed:', e.message));
+
+                    console.log(`[WhatsApp] Typing indicator sent to ${target}`);
+                } else {
+                    console.log(`[WhatsApp] Typing simulation for ${target} (no credentials)`);
+                }
             } else if (source === 'instagram') {
                 const { sendInstagramTyping } = require('../instagram');
                 await sendInstagramTyping(target);

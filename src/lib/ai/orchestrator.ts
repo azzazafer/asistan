@@ -88,13 +88,42 @@ ${knowledgeContext}
 
 Strategy: Act as a Closer. Redirect to booking.`;
 
-            // 6. GPT-4o EXECUTION
+            // 6. GPT-4o EXECUTION WITH VISION SUPPORT
+            // Construct messages array with proper image support for GPT-4o
+            const formattedMessages: any[] = [
+                { role: 'system', content: enrichedPrompt }
+            ];
+
+            // Add conversation history
+            for (let i = 0; i < messages.length; i++) {
+                const msg = messages[i];
+
+                // If this is the last user message and we have imageData, use vision format
+                if (i === messages.length - 1 && msg.role === 'user' && imageData) {
+                    formattedMessages.push({
+                        role: 'user',
+                        content: [
+                            { type: "text", text: msg.content },
+                            {
+                                type: "image_url",
+                                image_url: {
+                                    url: imageData.startsWith('http') ? imageData : `data:image/jpeg;base64,${imageData}`
+                                }
+                            }
+                        ]
+                    });
+                } else {
+                    // Standard text message
+                    formattedMessages.push({
+                        role: msg.role,
+                        content: msg.content
+                    });
+                }
+            }
+
             let response = await openai.chat.completions.create({
                 model: 'gpt-4o',
-                messages: [
-                    { role: 'system', content: enrichedPrompt },
-                    ...messages.map(m => ({ role: m.role, content: m.content }))
-                ] as any,
+                messages: formattedMessages,
                 tools: tools as any,
                 tool_choice: 'auto',
                 temperature: 0.7
