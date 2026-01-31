@@ -20,26 +20,29 @@ export async function POST(req: NextRequest) {
 
         console.log(`[Webhook] Incoming from: ${debugPhone} | Type: ${payload.NumMedia ? 'Media' : 'Text'}`);
 
-        // CRITICAL: Process asynchronously - don't await!
-        // This allows webhook to return 200 immediately
-        OmnichannelBridge.processIncoming(
-            await OmnichannelBridge.normalizeWhatsApp(payload)
-        ).catch(async (error: any) => {
-            console.error('❌ ASYNC PROCESSING ERROR:', error);
+        // CRITICAL: Fully async - don't await ANYTHING!
+        // Normalization happens in background including image download
+        (async () => {
+            try {
+                const normalized = await OmnichannelBridge.normalizeWhatsApp(payload);
+                await OmnichannelBridge.processIncoming(normalized);
+            } catch (error: any) {
+                console.error('❌ ASYNC PROCESSING ERROR:', error);
 
-            // Send error to user using existing messaging function
-            if (debugPhone) {
-                try {
-                    const { sendWhatsAppMessage } = await import('@/lib/messaging');
-                    await sendWhatsAppMessage(
-                        debugPhone,
-                        `🚨 Analiz hatası: ${error.message?.substring(0, 500)}`
-                    );
-                } catch (msgError: any) {
-                    console.error('Failed to send error notification:', msgError);
+                // Send error to user using existing messaging function
+                if (debugPhone) {
+                    try {
+                        const { sendWhatsAppMessage } = await import('@/lib/messaging');
+                        await sendWhatsAppMessage(
+                            debugPhone,
+                            `🚨 Analiz hatası: ${error.message?.substring(0, 500)}`
+                        );
+                    } catch (msgError: any) {
+                        console.error('Failed to send error notification:', msgError);
+                    }
                 }
             }
-        });
+        })(); // Execute immediately, don't await
 
         // IMMEDIATE RESPONSE - Don't wait for OpenAI
         return new NextResponse('<Response></Response>', {
