@@ -20,12 +20,21 @@ export async function POST(req: NextRequest) {
 
         console.log(`[Webhook] Incoming from: ${debugPhone} | Type: ${payload.NumMedia ? 'Media' : 'Text'}`);
 
+        // DIAGNOSTIC: Send confirmation that webhook is running
+        if (debugPhone) {
+            const { sendWhatsAppMessage } = await import('@/lib/messaging');
+            await sendWhatsAppMessage(debugPhone, '🔍 DEBUG: Webhook received your message!').catch(() => { });
+        }
+
         // CRITICAL: Fully async - don't await ANYTHING!
         // Normalization happens in background including image download
         (async () => {
             try {
+                console.log('🚀 BACKGROUND TASK STARTED');
                 const normalized = await OmnichannelBridge.normalizeWhatsApp(payload);
+                console.log('✅ Normalization complete');
                 await OmnichannelBridge.processIncoming(normalized);
+                console.log('✅ Processing complete');
             } catch (error: any) {
                 console.error('❌ ASYNC PROCESSING ERROR:', error);
 
