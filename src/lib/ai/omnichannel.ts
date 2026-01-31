@@ -383,11 +383,17 @@ export class OmnichannelBridge {
                     console.log('[WhatsApp] Downloading image from Twilio...');
                     const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
 
+                    // CRITICAL: Add 5s timeout to prevent infinite hang
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
                     const imageResponse = await fetch(mediaUrl, {
                         headers: {
                             'Authorization': `Basic ${auth}`
-                        }
+                        },
+                        signal: controller.signal
                     });
+                    clearTimeout(timeoutId);
 
                     if (!imageResponse.ok) {
                         throw new Error(`Twilio fetch failed: ${imageResponse.status}`);
