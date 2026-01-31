@@ -175,7 +175,7 @@ Strategy: Act as a Closer. Redirect to booking.`;
                     const msg = processedMessages[i];
 
                     // If this is the last user message and we have valid imageData, use vision format
-                    if (i === messages.length - 1 && msg.role === 'user' && imageData && typeof imageData === 'string') {
+                    if (i === processedMessages.length - 1 && msg.role === 'user' && imageData && typeof imageData === 'string') {
                         try {
                             // Sanitize image URL - ensure it's a valid HTTP URL or base64
                             const imageUrl = imageData.startsWith('http')
@@ -218,10 +218,10 @@ Strategy: Act as a Closer. Redirect to booking.`;
                 formattedMessages.push(...processedMessages.map(m => ({ role: m.role, content: m.content })));
             }
 
-            console.log(`[ORCHESTRATOR] Calling OpenAI with ${formattedMessages.length} messages, model: gpt-4o`);
+            console.log(`[ORCHESTRATOR] Calling OpenAI with ${formattedMessages.length} messages, model: gpt-4o-mini`);
 
             let response = await openai.chat.completions.create({
-                model: 'gpt-4o', // Reverted from mini for full vision capability
+                model: 'gpt-4o-mini', // PERF: Speed optimization for Vercel timeout limit
                 messages: formattedMessages,
                 tools: tools as any,
                 tool_choice: 'auto',
@@ -250,7 +250,7 @@ Strategy: Act as a Closer. Redirect to booking.`;
                 }
 
                 const secondaryResponse = await openai.chat.completions.create({
-                    model: 'gpt-4o',
+                    model: 'gpt-4o-mini',
                     messages: [
                         { role: 'system', content: enrichedPrompt },
                         ...messages.map(m => ({ role: m.role, content: m.content })),
