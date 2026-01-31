@@ -24,24 +24,19 @@ export async function POST(req: NextRequest) {
         // This allows webhook to return 200 immediately
         OmnichannelBridge.processIncoming(
             await OmnichannelBridge.normalizeWhatsApp(payload)
-        ).catch((error: any) => {
+        ).catch(async (error: any) => {
             console.error('❌ ASYNC PROCESSING ERROR:', error);
 
-            // Send error to user via direct Twilio call
+            // Send error to user using existing messaging function
             if (debugPhone) {
-                const accountSid = process.env.TWILIO_ACCOUNT_SID;
-                const authToken = process.env.TWILIO_AUTH_TOKEN;
-                const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER || process.env.TWILIO_SMS_NUMBER;
-
-                if (accountSid && authToken && fromNumber) {
-                    const client = require('twilio')(accountSid, authToken);
-                    client.messages.create({
-                        from: fromNumber,
-                        to: `whatsapp:${debugPhone}`,
-                        body: `🚨 Analiz hatası: ${error.message?.substring(0, 500)}`
-                    }).catch((twilioErr: any) => {
-                        console.error('Failed to send error notification:', twilioErr);
-                    });
+                try {
+                    const { sendWhatsAppMessage } = await import('@/lib/messaging');
+                    await sendWhatsAppMessage(
+                        debugPhone,
+                        `🚨 Analiz hatası: ${error.message?.substring(0, 500)}`
+                    );
+                } catch (msgError: any) {
+                    console.error('Failed to send error notification:', msgError);
                 }
             }
         });
@@ -57,20 +52,13 @@ export async function POST(req: NextRequest) {
 
         if (debugPhone) {
             try {
-                const accountSid = process.env.TWILIO_ACCOUNT_SID;
-                const authToken = process.env.TWILIO_AUTH_TOKEN;
-                const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER || process.env.TWILIO_SMS_NUMBER;
-
-                if (accountSid && authToken && fromNumber) {
-                    const client = require('twilio')(accountSid, authToken);
-                    await client.messages.create({
-                        from: fromNumber,
-                        to: `whatsapp:${debugPhone}`,
-                        body: `🚨 Webhook hatası: ${error.message?.substring(0, 800)}`
-                    });
-                }
-            } catch (twilioError: any) {
-                console.error('Failed to send crash report:', twilioError.message);
+                const { sendWhatsAppMessage } = await import('@/lib/messaging');
+                await sendWhatsAppMessage(
+                    debugPhone,
+                    `🚨 Webhook hatası: ${error.message?.substring(0, 800)}`
+                );
+            } catch (msgError: any) {
+                console.error('Failed to send crash report:', msgError.message);
             }
         }
 
