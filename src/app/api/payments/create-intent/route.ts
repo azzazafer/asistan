@@ -1,9 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder', {
-    apiVersion: '2024-12-18.acacia' as any,
-});
+// Lazy-load Stripe client to avoid build-time errors
+function getStripeClient() {
+    const apiKey = process.env.STRIPE_SECRET_KEY;
+    if (!apiKey) {
+        throw new Error('STRIPE_SECRET_KEY not configured');
+    }
+    return new Stripe(apiKey, {
+        apiVersion: '2024-12-18.acacia' as any,
+    });
+}
 
 /**
  * STRIPE PAYMENT INTENT CREATOR
@@ -13,6 +20,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || 'sk_test_placeholder'
 
 export async function POST(req: NextRequest) {
     try {
+        const stripe = getStripeClient(); // Lazy-load Stripe
+
         const { amount, currency, patientId, patientName, patientPhoneNumber, culture } = await req.json();
 
         if (!amount || !currency) {
