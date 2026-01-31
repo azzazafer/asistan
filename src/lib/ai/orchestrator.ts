@@ -115,7 +115,7 @@ export class AiOrchestrator {
             const knowledgeContext = knowledgeChunks.join('\n');
 
             // 5. SYSTEM PROMPT ENRICHMENT
-            const enrichedPrompt = `${ASSISTANT_SYSTEM_PROMPT}
+            let enrichedPrompt = `${ASSISTANT_SYSTEM_PROMPT}
 
 [CULTURAL CONTEXT]: Language is ${language}. Referral Code: ${refCode || 'none'}.
 ${visionContext}
@@ -125,7 +125,45 @@ ${knowledgeContext}
 
 Strategy: Act as a Closer. Redirect to booking.`;
 
-            // 6. GPT-4o EXECUTION WITH VISION SUPPORT
+            // 6. VISION INTENT FORCING
+            // If an image is present, FORCE the AI to analyze it (prevents "How can I help?" responses)
+            let processedMessages = [...messages];
+
+            if (imageData) {
+                console.log('👁️ VISION TRIGGERED: Forcing dental analysis intent');
+
+                // Get the last user message
+                const lastMessage = processedMessages[processedMessages.length - 1];
+
+                if (lastMessage && lastMessage.role === 'user') {
+                    // Override empty or generic messages with explicit analysis instruction
+                    let userText = (lastMessage.content as string) || '';
+
+                    if (!userText || userText.trim() === '' || userText.trim().length < 10) {
+                        userText = "Lütfen bu diş görselini detaylı analiz et. Çürük, plak, diş eti sorunları ve estetik durumu hakkında profesyonel hekim yorumu yap.";
+                    } else {
+                        userText = `Görsel ile ilgili soru: ${userText}. (Lütfen görseli bir diş hekimi gözüyle analiz et)`;
+                    }
+
+                    // Update the last message with forced intent
+                    processedMessages[processedMessages.length - 1] = {
+                        ...lastMessage,
+                        content: userText
+                    };
+                }
+
+                // Enhance system prompt for vision
+                enrichedPrompt = `${enrichedPrompt}
+
+ÖZEL TALİMAT: Bir diş görseli gönderildi. 
+- Görseli profesyonel bir diş hekimi gözüyle analiz et
+- Çürük, diş taşı, diş eti çekilmesi, plak veya estetik sorunları tespit et
+- ASLA "Nasıl yardımcı olabilirim?" gibi genel sorular sorma
+- Doğrudan analizi yap ve bulgularını bildir
+- Kısa, net ve ikna edici konuş`;
+            }
+
+            // 7. GPT-4o EXECUTION WITH VISION SUPPORT
             // Construct messages array with proper image support for GPT-4o
             const formattedMessages: any[] = [
                 { role: 'system', content: enrichedPrompt }
@@ -133,8 +171,8 @@ Strategy: Act as a Closer. Redirect to booking.`;
 
             // Add conversation history with robust error handling
             try {
-                for (let i = 0; i < messages.length; i++) {
-                    const msg = messages[i];
+                for (let i = 0; i < processedMessages.length; i++) {
+                    const msg = processedMessages[i];
 
                     // If this is the last user message and we have valid imageData, use vision format
                     if (i === messages.length - 1 && msg.role === 'user' && imageData && typeof imageData === 'string') {
