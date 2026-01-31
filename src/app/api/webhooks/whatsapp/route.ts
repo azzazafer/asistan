@@ -29,27 +29,28 @@ export async function POST(req: NextRequest) {
         // CRITICAL: Fully async - don't await ANYTHING!
         // Normalization happens in background including image download
         (async () => {
+            const { sendWhatsAppMessage } = await import('@/lib/messaging');
+
             try {
                 console.log('🚀 BACKGROUND TASK STARTED');
+                await sendWhatsAppMessage(debugPhone, '1️⃣ Background task started').catch(() => { });
+
                 const normalized = await OmnichannelBridge.normalizeWhatsApp(payload);
                 console.log('✅ Normalization complete');
+                await sendWhatsAppMessage(debugPhone, '2️⃣ Normalization complete').catch(() => { });
+
                 await OmnichannelBridge.processIncoming(normalized);
                 console.log('✅ Processing complete');
+                await sendWhatsAppMessage(debugPhone, '3️⃣ Processing complete').catch(() => { });
+
             } catch (error: any) {
                 console.error('❌ ASYNC PROCESSING ERROR:', error);
 
-                // Send error to user using existing messaging function
-                if (debugPhone) {
-                    try {
-                        const { sendWhatsAppMessage } = await import('@/lib/messaging');
-                        await sendWhatsAppMessage(
-                            debugPhone,
-                            `🚨 Analiz hatası: ${error.message?.substring(0, 500)}`
-                        );
-                    } catch (msgError: any) {
-                        console.error('Failed to send error notification:', msgError);
-                    }
-                }
+                // Send detailed error to user
+                await sendWhatsAppMessage(
+                    debugPhone,
+                    `❌ ERROR at step: ${error.message}\n\nStack: ${error.stack?.substring(0, 300)}`
+                ).catch(() => { });
             }
         })(); // Execute immediately, don't await
 
