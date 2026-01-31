@@ -1,77 +1,83 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OmnichannelBridge } from '@/lib/ai/omnichannel';
 
+// FORCE DYNAMIC: Prevents Vercel from caching static responses
 export const dynamic = 'force-dynamic';
-export const maxDuration = 60; // Allow up to 60 seconds for vision processing
+export const maxDuration = 60; // Extend timeout for vision processing
 
 /**
- * Twilio WhatsApp Webhook
- * Handles incoming messages from WhatsApp users via Twilio.
+ * Production-Grade WhatsApp Webhook
+ * Handles incoming messages with bulletproof error handling and debug messaging
  */
 export async function POST(req: NextRequest) {
-    // Extract phone OUTSIDE try block so catch can access it without re-reading stream
-    let userPhone = '';
+    let debugPhone = ''; // Variable accessible to the catch block - NO stream re-read needed
 
     try {
-        // Twilio sends form-urlencoded data, not JSON
+        // 1. SAFE DATA EXTRACTION (Read Once Policy)
         const formData = await req.formData();
         const payload = Object.fromEntries(formData.entries());
 
-        // Extract phone immediately
+        // Extract phone safely for debug purposes
         const rawFrom = payload.From as string | undefined;
-        userPhone = rawFrom ? rawFrom.replace('whatsapp:', '') : '';
+        debugPhone = rawFrom ? rawFrom.replace('whatsapp:', '') : '';
 
-        console.log(`[WHATSAPP WEBHOOK] Incoming from ${payload.From}`);
+        console.log(`[Webhook] Incoming from: ${debugPhone} | Type: ${payload.NumMedia ? 'Media' : 'Text'}`);
 
-        // 1. Normalize
-        const normalized = await OmnichannelBridge.normalizeWhatsApp(payload);
+        // 2. NORMALIZE & ORCHESTRATION HANDOFF
+        // Wrap orchestration to catch logic errors separate from system errors
+        try {
+            const normalized = await OmnichannelBridge.normalizeWhatsApp(payload);
 
-        // 2. Process through Neural Engine
-        // EMERGENCY DEBUG: Echo back immediately to prove connectivity
-        if (normalized.content.includes('echo')) {
-            console.log('[DEBUG] Echo override triggered');
-            const { sendWhatsAppMessage } = require('@/lib/messaging');
-            await sendWhatsAppMessage(normalized.userId, `ECHO: ${normalized.content}`);
-            return new NextResponse('<Response></Response>', { headers: { 'Content-Type': 'text/xml' } });
+            if (normalized.content) {
+                await OmnichannelBridge.processIncoming(normalized);
+            }
+        } catch (processError: any) {
+            console.error('❌ ORCHESTRATOR ERROR:', processError);
+            throw new Error(`Logic Error: ${processError.message}`);
         }
 
-        if (normalized.content) {
-            await OmnichannelBridge.processIncoming(normalized);
-        }
-
-        // Twilio expects XML TwiML or just a 200 OK. 
-        // We'll return simple XML to acknowledge avoid warnings if needed, or just standard 200.
-        // For simple msg receiving, 200 OK is usually enough but best practice is empty TwiML.
+        // 3. SUCCESS RESPONSE TO TWILIO
+        // Always return 200 XML to Twilio to stop them from retrying
         return new NextResponse('<Response></Response>', {
-            headers: { 'Content-Type': 'text/xml' }
+            status: 200,
+            headers: { 'Content-Type': 'text/xml' },
         });
 
     } catch (error: any) {
-        console.error('[WHATSAPP WEBHOOK ERROR]', error.message);
-        console.error('❌ WEBHOOK CRASH:', {
-            message: error.message,
-            stack: error.stack?.split('\n').slice(0, 3)
-        });
+        console.error('❌ FATAL WEBHOOK CRASH:', error);
+        console.error('Stack:', error.stack?.split('\n').slice(0, 5));
 
-        // 🚨 DEBUG MODE: Send the actual error to WhatsApp for diagnosis
-        try {
-            const { sendWhatsAppMessage } = require('@/lib/messaging');
-            const formData = await req.formData();
-            const payload = Object.fromEntries(formData.entries());
-            // Force convert to string to fix TS error
-            const rawFrom = payload.From as string | undefined;
-            const userPhone = rawFrom ? rawFrom.replace('whatsapp:', '') : '';
-            if (userPhone) {
-                const errorMessage = error.message || 'Unknown Error';
-                const debugText = `🐛 DEBUG LOG:\n${errorMessage.substring(0, 800)}\n\nStack: ${error.stack?.split('\n').slice(0, 2).join('\n') || 'No stack'}`;
+        // 4. FAIL-SAFE DEBUG MESSAGING
+        // If we have the phone number, tell the user what happened
+        if (debugPhone) {
+            try {
+                const accountSid = process.env.TWILIO_ACCOUNT_SID;
+                const authToken = process.env.TWILIO_AUTH_TOKEN;
+                const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER || process.env.TWILIO_SMS_NUMBER;
 
-                await sendWhatsAppMessage(userPhone, debugText);
-                console.log('[DEBUG] Error sent to user:', userPhone);
+                if (accountSid && authToken && fromNumber) {
+                    const client = require('twilio')(accountSid, authToken);
+
+                    const errorMessage = error.message || "Unknown System Error";
+
+                    // Send RAW Error to WhatsApp for Root Cause Analysis
+                    await client.messages.create({
+                        from: fromNumber,
+                        to: `whatsapp:${debugPhone}`,
+                        body: `🚨 SYSTEM CRASH REPORT:\n\n${errorMessage.substring(0, 1000)}\n\n(This is a raw debug message to find the root cause)`
+                    });
+
+                    console.log('[DEBUG] Crash report sent to user:', debugPhone);
+                }
+            } catch (twilioError: any) {
+                console.error('Failed to send crash report:', twilioError.message);
             }
-        } catch (innerError: any) {
-            console.error('[DEBUG] Failed to send error to WhatsApp:', innerError.message);
         }
 
-        return NextResponse.json({ error: error.message }, { status: 500 });
+        // Return 200 even on error to prevent Twilio retry loops (which cause spam)
+        return new NextResponse('<Response></Response>', {
+            status: 200,
+            headers: { 'Content-Type': 'text/xml' },
+        });
     }
 }
