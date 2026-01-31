@@ -176,6 +176,7 @@ Strategy: Act as a Closer. Redirect to booking.`;
 
                     // If this is the last user message and we have valid imageData, use vision format
                     if (i === processedMessages.length - 1 && msg.role === 'user' && imageData && typeof imageData === 'string') {
+                        console.log(`[ORCHESTRATOR] 🔍 DIAGNOSTIC: Image data length: ${imageData.length}, starts with: ${imageData.substring(0, 50)}`);
                         try {
                             // Sanitize image URL - ensure it's a valid HTTP URL or base64
                             const imageUrl = imageData.startsWith('http')
@@ -191,7 +192,8 @@ Strategy: Act as a Closer. Redirect to booking.`;
                                     {
                                         type: "image_url",
                                         image_url: {
-                                            url: imageUrl
+                                            url: imageUrl,
+                                            detail: "low" // PERF: 3x faster, sufficient for dental analysis
                                         }
                                     }
                                 ]
