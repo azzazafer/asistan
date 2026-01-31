@@ -1,5 +1,6 @@
 import { supabase } from '@/lib/supabase-client';
 import { AiOrchestrator, AuraResponse } from './orchestrator';
+import { VisionFast } from './vision-fast'; // Fast-path vision handler
 import { transcribeAudio } from '@/lib/openai';
 import { sendWhatsAppMessage, sendWhatsAppVoice } from '@/lib/messaging';
 import { sendInstagramMessage } from '@/lib/instagram';
@@ -122,16 +123,50 @@ export class OmnichannelBridge {
             }
         }
 
-        // 4. AI ORCHESTRATION (Context-Aware)
+        // 4. AI ORCHESTRATION (DUAL-PATH ARCHITECTURE)
         const history = await getMessageHistory(message.userId);
         const context = [...history, { role: 'user', content: message.content }];
 
-        const auraResponse = await AiOrchestrator.processMessage(
-            message.userId,
-            context,
-            message.mediaUrl || imageData, // Pass mediaUrl from webhook directly
-            message.source
-        );
+        let auraResponse: AuraResponse | null = null;
+
+        // FAST-PATH: Vision-only messages bypass orchestrator for speed
+        if (message.mediaUrl && message.mediaUrl.startsWith('data:image')) {
+            console.log('⚡ [FAST-PATH] Image detected - Using VisionFast.quickAnalyze');
+
+            try {
+                const visionResult = await VisionFast.quickAnalyze({
+                    imageData: message.mediaUrl,
+                    userMessage: message.content
+                });
+
+                auraResponse = {
+                    message: {
+                        role: 'assistant',
+                        content: visionResult
+                    }
+                };
+
+                console.log('⚡ [FAST-PATH] Vision analysis complete');
+            } catch (visionError: any) {
+                console.error('❌ [FAST-PATH] Vision failed, falling back to orchestrator:', visionError);
+                // Fallback to full orchestrator if fast path fails
+                auraResponse = await AiOrchestrator.processMessage(
+                    message.userId,
+                    context,
+                    message.mediaUrl || imageData,
+                    message.source
+                );
+            }
+        } else {
+            // FULL-PATH: Text messages or non-image media use full orchestrator
+            console.log('💎 [FULL-PATH] Using AiOrchestrator with all features');
+            auraResponse = await AiOrchestrator.processMessage(
+                message.userId,
+                context,
+                message.mediaUrl || imageData,
+                message.source
+            );
+        }
 
         // 4. RESPONSE DELIVERY
         if (auraResponse && auraResponse.message.content) {
