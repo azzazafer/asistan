@@ -177,7 +177,7 @@ Strategy: Act as a Closer. Redirect to booking.`;
             } catch (formatError: any) {
                 console.error('[ORCHESTRATOR] Message formatting error:', formatError.message);
                 // Fallback: use simple text format
-                formattedMessages.push(...messages.map(m => ({ role: m.role, content: m.content })));
+                formattedMessages.push(...processedMessages.map(m => ({ role: m.role, content: m.content })));
             }
 
             console.log(`[ORCHESTRATOR] Calling OpenAI with ${formattedMessages.length} messages, model: gpt-4o`);
