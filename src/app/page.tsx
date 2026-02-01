@@ -13,7 +13,7 @@ export default function VisualAuthorityLandingPage() {
       <FOMOTicker />
 
       {/* Hero Section - Visual Proof */}
-      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-6 overflow-hidden">
+      <section className="relative pt-44 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5 pointer-events-none" />
 
         <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-16 items-center">
@@ -164,19 +164,23 @@ export default function VisualAuthorityLandingPage() {
               className="lg:col-span-2"
               visual={
                 <div className="relative w-full h-48 bg-slate-900/50 rounded-xl border border-blue-500/20 overflow-hidden">
-                  {/* X-Ray with Bounding Boxes */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent" />
-                  <div className="absolute top-4 left-4 px-3 py-1 bg-blue-500/20 border border-blue-500/40 rounded-lg">
-                    <span className="text-[10px] font-bold text-blue-300">Diş #36: Çürük Tespit Edildi</span>
+                  {/* X-Ray with CSS Bounding Boxes */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-transparent" />
+
+                  {/* Simulated Teeth with Bounding Boxes */}
+                  <div className="absolute top-8 left-8 w-16 h-16 border-2 border-blue-400 rounded-lg">
+                    <div className="absolute -top-6 left-0 px-2 py-1 bg-blue-500/80 text-white text-[8px] font-bold rounded">
+                      DECAY DETECTED
+                    </div>
                   </div>
-                  <div className="absolute bottom-4 right-4 px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 rounded-lg">
-                    <span className="text-[10px] font-bold text-emerald-300">%94.2 Güven</span>
+                  <div className="absolute top-8 right-16 w-12 h-12 border-2 border-emerald-400/40 rounded-lg" />
+
+                  <div className="absolute bottom-4 left-4 px-3 py-1 bg-blue-500/20 border border-blue-500/40 rounded-lg">
+                    <span className="text-[10px] font-bold text-blue-300">Diş #36: Çürük</span>
                   </div>
-                  {/* Simulated X-Ray Grid */}
-                  <div className="absolute inset-0 opacity-10">
-                    {[...Array(8)].map((_, i) => (
-                      <div key={i} className="w-full h-px bg-blue-400" style={{ marginTop: `${i * 30}px` }} />
-                    ))}
+                  <div className="absolute bottom-4 right-4 px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 rounded-lg flex items-center gap-1">
+                    <CheckCircle2 size={10} className="text-emerald-300" />
+                    <span className="text-[10px] font-bold text-emerald-300">94.2%</span>
                   </div>
                 </div>
               }
@@ -192,19 +196,25 @@ export default function VisualAuthorityLandingPage() {
               className="md:row-span-2"
               visual={
                 <div className="space-y-2">
-                  {/* Multi-tenant list */}
-                  {['DentalPark Ankara', 'Smile Clinic İstanbul', 'Aydın Diş İzmir'].map((clinic, i) => (
-                    <div key={i} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg">
+                  {/* Multi-tenant Agency Dashboard */}
+                  {[{ name: 'DentalPark Ankara', leads: 18, color: 'emerald' }, { name: 'Smile Clinic İstanbul', leads: 23, color: 'blue' }, { name: 'Aydın Diş İzmir', leads: 15, color: 'purple' }].map((clinic, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-all group">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center text-[10px] font-bold text-white">
-                          {clinic.charAt(0)}
+                        <div className={`w-8 h-8 bg-gradient-to-br from-${clinic.color}-500 to-${clinic.color}-600 rounded-lg flex items-center justify-center text-[10px] font-bold text-white shadow-lg`}>
+                          {clinic.name.charAt(0)}
                         </div>
                         <div>
-                          <div className="text-xs font-bold text-white">{clinic}</div>
-                          <div className="text-[10px] text-slate-400">{15 + i * 3} aktif lead</div>
+                          <div className="text-xs font-bold text-white">{clinic.name}</div>
+                          <div className="text-[10px] text-slate-400 flex items-center gap-1">
+                            <Users size={10} />
+                            {clinic.leads} aktif lead
+                          </div>
                         </div>
                       </div>
-                      <TrendingUp size={14} className="text-emerald-400" />
+                      <div className="flex items-center gap-2">
+                        <div className="text-emerald-400 text-xs font-bold">+{5 + i * 2}%</div>
+                        <TrendingUp size={14} className="text-emerald-400 group-hover:scale-110 transition-transform" />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -293,7 +303,7 @@ export default function VisualAuthorityLandingPage() {
   );
 }
 
-// FOMO Ticker Component
+// FOMO Ticker Component - REPOSITIONED ABOVE NAVBAR
 function FOMOTicker() {
   const [offset, setOffset] = useState(0);
 
@@ -313,7 +323,7 @@ function FOMOTicker() {
   ];
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-emerald-950/80 via-slate-950/80 to-blue-950/80 backdrop-blur-md border-b border-white/10">
+    <div className="fixed top-0 left-0 right-0 z-60 bg-gradient-to-r from-emerald-950/90 via-slate-950/90 to-blue-950/90 backdrop-blur-xl border-b border-emerald-500/20">
       <div className="overflow-hidden py-3">
         <motion.div
           className="flex gap-12 whitespace-nowrap"
