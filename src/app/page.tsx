@@ -87,7 +87,7 @@ export default function VisualAuthorityLandingPage() {
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-xs font-bold text-white">CANLI PANObr />
+                      <span className="text-xs font-bold text-white">CANLI PANEL</span>
                     </div>
                     <span className="text-[10px] text-slate-400">Son 24 Saat</span>
                   </div>

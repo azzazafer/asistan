@@ -18,7 +18,7 @@ export default function Navbar() {
 
     return (
         <nav className={`fixed top-0 w-full z-[2000] transition-all duration-700 ${isScrolled ? 'py-4 bg-slate-950/90 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.3)]' : 'py-8 bg-transparent border-b border-transparent'}`}>
-            <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">>
+            <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-4 group">
                     <div className="w-12 h-12 flex items-center justify-center relative">
