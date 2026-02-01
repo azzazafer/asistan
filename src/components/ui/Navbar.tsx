@@ -17,8 +17,8 @@ export default function Navbar() {
     }, []);
 
     return (
-        <nav className={`fixed top-0 w-full z-[1000] transition-all duration-700 ${isScrolled ? 'py-4 bg-[#050505]/90 backdrop-blur-xl border-b border-white/10 shadow-3xl' : 'py-8 bg-transparent border-b border-transparent'}`}>
-            <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">
+        <nav className={`fixed top-0 w-full z-[2000] transition-all duration-700 ${isScrolled ? 'py-4 bg-slate-950/90 backdrop-blur-2xl border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.3)]' : 'py-8 bg-transparent border-b border-transparent'}`}>
+            <div className="max-w-[1400px] mx-auto px-6 flex items-center justify-between">>
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-4 group">
                     <div className="w-12 h-12 flex items-center justify-center relative">
@@ -47,10 +47,10 @@ export default function Navbar() {
 
                 {/* Desktop Menu */}
                 <div className="hidden lg:flex items-center gap-12 text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">
-                    <Link href="/solutions/clinics" className="hover:text-[#00F0FF] transition-all">Klinikler</Link>
-                    <Link href="/solutions/agencies" className="hover:text-[#00F0FF] transition-all">Acenteler</Link>
-                    <Link href="/technology" className="hover:text-[#00F0FF] transition-all">Teknoloji</Link>
-                    <Link href="/vision" className="hover:text-[#00F0FF] transition-all">Vizyon</Link>
+                    <Link href="/solutions/clinics" className="hover:text-emerald-400 transition-all">Klinikler</Link>
+                    <Link href="/solutions/agencies" className="hover:text-emerald-400 transition-all">Partner/Ajans</Link>
+                    <Link href="/technology" className="hover:text-blue-400 transition-all">Teknoloji</Link>
+                    <Link href="/vision" className="hover:text-white transition-all">Vizyon</Link>
                 </div>
 
                 {/* Right Actions */}
@@ -59,8 +59,8 @@ export default function Navbar() {
                         Giriş Yap
                     </Link>
                     <Link href="/signup">
-                        <button className="px-8 py-3 bg-[#00F0FF] text-black rounded-lg text-[10px] font-black uppercase tracking-[0.2em] hover:bg-[#00F0FF]/90 transition-all shadow-[0_0_25px_rgba(0,240,255,0.3)] active:scale-95">
-                            Operasyonu Başlat
+                        <button className="px-8 py-3 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg text-[10px] font-black uppercase tracking-[0.2em] hover:scale-105 transition-all shadow-[0_0_25px_rgba(16,185,129,0.3)] active:scale-95">
+                            Ücretsiz Başla
                         </button>
                     </Link>
                 </div>
@@ -96,8 +96,8 @@ export default function Navbar() {
                                 <Link href="/technology" className="text-2xl font-bold tracking-tight text-white font-space hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>Teknoloji</Link>
                                 <Link href="/vision" className="text-2xl font-bold tracking-tight text-white font-space hover:text-[#00F0FF] transition-colors" onClick={() => setIsMenuOpen(false)}>Vizyon</Link>
                                 <div className="h-px bg-white/10 w-full" />
-                                <Link href="/signup" onClick={() => setIsMenuOpen(false)} className="w-full py-5 bg-[#00F0FF] text-black rounded-2xl font-black uppercase tracking-[0.2em] text-center shadow-[0_10px_30px_rgba(0,240,255,0.3)] hover:scale-[1.02] transition-all">
-                                    Operasyonu Başlat
+                                <Link href="/signup" onClick={() => setIsMenuOpen(false)} className="w-full py-5 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-center shadow-[0_10px_30px_rgba(16,185,129,0.3)] hover:scale-[1.02] transition-all">
+                                    Ücretsiz Başla
                                 </Link>
                             </nav>
                         </motion.div>

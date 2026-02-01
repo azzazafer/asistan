@@ -1,213 +1,431 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import { ArrowDown, Cpu, Globe, Rocket, Shield, Zap, ChevronRight, Activity, Radio, Lock, Camera, Workflow, DollarSign } from "lucide-react";
+import { motion } from "framer-motion";
+import { ArrowRight, CheckCircle2, Camera, MessageSquare, TrendingUp, Shield, Building2, Smartphone, Users, Zap, DollarSign, Brain, Eye } from "lucide-react";
 import Link from "next/link";
 import AuraLayout from "@/components/AuraLayout";
-import AnimatedNumber from "@/components/AnimatedNumber";
-import NexScanDemo from "@/components/NexScanDemo";
-import LiveTicker from "@/components/LiveTicker";
-import ProblemTable from "@/components/ProblemTable";
 
-export default function DeepSpaceHomePage() {
-  const { scrollYProgress } = useScroll();
-  const dashboardRotate = useTransform(scrollYProgress, [0, 0.5], [15, 0]);
-  const dashboardScale = useTransform(scrollYProgress, [0, 0.5], [0.8, 1]);
-
+export default function VisualAuthorityLandingPage() {
   return (
     <AuraLayout>
-      {/* --- SECTION A: HERO (THE HOOK) --- */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 px-6 overflow-hidden flex flex-col items-center min-h-[90vh] justify-center">
-        {/* Visual Backdrop: Neural Connection & Hero V5 */}
-        <div className="absolute inset-x-0 top-0 h-full opacity-40 pointer-events-none z-0">
-          <Image
-            src="/images/aura_hero_bg.png"
-            alt=""
-            fill
-            className="object-cover mix-blend-screen opacity-20"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
-        </div>
+      {/* FOMO Ticker - Thin & Translucent */}
+      <FOMOTicker />
 
-        <div className="max-w-[1400px] mx-auto text-center relative z-10 space-y-12">
+      {/* Hero Section - Visual Proof */}
+      <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 px-6 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-blue-500/5 pointer-events-none" />
+
+        <div className="max-w-[1400px] mx-auto grid lg:grid-cols-2 gap-16 items-center">
+          {/* Left: Headline */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-3 px-6 py-2 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-[0.5em] text-[#00F0FF]"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="space-y-8"
           >
-            <Radio size={14} className="animate-pulse" /> NEXTORIA ALPHA OPERASYONU v13.0
-          </motion.div>
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+              <Zap size={14} className="text-emerald-400" />
+              <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Otonom Satış Motoru</span>
+            </div>
 
-          {/* New Hero Image Feature for Mobile/Desktop Depth */}
-          <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-full max-w-[1000px] h-[600px] opacity-10 pointer-events-none select-none blur-sm">
-            <Image src="/images/hero_v5.png" alt="" fill priority className="object-contain" />
-          </div>
+            <h1 className="text-5xl md:text-7xl font-bold tracking-tight leading-[1.1]">
+              <span className="text-white">Klinikler ve Ajanslar</span>
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">
+                İçin Otonom Zeka
+              </span>
+            </h1>
 
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="fluid-hero font-bold tracking-[-0.08em] font-space text-white leading-tight uppercase italic"
-          >
-            Yönetmeyi Bırakın.<br />
-            <span className="text-[#00F0FF]">Kapatmaya Başlayın.</span>
-          </motion.h1>
+            <p className="text-xl text-slate-400 leading-relaxed max-w-xl">
+              Sekreteriniz <span className="text-white font-semibold">uyurken</span>, Aura OS hasta ikna eder, röntgen okur ve <span className="text-emerald-400 font-semibold">₺45.000 satış kapatır</span>. 7/24.
+            </p>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-xl md:text-2xl font-medium text-[#B0B0B0] max-w-3xl mx-auto leading-relaxed"
-          >
-            Dünyanın ilk Nöro-Satış Motoru. Randevu vermiyoruz, HBYS ile <span className="text-white">12ms hızında</span> konuşup satışı Stripe üzerinden otonom kapatıyoruz.
-          </motion.p>
+            <div className="flex flex-wrap gap-4">
+              <button
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    window.open('https://wa.me/905322850606?text=Merhaba%2C%20Aura%20OS%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum', '_blank');
+                  }
+                }}
+                className="group px-8 py-4 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl font-bold flex items-center gap-2 hover:scale-105 transition-all shadow-[0_0_30px_rgba(16,185,129,0.3)]"
+              >
+                WhatsApp'ta Canlı Dene
+                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </button>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-col md:flex-row items-center justify-center gap-8 pt-6"
-          >
-            <button
-              onClick={() => {
-                if (typeof window !== 'undefined') {
-                  window.dispatchEvent(new CustomEvent('openNexScan'));
-                }
-              }}
-              className="px-12 py-5 bg-transparent border border-[#00F0FF] text-[#00F0FF] rounded-xl text-[12px] font-black uppercase tracking-[0.3em] hover:bg-[#00F0FF] hover:text-black transition-all shadow-[0_0_40px_rgba(0,240,255,0.2)] active:scale-95 duration-500">
-              Alpha Sürümüne Geç
-            </button>
-            <Link href="/calculate-loss" className="text-[12px] font-black uppercase tracking-[0.3em] text-[#B0B0B0] hover:text-white transition-colors flex items-center gap-3 group">
-              Ciro Kaybını Hesapla <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+              <Link href="/calculate-loss">
+                <button className="px-8 py-4 bg-white/5 border border-white/10 text-white rounded-xl font-bold hover:bg-white/10 transition-all">
+                  Ciro Kaybını Hesapla
+                </button>
+              </Link>
+            </div>
 
-      {/* Live Data Ticker */}
-      <LiveTicker />
-
-      {/* --- SECTION B: THE PROBLEM (REALITY CHECK) --- */}
-      <section className="py-40 px-6 relative">
-        <div className="max-w-[1400px] mx-auto space-y-24">
-          <div className="text-center space-y-6">
-            <h2 className="text-4xl md:text-6xl font-bold uppercase italic tracking-tighter text-white font-space">Gerçekle Yüzleşin.</h2>
-            <p className="text-[#B0B0B0] max-w-2xl mx-auto text-lg leading-relaxed">Eski nesil CRM'ler yavaş ve pasiftir. Aura OS, otonom bir avcı gibi her fırsatı paraya dönüştürür.</p>
-          </div>
-
-          <ProblemTable />
-        </div>
-      </section>
-
-      {/* --- SECTION C: CORE TECHNOLOGY (THE GRID) --- */}
-      <section id="nexscan" className="py-40 px-6 bg-[#030303] relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-px bg-white/5" />
-
-        <div className="max-w-[1400px] mx-auto grid lg:grid-cols-3 gap-10">
-          <Link href="/technology" className="flex">
-            <TechCard
-              id="scarcity"
-              icon={<Activity className="text-[#8A2BE2]" />}
-              title="Scarcity Engine™"
-              text="Stoklar 2'nin altına düştüğünde, AI otomatik olarak 'Kıtlık Psikolojisi' uygular ve dönüşümü %300 artırır."
-              color="#8A2BE2"
-              visual={<div className="w-20 h-20 bg-[#8A2BE2]/10 rounded-full flex items-center justify-center animate-pulse border border-[#8A2BE2]/20"><DollarSign size={32} className="text-[#8A2BE2]" /></div>}
-            />
-          </Link>
-
-          <TechCard
-            id="nexscan-tech"
-            icon={<Camera className="text-[#00F0FF]" />}
-            title="Nex-Scan™ Triaj"
-            text="Hasta fotoğrafını (Saç/Diş) milisaniyeler içinde analiz eder. Doktor görmeden önce Lead Score çıkarır."
-            color="#00F0FF"
-            visual={<div className="relative w-24 h-24 border border-[#00F0FF]/20 rounded-xl overflow-hidden group">
-              <motion.div
-                animate={{ y: ["0%", "100%", "0%"] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-                className="absolute top-0 left-0 w-full h-0.5 bg-[#00F0FF] shadow-[0_0_15px_#00F0FF]"
-              />
-              <div className="absolute inset-0 flex items-center justify-center"><Activity size={32} className="text-[#00F0FF]/40" /></div>
-            </div>}
-            onClick={() => {
-              if (typeof window !== 'undefined') {
-                window.dispatchEvent(new CustomEvent('openNexScan'));
-              }
-            }}
-          />
-
-          <Link href="/technology" className="flex">
-            <TechCard
-              id="stripe"
-              icon={<Lock className="text-white" />}
-              title="Stripe Bridge"
-              text="Telefon kapanmadan kapora tahsilatı yapılır. 'Sözde randevu' biter, 'Ödenmiş Randevu' başlar."
-              color="#FFFFFF"
-              visual={<div className="flex flex-col items-center gap-3">
-                <div className="text-3xl font-bold font-space text-white">$2,500</div>
-                <div className="text-[8px] font-black uppercase tracking-widest text-[#00F0FF]">KAPORA TAHSİL EDİLDİ</div>
-              </div>}
-            />
-          </Link>
-        </div>
-      </section>
-
-      {/* --- SECTION D: THE DASHBOARD (THE MATRIX) --- */}
-      <section className="py-40 px-6 relative overflow-hidden">
-        <div className="max-w-[1400px] mx-auto text-center space-y-20">
-          <div className="space-y-6">
-            <div className="text-[#00F0FF] text-[10px] font-black tracking-[0.5em] uppercase">ALPHA INFRASTRUCTURE v13.0</div>
-            <h2 className="text-4xl md:text-7xl font-bold uppercase italic tracking-tighter text-white font-space">Tekil Komuta Merkezi.</h2>
-          </div>
-
-          <motion.div
-            style={{ rotateX: dashboardRotate, scale: dashboardScale, perspective: 1000 }}
-            className="relative w-full aspect-video max-w-6xl mx-auto rounded-[3rem] overflow-hidden border border-white/5 shadow-[0_100px_200px_rgba(0,0,0,0.8)]"
-          >
-            <Image
-              src="/images/aura_dashboard_matrix_mockup.png"
-              alt="Aura OS Dashboard"
-              fill
-              className="brightness-75 hover:brightness-100 transition-all duration-700 object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent" />
-            <div className="absolute bottom-10 left-10 md:bottom-20 md:left-20 text-left space-y-4">
-              <div className="flex items-center gap-4">
-                <span className="w-3 h-3 bg-green-500 rounded-full animate-ping shadow-[0_0_10px_#22c55e]" />
-                <span className="text-[10px] font-black text-white uppercase tracking-widest">Canlı Global İzleme Aktif</span>
+            <div className="flex items-center gap-8 pt-4">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={20} className="text-emerald-400" />
+                <span className="text-sm text-slate-400">Kredi Kartı Gerekmez</span>
               </div>
-              <div className="text-[#B0B0B0] text-xs font-medium max-w-xs leading-relaxed">Nextoria Alpha veri merkezlerine doğrudan bağlı, 12ms senkronizasyon hızı.</div>
+              <div className="flex items-center gap-2">
+                <CheckCircle2 size={20} className="text-emerald-400" />
+                <span className="text-sm text-slate-400">30 Saniyede Başla</span>
+              </div>
             </div>
           </motion.div>
+
+          {/* Right: Tilted 3D Dashboard Mockup */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="relative"
+          >
+            <div className="relative perspective-1000">
+              {/* Dashboard Container */}
+              <div className="transform rotate-y-6 rotate-x-3 hover:rotate-0 transition-all duration-700">
+                <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl border border-white/10 shadow-[0_40px_100px_rgba(0,0,0,0.4)] p-6 space-y-4">
+                  {/* Dashboard Header */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="text-xs font-bold text-white">CANLI PANObr />
+                    </div>
+                    <span className="text-[10px] text-slate-400">Son 24 Saat</span>
+                  </div>
+
+                  {/* Revenue Widget */}
+                  <div className="bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30 rounded-2xl p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-emerald-400 font-bold">GÜNLÜK GELİR</span>
+                      <TrendingUp size={16} className="text-emerald-400" />
+                    </div>
+                    <div className="text-3xl font-bold text-white">₺127,450</div>
+                    <div className="text-[10px] text-emerald-400 mt-1">+34% bu hafta 📈</div>
+                  </div>
+
+                  {/* X-Ray Analysis Chat */}
+                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
+                    <div className="flex items-center gap-2">
+                      <Camera size={14} className="text-blue-400" />
+                      <span className="text-xs font-bold text-slate-300">Röntgen Analizi</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-2">
+                        <p className="text-[11px] text-slate-300">"Sol alt 36 numaralı dişte çürük tespit edildi. Dolgu öneriyorum."</p>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-slate-400">
+                        <Brain size={12} className="text-blue-400" />
+                        <span>GPT-4o Vision • %94.2 güven</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Mini Graph */}
+                  <div className="h-20 bg-gradient-to-t from-emerald-500/5 to-transparent rounded-xl flex items-end gap-1 p-2">
+                    {[40, 65, 45, 80, 70, 95, 75, 88].map((height, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 bg-gradient-to-t from-emerald-500 to-emerald-400 rounded-sm"
+                        style={{ height: `${height}%` }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Glow Effect */}
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-blue-500/20 rounded-3xl blur-3xl -z-10" />
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Bento Grid - Visual Proof */}
+      <section className="py-20 px-6 bg-gradient-to-b from-transparent to-slate-950/50">
+        <div className="max-w-[1400px] mx-auto space-y-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold text-white">
+              Göster, <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">Anlatma</span>
+            </h2>
+            <p className="text-slate-400 max-w-2xl mx-auto">
+              İkonlar değil, gerçek UI. Aura OS'un nasıl çalıştığını görün.
+            </p>
+          </div>
+
+          {/* Bento Grid Layout */}
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Box 1: Vision AI (Big - 2 columns) */}
+            <BentoCard
+              title="Röntgeni Görüyorum"
+              description="GPT-4o Vision ile diş çürüklerini, kırıkları ve tedavi ihtiyaçlarını 3 saniyede tespit eder."
+              icon={<Eye className="text-blue-400" />}
+              gradient="from-blue-500/10 to-blue-600/5"
+              border="border-blue-500/20"
+              className="lg:col-span-2"
+              visual={
+                <div className="relative w-full h-48 bg-slate-900/50 rounded-xl border border-blue-500/20 overflow-hidden">
+                  {/* X-Ray with Bounding Boxes */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent" />
+                  <div className="absolute top-4 left-4 px-3 py-1 bg-blue-500/20 border border-blue-500/40 rounded-lg">
+                    <span className="text-[10px] font-bold text-blue-300">Diş #36: Çürük Tespit Edildi</span>
+                  </div>
+                  <div className="absolute bottom-4 right-4 px-3 py-1 bg-emerald-500/20 border border-emerald-500/40 rounded-lg">
+                    <span className="text-[10px] font-bold text-emerald-300">%94.2 Güven</span>
+                  </div>
+                  {/* Simulated X-Ray Grid */}
+                  <div className="absolute inset-0 opacity-10">
+                    {[...Array(8)].map((_, i) => (
+                      <div key={i} className="w-full h-px bg-blue-400" style={{ marginTop: `${i * 30}px` }} />
+                    ))}
+                  </div>
+                </div>
+              }
+            />
+
+            {/* Box 2: Agency Mode (Tall - 2 rows) */}
+            <BentoCard
+              title="Ajans Modu"
+              description="Müşterilerinizi tek panelden yönetin. Her klinik için ayrı branding ve raporlama."
+              icon={<Building2 className="text-emerald-400" />}
+              gradient="from-emerald-500/10 to-emerald-600/5"
+              border="border-emerald-500/20"
+              className="md:row-span-2"
+              visual={
+                <div className="space-y-2">
+                  {/* Multi-tenant list */}
+                  {['DentalPark Ankara', 'Smile Clinic İstanbul', 'Aydın Diş İzmir'].map((clinic, i) => (
+                    <div key={i} className="flex items-center justify-between p-3 bg-white/5 border border-white/10 rounded-lg">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-lg flex items-center justify-center text-[10px] font-bold text-white">
+                          {clinic.charAt(0)}
+                        </div>
+                        <div>
+                          <div className="text-xs font-bold text-white">{clinic}</div>
+                          <div className="text-[10px] text-slate-400">{15 + i * 3} aktif lead</div>
+                        </div>
+                      </div>
+                      <TrendingUp size={14} className="text-emerald-400" />
+                    </div>
+                  ))}
+                </div>
+              }
+            />
+
+            {/* Box 3: WhatsApp Mode */}
+            <BentoCard
+              title="WhatsApp Entegre"
+              description="Hasta mesajlarına 12ms'de cevap verir. İnsan gibi, ama yorulmadan."
+              icon={<MessageSquare className="text-green-400" />}
+              gradient="from-green-500/10 to-green-600/5"
+              border="border-green-500/20"
+              visual={
+                <div className="relative w-full h-48">
+                  {/* iPhone Frame */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-slate-800 to-slate-900 rounded-[2rem] border-4 border-slate-700 shadow-2xl p-3">
+                    {/* Status Bar */}
+                    <div className="flex items-center justify-between px-6 py-2">
+                      <span className="text-[8px] text-white">9:41</span>
+                      <div className="flex items-center gap-1">
+                        <div className="w-4 h-2 bg-white/30 rounded-sm" />
+                        <div className="w-1 h-2 bg-white/30 rounded-sm" />
+                      </div>
+                    </div>
+                    {/* WhatsApp Chat */}
+                    <div className="bg-[#0a1014] rounded-2xl p-2 space-y-2 h-[calc(100%-30px)] overflow-hidden">
+                      <div className="bg-[#1f3933] rounded-lg p-2 max-w-[80%]">
+                        <p className="text-[9px] text-white">Diş çekimi fiyatı ne kadar?</p>
+                      </div>
+                      <div className="bg-[#005c4b] rounded-lg p-2 max-w-[80%] ml-auto">
+                        <p className="text-[9px] text-white">Basit çekim ₺800, gömülü ₺1,500. Pazar'a slot açtım 👍</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              }
+            />
+
+            {/* Box 4: Security */}
+            <BentoCard
+              title="KVKK Uyumlu"
+              description="AES-256 şifreleme, audit logs, ve tam Türkiye compliance."
+              icon={<Shield className="text-amber-400" />}
+              gradient="from-amber-500/10 to-amber-600/5"
+              border="border-amber-500/20"
+              visual={
+                <div className="flex items-center justify-center h-32">
+                  <div className="relative">
+                    <Shield size={48} className="text-amber-400" />
+                    <div className="absolute inset-0 bg-amber-400/20 rounded-full blur-2xl" />
+                  </div>
+                </div>
+              }
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Comparison Table */}
+      <ComparisonTable />
+
+      {/* CTA Section */}
+      <section className="py-20 px-6">
+        <div className="max-w-4xl mx-auto text-center space-y-8">
+          <h2 className="text-4xl md:text-5xl font-bold text-white">
+            Başlamaya Hazır mısınız?
+          </h2>
+          <p className="text-xl text-slate-400">
+            Kredi kartı gerekmez. 30 saniyede WhatsApp'tan başlayın.
+          </p>
+          <button
+            onClick={() => {
+              if (typeof window !== 'undefined') {
+                window.open('https://wa.me/905322850606?text=Merhaba%2C%20Aura%20OS%20demo%20talebi', '_blank');
+              }
+            }}
+            className="group px-12 py-6 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-2xl text-lg font-bold flex items-center gap-3 hover:scale-105 transition-all shadow-[0_0_50px_rgba(16,185,129,0.3)] mx-auto"
+          >
+            Ücretsiz Başla
+            <ArrowRight size={24} className="group-hover:translate-x-2 transition-transform" />
+          </button>
         </div>
       </section>
     </AuraLayout>
   );
 }
 
-function TechCard({ id, icon, title, text, color, visual, onClick }: { id: string, icon: React.ReactNode, title: string, text: string, color: string, visual: React.ReactNode, onClick?: () => void }) {
+// FOMO Ticker Component
+function FOMOTicker() {
+  const [offset, setOffset] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setOffset((prev) => (prev - 1) % 100);
+    }, 50);
+    return () => clearInterval(interval);
+  }, []);
+
+  const events = [
+    "⚡ Dr. Yılmaz (İstanbul) ₺45.000 Satış Kapattı",
+    "🔥 DentalPark (Ankara) Randevu Onayladı",
+    "💰 Smile Clinic (İzmir) Kapora Tahsil Etti",
+    "⚡ Dr. Mehmet (Antalya) X-Ray Analizi Tamamlandı",
+    "🔥 Elite Dental (Bursa) ₺32.500 Satış",
+  ];
+
   return (
-    <div
-      id={id}
-      onClick={onClick}
-      className={`p-10 rounded-[3rem] bg-white/[0.02] border border-white/5 hover:border-[#00F0FF]/30 transition-all duration-700 group flex flex-col justify-between min-h-[500px] relative overflow-hidden cursor-pointer`}
-    >
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-white/[0.01] to-transparent pointer-events-none" />
-
-      <div className="space-y-8 relative z-10">
-        <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center border border-white/10 group-hover:scale-110 group-hover:bg-[#00F0FF]/10 transition-all duration-500">{icon}</div>
-        <h3 className="text-3xl font-bold uppercase italic tracking-tight font-space text-white">{title}</h3>
-        <p className="text-lg text-[#B0B0B0] leading-relaxed font-medium">{text}</p>
-      </div>
-
-      <div className="relative z-10 flex justify-center py-10 opacity-40 group-hover:opacity-100 transition-opacity duration-700">
-        {visual}
-      </div>
-
-      <div className="relative z-10 pt-6 flex items-center gap-4 text-[10px] font-black uppercase tracking-widest text-slate-600 group-hover:text-white transition-colors">
-        Detayları Gör <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+    <div className="fixed top-0 left-0 right-0 z-40 bg-gradient-to-r from-emerald-950/80 via-slate-950/80 to-blue-950/80 backdrop-blur-md border-b border-white/10">
+      <div className="overflow-hidden py-3">
+        <motion.div
+          className="flex gap-12 whitespace-nowrap"
+          animate={{ x: `${offset}%` }}
+          transition={{ duration: 0, ease: "linear" }}
+        >
+          {[...events, ...events, ...events].map((event, i) => (
+            <span key={i} className="text-xs font-bold text-emerald-400 flex items-center gap-2">
+              {event}
+              <span className="text-slate-600">•</span>
+            </span>
+          ))}
+        </motion.div>
       </div>
     </div>
+  );
+}
+
+// Bento Card Component
+interface BentoCardProps {
+  title: string;
+  description: string;
+  icon: React.ReactNode;
+  gradient: string;
+  border: string;
+  visual: React.ReactNode;
+  className?: string;
+}
+
+function BentoCard({ title, description, icon, gradient, border, visual, className = "" }: BentoCardProps) {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      className={`relative p-6 bg-gradient-to-br ${gradient} border ${border} rounded-3xl backdrop-blur-xl overflow-hidden group ${className}`}
+    >
+      <div className="relative z-10 space-y-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
+            {icon}
+          </div>
+          <h3 className="text-xl font-bold text-white">{title}</h3>
+        </div>
+
+        <p className="text-sm text-slate-400 leading-relaxed">{description}</p>
+
+        <div className="mt-6">
+          {visual}
+        </div>
+      </div>
+
+      {/* Glow on Hover */}
+      <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+    </motion.div>
+  );
+}
+
+// Comparison Table Component
+function ComparisonTable() {
+  return (
+    <section className="py-20 px-6 bg-gradient-to-b from-slate-950/50 to-transparent">
+      <div className="max-w-[1200px] mx-auto space-y-12">
+        <div className="text-center space-y-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white">
+            Gerçekle <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-blue-400">Yüzleşin</span>
+          </h2>
+          <p className="text-slate-400">
+            Neden Aura OS diğerlerinden farklı?
+          </p>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b border-white/10">
+                <th className="text-left py-4 px-6 text-slate-400 font-medium">Özellik</th>
+                <th className="text-center py-4 px-6 text-slate-400 font-medium">Sekreter</th>
+                <th className="text-center py-4 px-6 text-slate-400 font-medium">Chatbot</th>
+                <th className="text-center py-4 px-6 text-emerald-400 font-bold">AURA OS</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                { feature: "Maliyet", sekreter: "₺15.000/ay", chatbot: "₺2.000/ay", aura: "%10 komisyon" },
+                { feature: "Çalışma Saati", sekreter: "09:00-18:00", chatbot: "7/24", aura: "7/24" },
+                { feature: "Satış Kapatır", sekreter: false, chatbot: false, aura: true },
+                { feature: "Röntgen Okur", sekreter: false, chatbot: false, aura: true },
+                { feature: "Ödeme Alır", sekreter: false, chatbot: false, aura: true },
+                { feature: "Çok Dilli", sekreter: false, chatbot: true, aura: true },
+              ].map((row, i) => (
+                <tr key={i} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                  <td className="py-4 px-6 text-white font-medium">{row.feature}</td>
+                  <td className="py-4 px-6 text-center text-slate-400">
+                    {typeof row.sekreter === 'boolean' ? (
+                      row.sekreter ? <CheckCircle2 className="inline text-emerald-400" size={20} /> : <span className="text-red-400">✗</span>
+                    ) : row.sekreter}
+                  </td>
+                  <td className="py-4 px-6 text-center text-slate-400">
+                    {typeof row.chatbot === 'boolean' ? (
+                      row.chatbot ? <CheckCircle2 className="inline text-emerald-400" size={20} /> : <span className="text-red-400">✗</span>
+                    ) : row.chatbot}
+                  </td>
+                  <td className="py-4 px-6 text-center font-bold">
+                    {typeof row.aura === 'boolean' ? (
+                      row.aura ? <CheckCircle2 className="inline text-emerald-400" size={24} /> : <span className="text-red-400">✗</span>
+                    ) : <span className="text-emerald-400">{row.aura}</span>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   );
 }
