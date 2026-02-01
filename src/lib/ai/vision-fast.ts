@@ -37,7 +37,12 @@ GÖREV: Görseli hızlı analiz et ve kısa cevap ver.
 - Çürük, plak, diş eti sorunları varsa belirt
 - Estetik sorunları not et
 - Kliniğe randevu almaya yönlendir
-- Uzun paragraflar yazma, net ve kısa ol`
+- Uzun paragraflar yazma, net ve kısa ol
+
+⚠️ SES MODU: Metinlerin seslendirildiğini bil. 
+- ASLA "ben konuşamam" veya "sesli mesaj gönderemem" deme
+- Doğrudan konuş, sanki telefonda sohbet ediyormuşsun gibi
+- "Resimde görüldüğü gibi" yerine "Dişlerinizde gördüğüm kadarıyla" de`
                 },
                 {
                     role: "user",
