@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { validateRequest } from '@/lib/shield';
 
+/**
+ * ⚠️ FEATURE DISABLED: Telemedicine
+ * Reason: No video SDK integration (Daily.co/Twilio Video not configured)
+ * Status: Ghost code - creates DB entries but no actual video capability
+ * Action: Return 503 until video SDK is integrated
+ */
 export async function POST(req: NextRequest) {
     const ip = req.headers.get('x-forwarded-for') || '127.0.0.1';
     const userAgent = req.headers.get('user-agent') || 'unknown';
@@ -14,21 +20,21 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: security.error }, { status: 403 });
         }
 
-        const { appointmentId, patientName } = body;
-
-        // 1. Daily.co API Keys (In a real app, use environment variables)
+        // ⚠️ FEATURE DISABLED
         const DAILY_API_KEY = process.env.DAILY_API_KEY;
 
         if (!DAILY_API_KEY) {
-            console.warn('[Telemedicine] DAILY_API_KEY missing. Returning mock room.');
+            console.warn('[Telemedicine] FEATURE DISABLED - No video SDK configured');
             return NextResponse.json({
-                success: true,
-                roomUrl: `https://aura-health.daily.co/mock-session-${appointmentId || 'default'}`,
-                isMock: true
-            });
+                error: 'Telemedicine service temporarily unavailable',
+                message: 'Video consultation feature requires configuration. Please contact support.',
+                code: 'VIDEO_SDK_NOT_CONFIGURED'
+            }, { status: 503 }); // Service Unavailable
         }
 
-        // 2. Real Daily.co Room Creation
+        // If SDK is configured in the future, use real implementation
+        const { appointmentId } = body;
+
         const response = await fetch('https://api.daily.co/v1/rooms', {
             method: 'POST',
             headers: {
@@ -60,6 +66,9 @@ export async function POST(req: NextRequest) {
 
     } catch (error: any) {
         console.error('[TELEMEDICINE ROOM ERROR]', error.message);
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+        return NextResponse.json({
+            error: 'Failed to create video consultation room',
+            details: error.message
+        }, { status: 500 });
     }
 }

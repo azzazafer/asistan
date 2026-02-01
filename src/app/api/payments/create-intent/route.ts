@@ -13,9 +13,21 @@ function getStripeClient() {
 }
 
 /**
+ * Timeout wrapper for external API calls
+ * Prevents indefinite hanging on slow network conditions
+ */
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+    const timeout = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('Request timeout')), timeoutMs)
+    );
+    return Promise.race([promise, timeout]);
+}
+
+/**
  * STRIPE PAYMENT INTENT CREATOR
  * =============================
  * Creates a Payment Intent with metadata for lead attribution.
+ * Production-hardened with 10-second timeout.
  */
 
 export async function POST(req: NextRequest) {
@@ -30,17 +42,21 @@ export async function POST(req: NextRequest) {
 
         console.log(`[Stripe] Creating intent for ${patientName} (${amount} ${currency.toUpperCase()})`);
 
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount: Math.round(amount * 100), // Convert to cents
-            currency: currency.toLowerCase(),
-            automatic_payment_methods: { enabled: true },
-            metadata: {
-                patientId: patientId || 'unknown',
-                patientName: patientName || 'Valued Guest',
-                patientPhoneNumber: patientPhoneNumber || 'unknown',
-                culture: culture || 'en'
-            },
-        });
+        // ✅ PRODUCTION FIX: Add 10-second timeout to prevent hanging
+        const paymentIntent = await withTimeout(
+            stripe.paymentIntents.create({
+                amount: Math.round(amount * 100), // Convert to cents
+                currency: currency.toLowerCase(),
+                automatic_payment_methods: { enabled: true },
+                metadata: {
+                    patientId: patientId || 'unknown',
+                    patientName: patientName || 'Valued Guest',
+                    patientPhoneNumber: patientPhoneNumber || 'unknown',
+                    culture: culture || 'en'
+                },
+            }),
+            10000 // 10 seconds max
+        );
 
         return NextResponse.json({
             clientSecret: paymentIntent.client_secret,
@@ -49,6 +65,13 @@ export async function POST(req: NextRequest) {
 
     } catch (err: any) {
         console.error('[Stripe Intent Error]', err.message);
+
+        if (err.message === 'Request timeout') {
+            return NextResponse.json({
+                error: 'Payment service timeout. Please try again.'
+            }, { status: 504 }); // Gateway Timeout
+        }
+
         return NextResponse.json({ error: err.message }, { status: 500 });
     }
 }
