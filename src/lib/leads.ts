@@ -5,6 +5,7 @@ import { saveLeadLocally } from './persistence';
 import { Lead, SubjectRank } from './types';
 import { encrypt, decrypt } from './crypto';
 import { redactPII } from './security';
+import { LearningService } from './ai/learning';
 
 // Global Lead Memory Removed to enforce database integrity in production.
 
@@ -64,6 +65,17 @@ export const addLead = async (lead: Lead) => {
         throw new Error("[CRM] CRITICAL: Cannot persist lead without tenant_id.");
     }
 
+    // 🧠 WIN ANALYSIS TRIGGER: Detect status change to "Randevu Onaylandı"
+    let shouldTriggerLearning = false;
+    if (supabase && lead.status === 'Randevu Onaylandı') {
+        // Fetch old lead to compare status
+        const existingLead = await getLeadByPhone(lead.phone, lead.tenant_id);
+        if (existingLead && existingLead.status !== 'Randevu Onaylandı') {
+            // Status JUST changed to converted
+            shouldTriggerLearning = true;
+        }
+    }
+
     // Generate score if missing or if message content is fresh
     if (!lead.score || lead.last_message) {
         const scoring = calculateLeadScore({
@@ -99,6 +111,17 @@ export const addLead = async (lead: Lead) => {
         const { error } = await supabase.from('leads').upsert(securedLead);
         if (error) {
             console.error("Supabase addLead error:", error.message);
+        }
+
+        // 🧠 ACTIVATE LEARNING: Fire-and-forget win analysis
+        if (shouldTriggerLearning && lead.history && lead.history.length > 3) {
+            console.log(`🧠 [INTELLIGENCE ACTIVATED] Analyzing win for lead ${lead.id}...`);
+            // Fire-and-forget: Don't await, don't block
+            LearningService.analyzeWin(
+                lead.id || 'unknown',
+                lead.history,
+                lead.tenant_id
+            ).catch(e => console.error('[Win Analysis Error]', e));
         }
     } else {
         console.warn("[Aura leads] Database connection offline. Lead could not be persisted to cloud.");
