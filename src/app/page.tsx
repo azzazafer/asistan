@@ -1,14 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
-import {
-  Zap, Globe, Shield, Activity, MessageSquare,
-  BarChart3, CheckCircle2, ArrowRight, Lock,
-  LayoutDashboard, Users, HeartPulse, TrendingUp, AlertTriangle, Play
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Zap, Globe, Shield, Activity, MessageSquare, BarChart3, CheckCircle2, ArrowRight, Lock, LayoutDashboard, Users, HeartPulse, TrendingUp, AlertTriangle, ChevronRight, PlayCircle } from 'lucide-react';
 import Link from 'next/link';
 
-// --- 1. CONTENT DICTIONARY (THE BRAIN) ---
 const content = {
   tr: {
     nav: { features: "Özellikler", panels: "Paneller", why: "Neden Aura?", login: "Giriş" },
@@ -20,7 +15,7 @@ const content = {
       cta_secondary: "Kayıp Ciro Hesabı"
     },
     pain: {
-      title: "Gerçekle Yüzleşin:",
+      title: "Gerçekle Yüzleşin",
       stat: "Her Gün %30 Ciro Kaybı",
       desc: "Telefonu açamayan sekreter, cevaplanmayan DM'ler... Rakipleriniz yapay zeka ile hastaları toplarken siz izlemeyin."
     },
@@ -45,7 +40,7 @@ const content = {
       cta_secondary: "Calc Lost Revenue"
     },
     pain: {
-      title: "Face the Reality:",
+      title: "Face the Reality",
       stat: "30% Revenue Loss Daily",
       desc: "Missed calls, unanswered DMs... Don't watch while competitors steal patients with AI."
     },
@@ -70,7 +65,7 @@ const content = {
       cta_secondary: "حساب الخسائر"
     },
     pain: {
-      title: "واجه الحقيقة:",
+      title: "واجه الحقيقة",
       stat: "خسارة 30٪ من الدخل يومياً",
       desc: "المكالمات الفائتة، الرسائل غير المجابة... لا تشاهد المنافسين يسرقون المرضى بالذكاء الاصطناعي."
     },
@@ -90,65 +85,73 @@ const content = {
 export default function Home() {
   const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
   const [activeTab, setActiveTab] = useState<'clinic' | 'agency' | 'patient'>('clinic');
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    setIsVisible(true);
+  }, []);
 
   const t = content[lang];
   const isRTL = lang === 'ar';
 
   return (
-    <div
-      dir={isRTL ? 'rtl' : 'ltr'}
-      className={`min-h-screen bg-[#050505] text-gray-100 font-sans selection:bg-cyan-500/30 overflow-x-hidden ${isRTL ? 'font-arabic' : ''}`}
-    >
+    <div dir={isRTL ? 'rtl' : 'ltr'} className={`min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-500/30 overflow-x-hidden ${isRTL ? 'font-arabic' : ''}`}>
 
-      {/* --- 1. NAVBAR (Sticky & Glass) --- */}
-      <nav className="fixed top-0 left-0 w-full z-50 bg-[#050505]/90 backdrop-blur-xl border-b border-white/5 h-20">
-        <div className="max-w-7xl mx-auto px-6 h-full flex items-center justify-between">
+      {/* AURORA BACKGROUND */}
+      <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-900/10 rounded-full blur-[120px]" style={{ animation: 'pulse-slow 3s ease-in-out infinite' }}></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 rounded-full blur-[120px]" style={{ animation: 'pulse-slow 3s ease-in-out infinite', animationDelay: '1s' }}></div>
+      </div>
 
-          {/* Logo */}
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center animate-pulse">
-              <Zap className="w-5 h-5 text-white fill-current" />
+      {/* NAVBAR */}
+      <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-700 ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`}>
+        <div className="absolute inset-0 bg-[#050505]/70 backdrop-blur-xl border-b border-white/5"></div>
+        <div className="relative max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+
+          <div className="flex items-center gap-3 group cursor-pointer">
+            <div className="relative w-8 h-8 flex items-center justify-center">
+              <div className="absolute inset-0 bg-cyan-500/20 rounded-lg blur-md group-hover:blur-lg transition-all"></div>
+              <div className="relative w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center border border-white/10">
+                <Zap className="w-4 h-4 text-white fill-white" />
+              </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-xl font-bold tracking-tight text-white leading-none">AURA OS</span>
-              <span className="text-[9px] text-gray-500 font-mono tracking-widest uppercase">Autonomous Logic</span>
+              <span className="text-lg font-bold tracking-tight text-white leading-none">AURA OS</span>
+              <span className="text-[9px] text-gray-400 font-mono tracking-widest uppercase mt-0.5">Autonomous</span>
             </div>
           </div>
 
-          {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8 text-sm font-medium text-gray-400">
-            <a href="#features" className="hover:text-cyan-400 transition-colors">{t.nav.features}</a>
-            <a href="#panels" className="hover:text-cyan-400 transition-colors">{t.nav.panels}</a>
-            <a href="#pain" className="hover:text-cyan-400 transition-colors">{t.nav.why}</a>
+            <a href="#features" className="hover:text-cyan-400 transition-colors duration-300">{t.nav.features}</a>
+            <a href="#panels" className="hover:text-cyan-400 transition-colors duration-300">{t.nav.panels}</a>
+            <a href="#pain" className="hover:text-cyan-400 transition-colors duration-300">{t.nav.why}</a>
           </div>
 
-          {/* Lang & Action */}
-          <div className="flex items-center gap-3">
-            <div className="flex bg-white/5 rounded-full p-1 border border-white/10">
+          <div className="flex items-center gap-4">
+            <div className="hidden sm:flex bg-white/5 rounded-full p-1 border border-white/10 backdrop-blur-md">
               {(['tr', 'en', 'ar'] as const).map((l) => (
-                <button
-                  key={l}
-                  onClick={() => setLang(l)}
-                  className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase transition-all ${lang === l ? 'bg-cyan-600 text-white' : 'text-gray-500 hover:text-white'
-                    }`}
-                >
+                <button key={l} onClick={() => setLang(l)} className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase transition-all duration-300 ${lang === l ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-900/50' : 'text-gray-500 hover:text-white'}`}>
                   {l}
                 </button>
               ))}
             </div>
-            <Link href="https://wa.me/905322850606" className="hidden sm:flex bg-white hover:bg-gray-200 text-black px-5 py-2 rounded-full text-sm font-bold transition-all items-center gap-2">
-              {t.nav.login}
+            <Link href="https://wa.me/905322850606" className="group relative overflow-hidden bg-white text-black px-6 py-2 rounded-full text-sm font-bold transition-all hover:scale-105 active:scale-95">
+              <span className="relative z-10 flex items-center gap-2">
+                {t.nav.login} <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+              </span>
+              <div className="absolute inset-0 bg-cyan-400/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
             </Link>
           </div>
         </div>
       </nav>
 
-      {/* --- 2. HERO SECTION (The Hook) --- */}
-      <main className="pt-36 pb-20 px-6">
+      {/* HERO */}
+      <main className="pt-32 pb-20 px-6 overflow-hidden">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
 
-          <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950/30 border border-cyan-500/20 text-cyan-400 text-xs font-medium">
+          <div className={`space-y-8 transition-all duration-1000 delay-300 ${isVisible ? 'translate-x-0 opacity-100' : (isRTL ? 'translate-x-20 opacity-0' : '-translate-x-20 opacity-0')}`}>
+
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-950/30 border border-cyan-500/20 text-cyan-400 text-xs font-medium backdrop-blur-sm" style={{ animation: 'pulse-slow 3s ease-in-out infinite' }}>
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
@@ -157,139 +160,167 @@ export default function Home() {
             </div>
 
             <h1 className="text-5xl lg:text-7xl font-extrabold tracking-tight leading-[1.1] text-white">
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
-                {t.hero.title}
+              <span className="block">{t.hero.title.split(' ')[0]}</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500" style={{ backgroundSize: '200% 200%', animation: 'gradient-shift 3s ease infinite' }}>
+                {t.hero.title.split(' ').slice(1).join(' ')}
               </span>
             </h1>
 
-            <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
+            <p className="text-lg text-gray-400 max-w-xl leading-relaxed border-l-2 border-white/10 pl-6">
               {t.hero.subtitle}
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link
-                href="https://wa.me/905322850606"
-                className="flex items-center justify-center gap-2 bg-cyan-500 hover:bg-cyan-600 text-black px-8 py-4 rounded-2xl font-bold text-lg transition-all shadow-[0_0_20px_rgba(6,182,212,0.3)] hover:scale-105"
-              >
-                <MessageSquare className="w-5 h-5" />
+              <Link href="https://wa.me/905322850606" className="group relative flex items-center justify-center gap-3 bg-cyan-500 hover:bg-cyan-400 text-black px-8 py-4 rounded-2xl font-bold text-lg transition-all active:scale-95" style={{ boxShadow: '0 0 40px rgba(6,182,212,0.3)' }}>
+                <MessageSquare className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 {t.hero.cta_primary}
               </Link>
-              <button className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-8 py-4 rounded-2xl font-medium transition-all">
+              <button className="group flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-8 py-4 rounded-2xl font-medium transition-all backdrop-blur-sm">
+                <BarChart3 className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
                 {t.hero.cta_secondary}
               </button>
             </div>
           </div>
 
-          {/* CSS HERO VISUAL (ABSTRACT BRAIN) */}
-          <div className="relative h-[400px] w-full flex items-center justify-center">
-            <div className="absolute w-64 h-64 bg-cyan-500/20 rounded-full blur-[100px] animate-pulse"></div>
-            <div className="relative w-full max-w-md bg-black/40 backdrop-blur-md border border-white/10 rounded-3xl p-6 shadow-2xl">
-              <div className="flex items-center gap-2 border-b border-white/5 pb-4 mb-4">
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <div className="text-[10px] text-gray-500 font-mono ml-auto">AI_CORE_ACTIVE</div>
+          <div className={`relative transition-all duration-1000 delay-500 ${isVisible ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0'}`}>
+            <div className="absolute inset-0 bg-gradient-to-tr from-cyan-500/10 to-blue-500/10 rounded-full blur-[80px]" style={{ animation: 'pulse-slow 3s ease-in-out infinite' }}></div>
+
+            <div className="relative bg-[#0A0A0A]/80 backdrop-blur-2xl border border-white/10 rounded-3xl p-1 shadow-2xl ring-1 ring-white/5 transform hover:scale-[1.02] transition-transform duration-500">
+
+              <div className="flex items-center gap-2 px-4 py-3 border-b border-white/5 bg-black/40 rounded-t-[20px]">
+                <div className="flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/20"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/20"></div>
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500/40"></div>
+                </div>
+                <div className="ml-auto flex items-center gap-2 px-3 py-1 rounded-full bg-black/50 border border-white/5 text-[10px] text-gray-500 font-mono">
+                  <Lock className="w-2.5 h-2.5" /> app.auraos.ai
+                </div>
               </div>
-              <div className="space-y-4">
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-full bg-gray-800 flex-shrink-0"></div>
-                  <div className="space-y-2 w-full">
-                    <div className="h-2 bg-gray-800 rounded w-1/4"></div>
-                    <div className="h-10 bg-gray-800/50 rounded-tr-2xl rounded-bl-2xl rounded-br-2xl p-3 text-xs text-gray-400">
-                      ...scanning dental x-ray image...
-                    </div>
+
+              <div className="p-6 space-y-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-cyan-500/30 transition-colors group">
+                    <div className="text-xs text-gray-500 mb-1">Total Revenue</div>
+                    <div className="text-2xl font-bold text-white group-hover:text-cyan-400 transition-colors">₺45,250</div>
+                  </div>
+                  <div className="bg-white/5 p-4 rounded-2xl border border-white/5 hover:border-green-500/30 transition-colors">
+                    <div className="text-xs text-gray-500 mb-1">Conversion</div>
+                    <div className="text-2xl font-bold text-green-400">%87.4</div>
                   </div>
                 </div>
-                <div className="flex gap-4 flex-row-reverse">
-                  <div className="w-10 h-10 rounded-full bg-cyan-600 flex-shrink-0 flex items-center justify-center"><Zap className="w-4 h-4 text-white" /></div>
-                  <div className="space-y-2 w-full flex flex-col items-end">
-                    <div className="h-2 bg-cyan-900/50 rounded w-1/4"></div>
-                    <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-tl-2xl rounded-bl-2xl rounded-br-2xl p-3 text-xs text-cyan-200">
-                      ⚠️ Detection: Cavity on tooth #36.<br />
-                      💡 Suggestion: Root canal therapy.
+
+                <div className="bg-black/40 rounded-2xl border border-white/5 p-4 space-y-3">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
+                    Live Analysis: Patient #8921
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gray-800 flex-shrink-0"></div>
+                    <div className="space-y-2 w-full">
+                      <div className="h-2 bg-gray-800 rounded w-1/3 animate-pulse"></div>
+                      <div className="bg-gray-800/50 p-2 rounded-lg rounded-tl-none text-[10px] text-gray-400">
+                        Scanning x-ray image...
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex gap-3 flex-row-reverse">
+                    <div className="w-8 h-8 rounded-full bg-cyan-600 flex-shrink-0 flex items-center justify-center">
+                      <Zap className="w-4 h-4 text-white" />
+                    </div>
+                    <div className="bg-cyan-900/20 border border-cyan-500/20 p-2 rounded-lg rounded-tr-none text-[10px] text-cyan-200">
+                      Detected: Deep caries on tooth #36. Suggesting root canal.
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-
         </div>
       </main>
 
-      {/* --- 3. PAIN POINT (The Funnel Hook) --- */}
-      <section id="pain" className="py-20 bg-gradient-to-b from-black to-neutral-950 border-y border-white/5">
-        <div className="max-w-4xl mx-auto text-center px-6">
-          <div className="inline-flex items-center gap-2 text-red-400 bg-red-900/20 px-4 py-2 rounded-full mb-6 border border-red-500/20">
+      {/* PAIN SECTION */}
+      <section id="pain" className="py-24 bg-[#080808] border-y border-white/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
+        <div className="max-w-4xl mx-auto text-center px-6 relative z-10">
+          <div className="inline-flex items-center gap-2 text-red-400 bg-red-950/30 px-4 py-2 rounded-full mb-8 border border-red-500/20" style={{ boxShadow: '0 0 30px rgba(239,68,68,0.2)' }}>
             <AlertTriangle className="w-4 h-4" />
-            <span className="text-sm font-bold uppercase tracking-widest">{t.pain.title}</span>
+            <span className="text-xs font-bold uppercase tracking-widest">{t.pain.title}</span>
           </div>
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6 tracking-tight">
             {t.pain.stat}
           </h2>
-          <p className="text-xl text-gray-400 leading-relaxed">
+          <p className="text-xl text-gray-400 leading-relaxed font-light">
             {t.pain.desc}
           </p>
         </div>
       </section>
 
-      {/* --- 4. INTERACTIVE DASHBOARDS (The Proof) --- */}
-      <section id="panels" className="py-24 bg-[#050505]">
+      {/* DASHBOARDS */}
+      <section id="panels" className="py-32 relative">
         <div className="max-w-7xl mx-auto px-6">
 
-          {/* Tabs */}
-          <div className="flex flex-wrap justify-center gap-4 mb-12">
+          <div className="flex flex-wrap justify-center gap-2 mb-16">
             {[
               { id: 'clinic' as const, label: t.tabs.clinic, icon: LayoutDashboard },
               { id: 'agency' as const, label: t.tabs.agency, icon: Users },
               { id: 'patient' as const, label: t.tabs.patient, icon: HeartPulse },
             ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold transition-all border ${activeTab === tab.id
-                    ? 'bg-white text-black border-white shadow-xl'
-                    : 'bg-black text-gray-400 border-white/10 hover:border-white/30'
-                  }`}
-              >
-                <tab.icon className="w-4 h-4" />
-                {tab.label}
+              <button key={tab.id} onClick={() => setActiveTab(tab.id)} className={`group relative flex items-center gap-2 px-8 py-4 rounded-full text-sm font-bold transition-all duration-300 overflow-hidden ${activeTab === tab.id ? 'text-black' : 'text-gray-400 hover:text-white bg-white/5 border border-white/10'}`}>
+                {activeTab === tab.id && (
+                  <div className="absolute inset-0 bg-white transition-all duration-300"></div>
+                )}
+                <tab.icon className={`w-4 h-4 relative z-10 ${activeTab === tab.id ? 'text-black' : 'text-gray-500 group-hover:text-white'}`} />
+                <span className="relative z-10">{tab.label}</span>
               </button>
             ))}
           </div>
 
-          {/* Dynamic Mockups (CSS Only) */}
-          <div className="bg-[#0A0A0A] rounded-3xl border border-white/10 p-2 md:p-8 min-h-[500px] shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-500 via-purple-500 to-blue-500 opacity-50"></div>
+          <div className="relative bg-[#0A0A0A] rounded-[40px] border border-white/10 p-2 md:p-12 min-h-[600px] shadow-2xl overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:via-cyan-500/50 transition-all duration-700"></div>
 
             {activeTab === 'clinic' && (
-              <div className="animate-in fade-in duration-500 h-full">
-                <div className="grid md:grid-cols-4 gap-6 h-full">
-                  {/* Sidebar */}
-                  <div className="hidden md:block col-span-1 bg-white/5 rounded-2xl p-4 space-y-2">
-                    <div className="h-8 bg-cyan-500/20 rounded-lg w-full mb-6"></div>
-                    <div className="h-8 bg-white/5 rounded-lg w-full"></div>
-                    <div className="h-8 bg-white/5 rounded-lg w-full"></div>
+              <div className="h-full">
+                <div className="grid md:grid-cols-4 gap-8 h-full">
+                  <div className="hidden md:flex flex-col col-span-1 bg-white/5 rounded-3xl p-6 border border-white/5 h-full">
+                    <div className="h-8 bg-cyan-500/20 rounded-xl w-full mb-6 animate-pulse"></div>
+                    <div className="space-y-4">
+                      {[1, 2, 3].map(i => <div key={i} className="h-10 bg-white/5 rounded-xl w-full hover:bg-white/10 transition-colors cursor-pointer"></div>)}
+                    </div>
+                    <div className="mt-auto h-12 bg-gradient-to-r from-cyan-500/10 to-blue-500/10 rounded-xl border border-white/5"></div>
                   </div>
-                  {/* Content */}
-                  <div className="col-span-3 space-y-6">
-                    <div className="flex justify-between items-center">
-                      <h3 className="text-2xl font-bold text-white">Dashboard</h3>
-                      <div className="text-emerald-400 bg-emerald-900/20 px-3 py-1 rounded-full text-xs">Online</div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="bg-black border border-white/10 p-6 rounded-2xl">
-                        <div className="text-gray-500 text-xs uppercase tracking-wider mb-2">Revenue</div>
-                        <div className="text-3xl font-bold text-white">₺45,250</div>
+                  <div className="col-span-3 space-y-8">
+                    <div className="flex justify-between items-end">
+                      <div>
+                        <h3 className="text-3xl font-bold text-white mb-1">Dr. Yılmaz</h3>
+                        <p className="text-gray-500 text-sm">Real-time Revenue Monitoring</p>
                       </div>
-                      <div className="bg-black border border-white/10 p-6 rounded-2xl">
-                        <div className="text-gray-500 text-xs uppercase tracking-wider mb-2">Appointments</div>
-                        <div className="text-3xl font-bold text-cyan-400">12</div>
+                      <div className="flex gap-2">
+                        <div className="w-3 h-3 rounded-full bg-green-500 animate-pulse"></div>
+                        <span className="text-green-500 text-xs font-bold uppercase tracking-wider">System Active</span>
                       </div>
                     </div>
-                    <div className="bg-black border border-white/10 p-6 rounded-2xl h-48 flex items-end gap-2 px-10 pb-0">
-                      {[20, 40, 30, 70, 50, 90, 60, 80].map((h, i) => (
-                        <div key={i} style={{ height: `${h}%` }} className="flex-1 bg-white/10 rounded-t-lg hover:bg-cyan-500 transition-colors"></div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="bg-[#111] border border-white/5 p-8 rounded-3xl hover:border-white/20 transition-all cursor-default">
+                        <div className="text-gray-500 text-xs uppercase tracking-wider mb-4">Daily Revenue</div>
+                        <div className="text-4xl font-bold text-white tracking-tight">₺45,250</div>
+                        <div className="text-green-400 text-sm mt-2 flex items-center gap-1"><TrendingUp className="w-3 h-3" /> +22% vs yesterday</div>
+                      </div>
+                      <div className="bg-[#111] border border-white/5 p-8 rounded-3xl hover:border-cyan-500/20 transition-all">
+                        <div className="text-gray-500 text-xs uppercase tracking-wider mb-4">AI Appointments</div>
+                        <div className="text-4xl font-bold text-cyan-400 tracking-tight">12</div>
+                        <div className="text-cyan-400/60 text-sm mt-2">Fully autonomous</div>
+                      </div>
+                      <div className="bg-[#111] border border-white/5 p-8 rounded-3xl hover:border-purple-500/20 transition-all">
+                        <div className="text-gray-500 text-xs uppercase tracking-wider mb-4">Pending X-Rays</div>
+                        <div className="text-4xl font-bold text-purple-400 tracking-tight">3</div>
+                        <div className="text-purple-400/60 text-sm mt-2">Processing now...</div>
+                      </div>
+                    </div>
+                    <div className="bg-[#111] border border-white/5 p-8 rounded-3xl h-64 flex items-end gap-3 relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-cyan-900/5 to-transparent"></div>
+                      {[30, 45, 35, 70, 55, 85, 65, 90, 75, 95].map((h, i) => (
+                        <div key={i} style={{ height: `${h}%` }} className="flex-1 bg-white/10 rounded-t-lg hover:bg-cyan-500 transition-all duration-300 hover:scale-y-105 cursor-crosshair"></div>
                       ))}
                     </div>
                   </div>
@@ -298,90 +329,129 @@ export default function Home() {
             )}
 
             {activeTab === 'agency' && (
-              <div className="animate-in fade-in duration-500 p-4">
-                <h3 className="text-2xl font-bold text-white mb-6">Partner Admin</h3>
-                <table className="w-full text-left">
-                  <thead className="text-gray-500 text-xs uppercase border-b border-white/10">
-                    <tr>
-                      <th className="pb-4">Client Name</th>
-                      <th className="pb-4">Status</th>
-                      <th className="pb-4 text-right">Revenue</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-gray-300">
-                    {[1, 2, 3, 4].map((i) => (
-                      <tr key={i} className="border-b border-white/5 hover:bg-white/5">
-                        <td className="py-4 pl-2 font-medium">Dental Clinic #{i}</td>
-                        <td className="py-4"><span className="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded">Active</span></td>
-                        <td className="py-4 text-right font-mono">₺{(Math.random() * 50000).toFixed(2)}</td>
+              <div className="p-4 h-full flex flex-col">
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-2xl font-bold text-white">Partner Agency Portal</h3>
+                  <button className="bg-white text-black px-4 py-2 rounded-lg text-sm font-bold">Add New Clinic</button>
+                </div>
+                <div className="overflow-hidden rounded-2xl border border-white/10">
+                  <table className="w-full text-left bg-[#111]">
+                    <thead className="text-gray-500 text-xs uppercase bg-white/5 border-b border-white/10">
+                      <tr>
+                        <th className="px-6 py-4 font-medium">Client Name</th>
+                        <th className="px-6 py-4 font-medium">Status</th>
+                        <th className="px-6 py-4 font-medium">AI Usage</th>
+                        <th className="px-6 py-4 font-medium text-right">Commission</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-
-            {activeTab === 'patient' && (
-              <div className="animate-in fade-in duration-500 flex justify-center items-center h-full">
-                <div className="w-[300px] bg-black border border-white/20 rounded-[30px] p-4 overflow-hidden shadow-2xl relative">
-                  <div className="absolute top-0 left-0 w-full h-12 bg-gray-900 border-b border-white/10 flex items-center justify-center text-xs font-bold text-gray-500">
-                    Aura Assistant
-                  </div>
-                  <div className="mt-12 space-y-4 text-sm">
-                    <div className="bg-gray-800 p-3 rounded-2xl rounded-tl-none text-gray-200">
-                      Röntgen analizi tamamlandı. 🦷
-                    </div>
-                    <div className="bg-cyan-600 p-3 rounded-2xl rounded-tr-none text-white ml-auto w-fit">
-                      Ne kadar tutar?
-                    </div>
-                    <div className="bg-gray-800 p-3 rounded-2xl rounded-tl-none text-gray-200">
-                      Normalde ₺5000, ancak bu hafta başlarsanız ₺3500.
-                    </div>
-                    <div className="bg-gray-800 p-3 rounded-2xl rounded-tl-none text-gray-200">
-                      Cumartesi 14:00 uygun mu?
-                    </div>
-                    <button className="w-full bg-cyan-500 text-black font-bold py-2 rounded-xl mt-4">
-                      Evet, Onayla
-                    </button>
-                  </div>
+                    </thead>
+                    <tbody className="text-gray-300 divide-y divide-white/5">
+                      {[1, 2, 3, 4, 5].map((i) => (
+                        <tr key={i} className="hover:bg-white/5 transition-colors cursor-pointer group">
+                          <td className="px-6 py-5 flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-lg bg-gray-800 flex items-center justify-center text-xs text-gray-400 font-bold group-hover:bg-cyan-500 group-hover:text-black transition-colors">DC</div>
+                            <span className="font-bold text-white group-hover:text-cyan-400 transition-colors">Dental Clinic #{i}</span>
+                          </td>
+                          <td className="px-6 py-5"><span className="bg-green-500/10 text-green-400 border border-green-500/20 text-[10px] px-2 py-1 rounded-full uppercase tracking-wide">Active</span></td>
+                          <td className="px-6 py-5">
+                            <div className="h-1.5 w-24 bg-gray-800 rounded-full overflow-hidden">
+                              <div style={{ width: `${Math.random() * 100}%` }} className="h-full bg-cyan-500"></div>
+                            </div>
+                          </td>
+                          <td className="px-6 py-5 text-right font-mono text-white">₺{(Math.random() * 50000).toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </div>
             )}
 
+            {activeTab === 'patient' && (
+              <div className="flex justify-center items-center h-full min-h-[500px]">
+                <div className="w-[340px] bg-black border border-white/20 rounded-[40px] p-4 overflow-hidden shadow-2xl relative ring-8 ring-gray-900">
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-gray-900 rounded-b-xl z-20"></div>
+
+                  <div className="bg-[#075E54] -mx-4 -mt-4 p-4 pt-10 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center"><Zap className="w-5 h-5 text-[#075E54]" /></div>
+                    <div className="text-white">
+                      <div className="font-bold text-sm">Aura Assistant</div>
+                      <div className="text-[10px] opacity-80">Business Account</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 space-y-4 text-sm h-[350px] overflow-y-auto pr-2">
+                    <div className="flex justify-center text-[10px] text-gray-500 bg-[#e0e0e0]/10 py-1 rounded-lg mb-4">TODAY</div>
+
+                    <div className="bg-[#1f2c34] p-3 rounded-2xl rounded-tl-none text-gray-200 max-w-[85%] border border-white/5">
+                      Merhaba! Röntgen sonucunuz incelendi. 🦷
+                      <div className="text-[9px] text-gray-500 text-right mt-1">14:02</div>
+                    </div>
+
+                    <div className="bg-[#1f2c34] p-2 rounded-2xl rounded-tl-none text-gray-200 max-w-[85%] border border-white/5">
+                      <div className="bg-black/50 h-32 rounded-lg flex items-center justify-center border border-white/10 mb-2">
+                        <div className="text-xs text-gray-500 flex flex-col items-center">
+                          <Activity className="w-6 h-6 mb-1 opacity-50" />
+                          X-Ray Analysis
+                        </div>
+                      </div>
+                      <div className="text-xs">Sol alt dişte derin çürük tespit edildi.</div>
+                      <div className="text-[9px] text-gray-500 text-right mt-1">14:02</div>
+                    </div>
+
+                    <div className="bg-[#005c4b] p-3 rounded-2xl rounded-tr-none text-white ml-auto max-w-[80%] shadow-md">
+                      Ne kadar tutar?
+                      <div className="text-[9px] text-green-200 text-right mt-1 flex justify-end gap-1">14:03 <CheckCircle2 className="w-3 h-3" /></div>
+                    </div>
+
+                    <div className="bg-[#1f2c34] p-3 rounded-2xl rounded-tl-none text-gray-200 max-w-[85%] border border-white/5">
+                      Normalde ₺5000, ancak bu hafta başlarsanız ₺3500.
+                      <br /><br />
+                      Cumartesi 14:00 uygun mu?
+                      <div className="text-[9px] text-gray-500 text-right mt-1">14:03</div>
+                    </div>
+                  </div>
+
+                  <div className="absolute bottom-4 left-4 right-4 h-10 bg-[#1f2c34] rounded-full flex items-center px-4 justify-between border border-white/10">
+                    <span className="text-gray-500 text-xs">Message...</span>
+                    <div className="w-6 h-6 rounded-full bg-[#005c4b] flex items-center justify-center"><ArrowRight className="w-3 h-3 text-white" /></div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </section>
 
-      {/* --- 5. BENTO FEATURES --- */}
-      <section id="features" className="py-24 bg-black border-t border-white/5">
+      {/* FEATURES */}
+      <section id="features" className="py-24 bg-[#050505] border-t border-white/5">
         <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-3 gap-8">
-          <div className="bg-[#0A0A0A] p-8 rounded-3xl border border-white/10 hover:border-cyan-500/50 transition-all">
-            <div className="w-12 h-12 bg-cyan-900/20 rounded-xl flex items-center justify-center mb-6">
-              <Activity className="w-6 h-6 text-cyan-400" />
+          <div className="group bg-[#0A0A0A] p-8 rounded-[32px] border border-white/10 hover:border-cyan-500/50 transition-all duration-500 hover:-translate-y-2">
+            <div className="w-14 h-14 bg-cyan-900/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-cyan-500/20 transition-colors">
+              <Activity className="w-7 h-7 text-cyan-400 group-hover:scale-110 transition-transform" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">{t.features.vision_title}</h3>
-            <p className="text-gray-400">{t.features.vision_desc}</p>
+            <h3 className="text-2xl font-bold text-white mb-3">{t.features.vision_title}</h3>
+            <p className="text-gray-400 leading-relaxed">{t.features.vision_desc}</p>
           </div>
-          <div className="bg-[#0A0A0A] p-8 rounded-3xl border border-white/10 hover:border-purple-500/50 transition-all">
-            <div className="w-12 h-12 bg-purple-900/20 rounded-xl flex items-center justify-center mb-6">
-              <MessageSquare className="w-6 h-6 text-purple-400" />
+          <div className="group bg-[#0A0A0A] p-8 rounded-[32px] border border-white/10 hover:border-purple-500/50 transition-all duration-500 hover:-translate-y-2">
+            <div className="w-14 h-14 bg-purple-900/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-colors">
+              <MessageSquare className="w-7 h-7 text-purple-400 group-hover:scale-110 transition-transform" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">{t.features.sales_title}</h3>
-            <p className="text-gray-400">{t.features.sales_desc}</p>
+            <h3 className="text-2xl font-bold text-white mb-3">{t.features.sales_title}</h3>
+            <p className="text-gray-400 leading-relaxed">{t.features.sales_desc}</p>
           </div>
-          <div className="bg-[#0A0A0A] p-8 rounded-3xl border border-white/10 hover:border-green-500/50 transition-all">
-            <div className="w-12 h-12 bg-green-900/20 rounded-xl flex items-center justify-center mb-6">
-              <Shield className="w-6 h-6 text-green-400" />
+          <div className="group bg-[#0A0A0A] p-8 rounded-[32px] border border-white/10 hover:border-green-500/50 transition-all duration-500 hover:-translate-y-2">
+            <div className="w-14 h-14 bg-green-900/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-green-500/20 transition-colors">
+              <Shield className="w-7 h-7 text-green-400 group-hover:scale-110 transition-transform" />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">{t.features.security_title}</h3>
-            <p className="text-gray-400">{t.features.security_desc}</p>
+            <h3 className="text-2xl font-bold text-white mb-3">{t.features.security_title}</h3>
+            <p className="text-gray-400 leading-relaxed">{t.features.security_desc}</p>
           </div>
         </div>
       </section>
 
-      {/* --- 6. TICKER (Bottom) --- */}
-      <div className="fixed bottom-0 left-0 w-full z-40 bg-black/90 border-t border-white/10 backdrop-blur-md h-10 flex items-center overflow-hidden pointer-events-none">
-        <div className="flex gap-12 animate-[marquee_40s_linear_infinite] whitespace-nowrap px-4 opacity-70">
+      {/* TICKER */}
+      <div className="fixed bottom-0 left-0 w-full z-50 bg-black/80 border-t border-white/5 backdrop-blur-md h-10 flex items-center overflow-hidden pointer-events-none">
+        <div className="flex gap-12 whitespace-nowrap px-4 opacity-80" style={{ animation: 'marquee 40s linear infinite' }}>
           <span className="flex items-center gap-2 text-emerald-400 text-xs font-mono">
             <TrendingUp className="w-3 h-3" /> Dr. Yılmaz (Istanbul) +₺45,000 Today
           </span>
@@ -391,10 +461,26 @@ export default function Home() {
           <span className="flex items-center gap-2 text-gray-400 text-xs font-mono">
             <Lock className="w-3 h-3" /> System Secure (Beta v0.9)
           </span>
+          <span className="flex items-center gap-2 text-emerald-400 text-xs font-mono">
+            <TrendingUp className="w-3 h-3" /> SmileClinic (Izmir) +₺12,500 Today
+          </span>
         </div>
       </div>
 
       <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;700&display=swap');
+        .font-arabic { font-family: 'IBM Plex Sans Arabic', sans-serif; }
+        
+        @keyframes pulse-slow {
+          0%, 100% { opacity: 0.6; }
+          50% { opacity: 1; }
+        }
+
+        @keyframes gradient-shift {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+
         @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
