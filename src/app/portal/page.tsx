@@ -190,6 +190,10 @@ export default function PatientPortal() {
   const reports = patientData?.documents.filter(d => !d.type?.toLowerCase().includes('prescription')) || [];
 
   const handleJoinCall = async (id: string) => {
+    // TODO: Telemedicine feature disabled (no video SDK integrated)
+    toast.error(lang === 'tr' ? 'Video görüşme yakında aktif olacak.' : 'Video consultation coming soon.');
+
+    /* DISABLED - Ghost feature (no video SDK)
     toast.loading(lang === 'tr' ? 'Oda oluşturuluyor...' : 'Creating room...');
     const res = await fetch('/api/telemedicine/create-room', {
       method: 'POST',
@@ -203,6 +207,7 @@ export default function PatientPortal() {
     } else {
       toast.error('Görüşme başlatılamadı.');
     }
+    */
   };
 
   const handleInitiatePayment = async () => {

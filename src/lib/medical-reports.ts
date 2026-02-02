@@ -29,7 +29,8 @@ export class MedicalReportingService {
         const report = this.draftReports.find(r => r.reportId === reportId);
         if (!report) throw new Error('Report not found');
 
-        const { BlockchainPassService } = await import('./blockchain');
+        // DISABLED: Blockchain feature (ghost code - no real implementation)
+        // const { BlockchainPassService } = await import('./blockchain');
 
         // 1. Generate PKI Signature (Simulated but based on real content hash)
         const signatureBase = `${reportId}:${doctorId}:${JSON.stringify(report.diagnosis)}`;
@@ -37,8 +38,10 @@ export class MedicalReportingService {
 
         report.status = 'SIGNED';
 
+        // DISABLED: Blockchain anchoring (no real blockchain integration)
         // 2. Immortalize on Blockchain Ledger
-        const tx = await BlockchainPassService.anchorReport(reportId, signatureBase);
+        // const tx = await BlockchainPassService.anchorReport(reportId, signatureBase);
+        const tx = { hash: `MOCK_TX_${Date.now()}`, blockNumber: 0 }; // Mock for now
 
         // 3. Archiving to HBYS via bridge
         await hbysBridge.emitEvent('REPORT_ARCHIVED', {
