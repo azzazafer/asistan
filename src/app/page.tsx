@@ -73,23 +73,26 @@ export default function Home() {
                 <Zap className="w-5 h-5" />
                 WhatsApp&apos;ta Dene
               </Link>
-              <button className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-8 py-4 rounded-xl font-medium transition-all">
+              <Link
+                href="/calculate-loss"
+                className="flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 text-white border border-white/10 px-8 py-4 rounded-xl font-medium transition-all"
+              >
                 Ciro Kaybını Hesapla
-              </button>
+              </Link>
             </div>
           </div>
 
           {/* RIGHT: CSS-BASED DASHBOARD MOCKUP (THE DESK BOARD) */}
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-emerald-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-            <div className="relative bg-black border border-white/10 rounded-2xl p-6 shadow-2xl transform hover:rotate-0 transition-all duration-500 ease-out" style={{ transform: 'rotateY(12deg)' }}>
+            <div className="relative bg-black border border-white/10 rounded-2xl p-6 shadow-2xl [transform:perspective(1200px)_rotateY(-8deg)] hover:[transform:perspective(1200px)_rotateY(0deg)] transition-all duration-500 ease-out">
 
               {/* Mockup Header */}
               <div className="flex justify-between items-center mb-6 border-b border-white/5 pb-4">
                 <div className="flex gap-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500/50"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500/50"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500/50"></div>
+                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
                 </div>
                 <div className="text-xs text-gray-500 font-mono">dashboard.auraos.ai</div>
               </div>
