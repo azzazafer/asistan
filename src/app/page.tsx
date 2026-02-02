@@ -23,6 +23,8 @@ const content = {
       step1_title: "Hasta Fotoğraf Atar",
       step1_desc: "WhatsApp üzerinden röntgen veya ağız fotoğrafı",
       step2_title: "Aura Analiz Eder & Fiyatlar",
+      step2_desc: "AI değerlendirir, tedavi fiyatını bildirir",
+      step3_title: "Kapora & Randevu",
       step3_desc: "Kapora alınır, randevu sisteme yazılır"
     },
     faq: {
