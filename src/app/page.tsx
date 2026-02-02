@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Zap, Globe, Shield, Activity, MessageSquare, BarChart3, CheckCircle2, ArrowRight, Lock, LayoutDashboard, Users, HeartPulse, TrendingUp, AlertTriangle, ChevronRight, PlayCircle } from 'lucide-react';
+import { Zap, Globe, Shield, Activity, MessageSquare, BarChart3, CheckCircle2, ArrowRight, Lock, LayoutDashboard, Users, HeartPulse, TrendingUp, AlertTriangle, ChevronRight, PlayCircle, Camera, Brain, CreditCard, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 
 const content = {
@@ -14,6 +14,27 @@ const content = {
       cta_primary: "WhatsApp'ta Dene",
       cta_secondary: "Kayıp Ciro Hesabı"
     },
+    trust: {
+      caption: "Dünyanın en gelişmiş altyapısı ile çalışır"
+    },
+    howitworks: {
+      title: "Nasıl Çalışır?",
+      subtitle: "3 basit adımda yapay zeka ile randevu satışı",
+      step1_title: "Hasta Fotoğraf Atar",
+      step1_desc: "WhatsApp üzerinden röntgen veya ağız fotoğrafı",
+      step2_title: "Aura Analiz Eder & Fiyatlar",
+      step3_desc: "Kapora alınır, randevu sisteme yazılır"
+    },
+    faq: {
+      title: "Sıkça Sorulan Sorular",
+      q1: "Mevcut hasta programımla (HBYS) çakışır mı?",
+      a1: "Hayır, Aura bağımsız çalışır veya isterse entegre olur. Mevcut sisteminizi bozmaz.",
+      q2: "Yapay zeka hata yaparsa?",
+      a2: "Aura sadece 'Öneri' sunar, son onay her zaman sizindir. Beta döneminde ek koruma altındasınız.",
+      q3: "Kapora ödemesi güvenli mi?",
+      a3: "Stripe altyapısı kullanır. Askeri düzeyde şifrelidir, biz para tutmayız."
+    },
+    mobileCta: "WhatsApp'ta Canlı Dene",
     pain: {
       title: "Gerçekle Yüzleşin",
       stat: "Her Gün %30 Ciro Kaybı",
@@ -39,6 +60,29 @@ const content = {
       cta_primary: "Try on WhatsApp",
       cta_secondary: "Calc Lost Revenue"
     },
+    trust: {
+      caption: "Powered by the world's most advanced infrastructure"
+    },
+    howitworks: {
+      title: "How It Works?",
+      subtitle: "3 simple steps to AI-powered appointment sales",
+      step1_title: "Patient Sends Photo",
+      step1_desc: "X-ray or oral photo via WhatsApp",
+      step2_title: "Aura Analyzes & Prices",
+      step2_desc: "AI detects issues, quotes treatment price",
+      step3_title: "Deposit & Booking",
+      step3_desc: "Deposit collected, appointment scheduled"
+    },
+    faq: {
+      title: "Frequently Asked Questions",
+      q1: "Does it conflict with my existing system (HIS)?",
+      a1: "No, Aura works independently or integrates if needed. Won't disrupt your current setup.",
+      q2: "What if AI makes a mistake?",
+      a2: "Aura only suggests. Final approval is always yours. Extra protection during Beta.",
+      q3: "Is deposit payment secure?",
+      a3: "Uses Stripe infrastructure. Military-grade encryption, we don't hold funds."
+    },
+    mobileCta: "Try Live on WhatsApp",
     pain: {
       title: "Face the Reality",
       stat: "30% Revenue Loss Daily",
@@ -64,6 +108,29 @@ const content = {
       cta_primary: "جرب عبر واتساب",
       cta_secondary: "حساب الخسائر"
     },
+    trust: {
+      caption: "مدعوم بأحدث البنية التحتية في العالم"
+    },
+    howitworks: {
+      title: "كيف يعمل؟",
+      subtitle: "3 خطوات بسيطة لبيع المواعيد بالذكاء الاصطناعي",
+      step1_title: "المريض يرسل صورة",
+      step1_desc: "أشعة أو صورة فم عبر واتساب",
+      step2_title: "أورا يحلل ويسعّر",
+      step2_desc: "الذكاء يكتشف المشاكل ويعرض السعر",
+      step3_title: "عربون وحجز",
+      step3_desc: "يتم تحصيل العربون وجدولة الموعد"
+    },
+    faq: {
+      title: "الأسئلة الشائعة",
+      q1: "هل يتعارض مع نظام المرضى الحالي؟",
+      a1: "لا، أورا يعمل بشكل مستقل أو يتكامل عند الحاجة. لن يعطل نظامك.",
+      q2: "ماذا لو أخطأ الذكاء الاصطناعي؟",
+      a2: "أورا يقترح فقط. الموافقة النهائية دائماً لك. حماية إضافية في فترة البيتا.",
+      q3: "هل دفع العربون آمن؟",
+      a3: "يستخدم Stripe. تشفير عسكري، نحن لا نحتفظ بالأموال."
+    },
+    mobileCta: "جرب مباشرة على واتساب",
     pain: {
       title: "واجه الحقيقة",
       stat: "خسارة 30٪ من الدخل يومياً",
@@ -86,6 +153,7 @@ export default function Home() {
   const [lang, setLang] = useState<'tr' | 'en' | 'ar'>('tr');
   const [activeTab, setActiveTab] = useState<'clinic' | 'agency' | 'patient'>('clinic');
   const [isVisible, setIsVisible] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   useEffect(() => {
     setIsVisible(true);
@@ -93,6 +161,7 @@ export default function Home() {
 
   const t = content[lang];
   const isRTL = lang === 'ar';
+  const whatsappNumber = "905510596718";
 
   return (
     <div dir={isRTL ? 'rtl' : 'ltr'} className={`min-h-screen bg-[#050505] text-white font-sans selection:bg-cyan-500/30 overflow-x-hidden ${isRTL ? 'font-arabic' : ''}`}>
@@ -135,7 +204,7 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            <Link href="https://wa.me/905322850606" className="group relative overflow-hidden bg-white text-black px-6 py-2 rounded-full text-sm font-bold transition-all hover:scale-105 active:scale-95">
+            <Link href={`https://wa.me/${whatsappNumber}`} className="group relative overflow-hidden bg-white text-black px-6 py-2 rounded-full text-sm font-bold transition-all hover:scale-105 active:scale-95">
               <span className="relative z-10 flex items-center gap-2">
                 {t.nav.login} <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </span>
@@ -171,7 +240,7 @@ export default function Home() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <Link href="https://wa.me/905322850606" className="group relative flex items-center justify-center gap-3 bg-cyan-500 hover:bg-cyan-400 text-black px-8 py-4 rounded-2xl font-bold text-lg transition-all active:scale-95" style={{ boxShadow: '0 0 40px rgba(6,182,212,0.3)' }}>
+              <Link href={`https://wa.me/${whatsappNumber}`} className="group relative flex items-center justify-center gap-3 bg-cyan-500 hover:bg-cyan-400 text-black px-8 py-4 rounded-2xl font-bold text-lg transition-all active:scale-95" style={{ boxShadow: '0 0 40px rgba(6,182,212,0.3)' }}>
                 <MessageSquare className="w-5 h-5 group-hover:rotate-12 transition-transform" />
                 {t.hero.cta_primary}
               </Link>
@@ -239,6 +308,22 @@ export default function Home() {
         </div>
       </main>
 
+      {/* TRUSTED TECH STACK */}
+      <section className="py-16 border-y border-white/5 bg-black/40">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col items-center gap-8">
+            <p className="text-xs uppercase tracking-widest text-gray-500 font-mono">{t.trust.caption}</p>
+            <div className="flex flex-wrap items-center justify-center gap-12 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+              <div className="text-white/70 hover:text-white transition-colors font-bold text-2xl">OpenAI</div>
+              <div className="text-white/70 hover:text-white transition-colors font-bold text-2xl">Stripe</div>
+              <div className="text-white/70 hover:text-white transition-colors font-bold text-2xl">Next.js</div>
+              <div className="text-white/70 hover:text-white transition-colors font-bold text-2xl">Vercel</div>
+              <div className="text-white/70 hover:text-white transition-colors font-bold text-2xl">Google Cloud</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* PAIN SECTION */}
       <section id="pain" className="py-24 bg-[#080808] border-y border-white/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
@@ -253,6 +338,44 @@ export default function Home() {
           <p className="text-xl text-gray-400 leading-relaxed font-light">
             {t.pain.desc}
           </p>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section id="howitworks" className="py-32 relative bg-gradient-to-b from-black to-[#0A0A0A]">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">{t.howitworks.title}</h2>
+            <p className="text-gray-400 text-lg">{t.howitworks.subtitle}</p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8 relative">
+            <div className="hidden md:block absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent -translate-y-1/2 z-0"></div>
+
+            <div className="relative z-10 text-center group">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-cyan-500/10 border-2 border-cyan-500/50 mb-6 group-hover:scale-110 group-hover:border-cyan-500 transition-all">
+                <Camera className="w-10 h-10 text-cyan-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">{t.howitworks.step1_title}</h3>
+              <p className="text-gray-400 text-sm">{t.howitworks.step1_desc}</p>
+            </div>
+
+            <div className="relative z-10 text-center group">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-purple-500/10 border-2 border-purple-500/50 mb-6 group-hover:scale-110 group-hover:border-purple-500 transition-all">
+                <Brain className="w-10 h-10 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">{t.howitworks.step2_title}</h3>
+              <p className="text-gray-400 text-sm">{t.howitworks.step2_desc || "AI değerlendirir, tedavi fiyatını bildirir"}</p>
+            </div>
+
+            <div className="relative z-10 text-center group">
+              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-500/10 border-2 border-green-500/50 mb-6 group-hover:scale-110 group-hover:border-green-500 transition-all">
+                <CreditCard className="w-10 h-10 text-green-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-3">{t.howitworks.step3_title || "Kapora & Randevu"}</h3>
+              <p className="text-gray-400 text-sm">{t.howitworks.step3_desc}</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -449,8 +572,35 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FAQ */}
+      <section id="faq" className="py-24 bg-black border-t border-white/5">
+        <div className="max-w-4xl mx-auto px-6">
+          <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-16">{t.faq.title}</h2>
+
+          <div className="space-y-4">
+            {[
+              { q: t.faq.q1, a: t.faq.a1 },
+              { q: t.faq.q2, a: t.faq.a2 },
+              { q: t.faq.q3, a: t.faq.a3 }
+            ].map((item, idx) => (
+              <div key={idx} className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-white/20 transition-colors">
+                <button onClick={() => setOpenFaq(openFaq === idx ? null : idx)} className="w-full px-6 py-5 flex items-center justify-between text-left group">
+                  <span className="font-bold text-white group-hover:text-cyan-400 transition-colors">{item.q}</span>
+                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${openFaq === idx ? 'rotate-180' : ''}`} />
+                </button>
+                {openFaq === idx && (
+                  <div className="px-6 pb-5 text-gray-400 leading-relaxed" style={{ animation: 'fadeIn 0.3s ease-in-out' }}>
+                    {item.a}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* TICKER */}
-      <div className="fixed bottom-0 left-0 w-full z-50 bg-black/80 border-t border-white/5 backdrop-blur-md h-10 flex items-center overflow-hidden pointer-events-none">
+      <div className="fixed bottom-0 left-0 w-full z-40 bg-black/80 border-t border-white/5 backdrop-blur-md h-10 flex items-center overflow-hidden pointer-events-none hidden md:flex">
         <div className="flex gap-12 whitespace-nowrap px-4 opacity-80" style={{ animation: 'marquee 40s linear infinite' }}>
           <span className="flex items-center gap-2 text-emerald-400 text-xs font-mono">
             <TrendingUp className="w-3 h-3" /> Dr. Yılmaz (Istanbul) +₺45,000 Today
@@ -465,6 +615,15 @@ export default function Home() {
             <TrendingUp className="w-3 h-3" /> SmileClinic (Izmir) +₺12,500 Today
           </span>
         </div>
+      </div>
+
+      {/* MOBILE STICKY CTA */}
+      <div className="fixed bottom-0 left-0 right-0 z-50 block md:hidden">
+        <Link href={`https://wa.me/${whatsappNumber}`} className="flex items-center justify-center gap-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-4 font-bold shadow-lg shadow-green-900/50 active:scale-95 transition-transform">
+          <MessageSquare className="w-5 h-5" />
+          {t.mobileCta}
+          <ArrowRight className="w-5 h-5" />
+        </Link>
       </div>
 
       <style jsx global>{`
@@ -484,6 +643,11 @@ export default function Home() {
         @keyframes marquee {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-10px); }
+          to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
     </div>
