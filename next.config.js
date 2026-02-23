@@ -15,6 +15,8 @@ const nextConfig = {
     compiler: {
         removeConsole: process.env.NODE_ENV === "production",
     },
+    // Fix for Iyzipay dynamic imports in Turbopack
+    serverExternalPackages: ['iyzipay'],
 };
 
 module.exports = nextConfig;

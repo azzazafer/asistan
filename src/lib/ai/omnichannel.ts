@@ -127,6 +127,18 @@ export class OmnichannelBridge {
         const history = await getMessageHistory(message.userId);
         const context = [...history, { role: 'user', content: message.content }];
 
+        const detectLanguage = (text: string): string => {
+            if (/[\u0600-\u06FF]/.test(text)) return 'ar';
+            if (/[\u0400-\u04FF]/.test(text)) return 'ru';
+            if (/[äöüßÄÖÜ]/.test(text)) return 'de';
+            const trChars = /[çğışöüÇĞİŞÖÜ]/;
+            if (trChars.test(text)) return 'tr';
+            if (/^[a-zA-Z\s]+$/.test(text)) return 'en';
+            return 'tr';
+        };
+
+        const detectedLanguage = detectLanguage(message.content);
+
         let auraResponse: AuraResponse | null = null;
 
         // FAST-PATH: Vision-only messages bypass orchestrator for speed
@@ -154,17 +166,19 @@ export class OmnichannelBridge {
                     message.userId,
                     context,
                     message.mediaUrl || imageData,
-                    message.source
+                    message.source,
+                    detectedLanguage
                 );
             }
         } else {
             // FULL-PATH: Text messages or non-image media use full orchestrator
-            console.log('💎 [FULL-PATH] Using AiOrchestrator with all features');
+            console.log(`💎 [FULL-PATH] Using AiOrchestrator with all features. Detected Lang: ${detectedLanguage}`);
             auraResponse = await AiOrchestrator.processMessage(
                 message.userId,
                 context,
                 message.mediaUrl || imageData,
-                message.source
+                message.source,
+                detectedLanguage
             );
         }
 
@@ -217,11 +231,11 @@ export class OmnichannelBridge {
                     let buttons: any[] = [];
 
                     // Payment Detection
-                    if (content.includes('checkout.stripe.com')) {
-                        const stripeUrl = content.match(/https?:\/\/checkout\.stripe\.com[^\s]+/)?.[0];
+                    if (content.includes('iyzico.com') || content.includes('iyzilink') || content.includes('kapora')) {
+                        const paymentUrl = content.match(/https?:\/\/(www\.)?(iyzico\.com|iyzilink)[^\s]+/)?.[0] || 'https://sandbox-api.iyzipay.com/';
                         buttons.push({
                             text: '💳 Depozitoyu Tamamla',
-                            url: stripeUrl,
+                            url: paymentUrl,
                             title: 'Ödeme Yap',
                             payload: 'PAY_NOW',
                             callback_data: 'pay_intent'

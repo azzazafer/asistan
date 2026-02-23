@@ -27,12 +27,13 @@ export function PatientJourney({ lead }: PatientJourneyProps) {
     // Determine current stage index based on lead status
     const getCurrentStageIndex = () => {
         // 1. Try exact match
-        const exactIndex = STAGES.findIndex(s => s.statusMatches.includes(lead.status));
+        const status = lead?.status || '';
+        const exactIndex = STAGES.findIndex(s => s.statusMatches.includes(status));
         if (exactIndex !== -1) return exactIndex;
 
         // 2. Fallback logic
-        if (lead.score > 80) return 3; // High score -> Likely scheduling
-        if (lead.score > 50) return 2; // Mid score -> Validation
+        if ((lead?.score || 0) > 80) return 3; // High score -> Likely scheduling
+        if ((lead?.score || 0) > 50) return 2; // Mid score -> Validation
         return 1; // Default to Consultation if not New
     };
 

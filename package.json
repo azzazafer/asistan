@@ -20,6 +20,7 @@
     "dotenv": "^17.2.3",
     "framer-motion": "^12.23.26",
     "ioredis": "^5.6.0",
+    "iyzipay": "^2.0.64",
     "jspdf": "^4.0.0",
     "jspdf-autotable": "^5.0.7",
     "lucide-react": "^0.562.0",
@@ -29,7 +30,6 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-hot-toast": "^2.6.0",
-    "stripe": "^20.1.2",
     "xstate": "^5.19.0",
     "zod": "^3.24.0"
   },

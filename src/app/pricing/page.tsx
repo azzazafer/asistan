@@ -1,66 +1,87 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import { PACKAGES } from '@/lib/stripe';
+import { useState } from 'react';
 import AuraLayout from "@/components/AuraLayout";
-import { Check, Shield, Zap, Globe, Cpu, ArrowRight } from "lucide-react";
+import { Check, X, Calculator, ChevronDown, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
-const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-const stripePromise = stripePublishableKey ? loadStripe(stripePublishableKey) : null;
+// MOCK PACKAGES
+const PACKAGES = {
+    starter: {
+        name: 'Starter',
+        price: '4900',
+        currency: '₺',
+        commission: '10',
+        features: ['Hasta Takip', 'Temel Raporlama', 'WhatsApp Desteği']
+    },
+    professional: {
+        name: 'Professional',
+        price: '18000',
+        currency: '₺',
+        commission: '12',
+        features: ['<b>Tüm Starter Özellikleri</b>', 'Yapay Zeka Asistanı', 'Gelişmiş Raporlama', 'Öncelikli Destek']
+    },
+    enterprise: {
+        name: 'Enterprise',
+        commission: 'Özel',
+        features: ['<b>Tüm Professional Özellikleri</b>', 'Özel Entegrasyon', 'Sınırsız Kullanıcı', '7/24 Destek', 'Özel SLA']
+    }
+};
 
 export default function PricingPage() {
     const [loading, setLoading] = useState<string | null>(null);
-    const [signupData, setSignupData] = useState<any>(null);
-    const [formData, setFormData] = useState({
-        hospitalName: '',
-        userEmail: '',
-    });
 
-    useEffect(() => {
-        const pending = sessionStorage.getItem("aura_pending_registration");
-        if (pending) {
-            const data = JSON.parse(pending);
-            setSignupData(data);
-            setFormData({
-                hospitalName: data.hospitalName,
-                userEmail: data.email
-            });
-        }
-    }, []);
-
+    // ROI Calculator State
+    const [missedCalls, setMissedCalls] = useState(30);
+    const [avgTreatmentValue, setAvgTreatmentValue] = useState(5000);
+    // MOCK PAYMENT DATA
     const handleCheckout = async (packageType: string) => {
-        if (!formData.hospitalName || !formData.userEmail) {
-            alert('Lütfen hastane adı ve email girin');
-            return;
-        }
-
         setLoading(packageType);
 
         try {
-            const response = await fetch('/api/checkout', {
+            // MOCK PAYMENT DATA
+            const paymentPayload = {
+                packageType: packageType,
+                tenantId: 'TEST-TENANT-001', // Should come from logged in user/onboarding
+                amount: packageType === 'starter' ? 4900 : 18000,
+                paidPrice: packageType === 'starter' ? 4900 : 18000,
+                buyerName: 'Ahmet',
+                buyerSurname: 'Yılmaz',
+                buyerEmail: 'test@clinic.com',
+                buyerGsm: '+905555555555',
+                buyerAddress: 'Test Adresi Istanbul',
+                buyerIp: '127.0.0.1',
+                cardHolderName: 'Ahmet Yilmaz',
+                cardNumber: '4111111111111111', // Test Card
+                expireMonth: '12',
+                expireYear: '2030',
+                cvc: '123'
+            };
+
+            const response = await fetch('/api/payments/pay', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    packageType,
-                    hospitalName: formData.hospitalName,
-                    email: formData.userEmail,
-                    fullName: signupData?.fullName || '',
-                })
+                body: JSON.stringify(paymentPayload)
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                throw new Error(data.error || 'Checkout failed');
+                throw new Error(data.message || 'Ödeme Hatası');
             }
 
-            if (data.url) {
-                window.location.href = data.url;
+            // SUCCESS
+            if (data.success) {
+                alert('Ödeme Başarılı! (Iyzico Test)\n\nDetay: ' + JSON.stringify(data.data?.status || 'Success'));
+                // Redirect to dashboard or success page
+                window.location.href = '/dashboard';
+            } else {
+                alert('Ödeme Başarısız: ' + JSON.stringify(data));
             }
+
         } catch (error: any) {
             alert(error.message || 'Bir hata oluştu');
+        } finally {
             setLoading(null);
         }
     };
@@ -69,149 +90,351 @@ export default function PricingPage() {
         window.location.href = 'mailto:sales@auraos.com?subject=Enterprise Package Inquiry';
     };
 
+    // ROI Calculation
+    const recoveryRate = 0.60; // %60 Aura Kurtarma Oranı
+    const monthlyGain = Math.floor(missedCalls * recoveryRate * avgTreatmentValue);
+    const proCost = 18000; // 499 Euro ≈ 18,000 TL
+    const roi = Math.floor(((monthlyGain - proCost) / proCost) * 100);
+
     return (
         <AuraLayout>
-            <section className="pt-40 pb-40 px-6 relative overflow-hidden">
-                {/* Visual Backdrop */}
-                <div className="absolute inset-0 pointer-events-none opacity-20 select-none">
-                    <img src="/images/hero_elite.png" alt="" className="w-full h-full object-cover grayscale" />
-                    <div className="absolute inset-0 bg-[#050505]/80" />
-                </div>
+            {/* Visual Backdrop */}
+            <div className="absolute inset-0 pointer-events-none opacity-20 select-none">
+                <div className="absolute inset-0 bg-[#030303]/90" />
+            </div>
 
-                <div className="max-w-[1400px] mx-auto space-y-24 relative z-10">
+            <section className="pt-40 pb-16 px-6 relative z-10">
+                <div className="max-w-[1400px] mx-auto space-y-24">
+
                     {/* Header */}
                     <div className="text-center space-y-6">
                         <div className="inline-flex items-center gap-3 px-4 py-2 bg-[#00F0FF]/10 border border-[#00F0FF]/20 rounded-full text-[10px] font-black uppercase tracking-[0.4em] text-[#00F0FF]">
                             ADAPTIVE LICENSING • v13.0
                         </div>
-                        <h1 className="text-6xl md:text-[8rem] font-bold uppercase italic tracking-tighter text-white font-space leading-[0.85]">
-                            Kazanmaya <br />
-                            <span className="text-[#00F0FF]">Yatırım Yapın.</span>
+                        <h1 className="text-5xl md:text-7xl font-bold uppercase tracking-tight text-white leading-tight">
+                            Maliyet Değil,<br />
+                            <span className="bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">Yatırım.</span>
                         </h1>
-                        <p className="text-xl md:text-2xl text-[#B0B0B0] max-w-3xl mx-auto leading-relaxed">
-                            Aura OS bir maliyet değil, operasyonunuzun otonom kar motorudur. %15+ dönüşüm garantili altyapıya bugün geçin.
+                        <p className="text-xl md:text-2xl text-gray-400 max-w-3xl mx-auto leading-relaxed">
+                            Aura OS bir gider kalemi değildir. İlk günden itibaren kendi parasını çıkaran ve kâr getiren bir ciro motorudur.
                         </p>
                     </div>
 
-                    {/* Registration Context */}
-                    {!signupData ? (
-                        <div className="max-w-2xl mx-auto bg-white/[0.02] border border-white/5 p-10 rounded-[3rem] backdrop-blur-3xl space-y-8">
-                            <div className="text-center">
-                                <h3 className="text-xl font-bold text-white uppercase italic font-space">Hızlı Başlangıç Verileri</h3>
-                                <p className="text-xs text-slate-500 mt-2 uppercase tracking-widest">Lisans tanımlaması için lütfen klinik bilgilerinizi doğrulayın.</p>
-                            </div>
-                            <div className="grid md:grid-cols-2 gap-6">
-                                <input
-                                    type="text"
-                                    placeholder="Hastane / Klinik Adı"
-                                    className="w-full px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:border-[#00F0FF] outline-none transition-colors"
-                                    value={formData.hospitalName}
-                                    onChange={(e) => setFormData({ ...formData, hospitalName: e.target.value })}
-                                />
-                                <input
-                                    type="email"
-                                    placeholder="Operasyonel Email"
-                                    className="w-full px-6 py-4 rounded-xl bg-white/5 border border-white/10 text-white placeholder-slate-600 focus:border-[#00F0FF] outline-none transition-colors"
-                                    value={formData.userEmail}
-                                    onChange={(e) => setFormData({ ...formData, userEmail: e.target.value })}
-                                />
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="max-w-md mx-auto bg-[#00F0FF]/5 border border-[#00F0FF]/20 p-8 rounded-[2rem] text-center shadow-[0_0_50px_rgba(0,240,255,0.05)]">
-                            <div className="text-[10px] font-black text-[#00F0FF] uppercase tracking-widest mb-2">Hazır Lisans Sahibi</div>
-                            <h3 className="text-2xl font-bold text-white italic font-space tracking-tight">{signupData.hospitalName}</h3>
-                            <p className="text-sm text-slate-500 mt-1">{signupData.email}</p>
-                            <button
-                                onClick={() => {
-                                    sessionStorage.removeItem("aura_pending_registration");
-                                    setSignupData(null);
-                                }}
-                                className="mt-6 text-[9px] font-black text-slate-600 hover:text-white uppercase tracking-[0.2em] transition-colors border-b border-transparent hover:border-white pb-1"
-                            >
-                                Başka Bir Lisans Kullan
-                            </button>
-                        </div>
-                    )}
+                    {/* ROI Calculator */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        className="max-w-4xl mx-auto"
+                    >
+                        <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 p-8 md:p-12 rounded-3xl relative overflow-hidden group">
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-cyan-400 to-blue-600"></div>
 
-                    {/* Pricing Cards Grid */}
-                    <div className="grid md:grid-cols-3 gap-10">
-                        <PriceCard
+                            <div className="grid md:grid-cols-2 gap-12 items-center">
+                                <div className="space-y-8">
+                                    <h3 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
+                                        <Calculator className="text-cyan-400" size={32} />
+                                        Ne Kadar Kaybediyorsunuz?
+                                    </h3>
+
+                                    {/* Slider 1 */}
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-400">Aylık Kaçırılan Çağrı/Hasta</span>
+                                            <span className="text-white font-mono font-bold text-lg">{missedCalls}</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="5"
+                                            max="200"
+                                            value={missedCalls}
+                                            onChange={(e) => setMissedCalls(parseInt(e.target.value))}
+                                            className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                        />
+                                    </div>
+
+                                    {/* Slider 2 */}
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between text-sm">
+                                            <span className="text-gray-400">Ortalama Tedavi Değeri (TL)</span>
+                                            <span className="text-white font-mono font-bold text-lg">₺{avgTreatmentValue.toLocaleString('tr-TR')}</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="1000"
+                                            max="50000"
+                                            step="500"
+                                            value={avgTreatmentValue}
+                                            onChange={(e) => setAvgTreatmentValue(parseInt(e.target.value))}
+                                            className="w-full h-2 bg-gray-800 rounded-lg appearance-none cursor-pointer accent-cyan-400"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Results */}
+                                <div className="bg-gradient-to-br from-gray-900 to-black p-8 rounded-2xl border border-white/10 text-center relative">
+                                    <div className="text-xs text-gray-500 uppercase tracking-widest mb-3">Aura OS ile Potansiyel Kazanç</div>
+                                    <div className="text-5xl md:text-6xl font-extrabold text-green-400 font-mono mb-3">
+                                        ₺{monthlyGain.toLocaleString('tr-TR')}
+                                    </div>
+                                    <div className="text-sm text-gray-400 mb-6">Her Ay Ekstra Ciro</div>
+
+                                    <div className="pt-6 border-t border-white/10 flex justify-between items-center">
+                                        <div className="text-left">
+                                            <div className="text-[10px] text-gray-500 uppercase tracking-wider">YATIRIM GERİ DÖNÜŞÜ</div>
+                                            <div className="text-3xl font-bold text-cyan-400">%{roi > 0 ? roi : 0}</div>
+                                        </div>
+                                        <button
+                                            onClick={() => handleCheckout('professional')}
+                                            className="bg-white text-black px-6 py-3 rounded-lg text-sm font-bold hover:scale-105 transition-transform"
+                                        >
+                                            Hemen Başla
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
+                    {/* Pricing Cards */}
+                    <div className="grid md:grid-cols-3 gap-8">
+                        <PricingCard
                             type="starter"
-                            title="Starter"
+                            title={PACKAGES.starter.name}
                             price={PACKAGES.starter.price}
+                            currency={PACKAGES.starter.currency}
+                            commission={PACKAGES.starter.commission}
                             features={PACKAGES.starter.features}
                             loading={loading === 'starter'}
                             onClick={() => handleCheckout('starter')}
                         />
-                        <PriceCard
+
+                        <PricingCard
                             type="professional"
-                            title="Professional"
+                            title={PACKAGES.professional.name}
                             price={PACKAGES.professional.price}
+                            currency={PACKAGES.professional.currency}
+                            commission={PACKAGES.professional.commission}
                             features={PACKAGES.professional.features}
                             loading={loading === 'professional'}
                             onClick={() => handleCheckout('professional')}
                             recommended
                         />
-                        <PriceCard
+
+                        <PricingCard
                             type="enterprise"
-                            title="Enterprise"
-                            price="Custom"
+                            title={PACKAGES.enterprise.name}
+                            price="Özel"
+                            currency=""
+                            commission={PACKAGES.enterprise.commission}
                             features={PACKAGES.enterprise.features}
                             onClick={handleContactSales}
                         />
                     </div>
+
+                    {/* Comparison Table */}
+                    <div className="max-w-5xl mx-auto">
+                        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 uppercase tracking-tight">Detaylı Karşılaştırma</h2>
+                        <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-3xl overflow-hidden">
+                            <div className="overflow-x-auto">
+                                <table className="w-full text-left border-collapse">
+                                    <thead>
+                                        <tr className="border-b border-white/10 bg-white/5">
+                                            <th className="p-4 text-xs uppercase tracking-wider text-gray-400">Özellik</th>
+                                            <th className="p-4 text-center text-xs uppercase tracking-wider text-gray-400 w-1/5">Başlangıç</th>
+                                            <th className="p-4 text-center text-xs uppercase tracking-wider text-cyan-400 font-bold bg-cyan-900/10 w-1/5">Pro</th>
+                                            <th className="p-4 text-center text-xs uppercase tracking-wider text-gray-400 w-1/5">Enterprise</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="text-sm text-gray-300 divide-y divide-white/5">
+                                        <ComparisonRow feature="7/24 AI Chat" starter={true} pro={true} enterprise={true} />
+                                        <ComparisonRow feature="Nex-Scan™ Röntgen" starter="50/Ay" pro="LİMİTSİZ" enterprise="LİMİTSİZ" />
+                                        <ComparisonRow feature="Ciro Kurtarma Motoru" starter={false} pro={true} enterprise={true} />
+                                        <ComparisonRow feature="V4 Satış Psikolojisi" starter={false} pro={true} enterprise={true} />
+                                        <ComparisonRow feature="WhatsApp Business API" starter={true} pro={true} enterprise={true} />
+                                        <ComparisonRow feature="Özel Entegrasyon" starter={false} pro={false} enterprise={true} />
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* FAQ Section */}
+                    <div className="max-w-3xl mx-auto">
+                        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 uppercase tracking-tight">Sıkça Sorulan Sorular</h2>
+                        <div className="space-y-4">
+                            <FAQItem
+                                question="Komisyon ne zaman kesilir?"
+                                answer="Komisyon, SADECE Aura OS üzerinden randevu alıp kliniğe gelip ödeme yapan (veya kapora yatıran) hastalardan kesilir. Eğer Aura satış yapamazsa, komisyon ödemezsiniz. Biz kazandırmazsak, kazanmayız."
+                            />
+                            <FAQItem
+                                question="Kurulum ücreti var mı?"
+                                answer="Hayır. Alpha sürümü boyunca (şu an) kurulum ücretini almıyoruz. Sadece aylık lisans bedeli ile başlarsınız."
+                            />
+                            <FAQItem
+                                question="İstediğim zaman iptal edebilir miyim?"
+                                answer="Evet. Taahhüt yok. Memnun kalmazsanız bir sonraki ay yenilemeyi durdurabilirsiniz."
+                            />
+                            <FAQItem
+                                question="V4 Satış Psikolojisi nedir?"
+                                answer="Hastanın duygusal durumunu analiz eden (Sentiment Guard) ve fiyat itirazlarında yönetici onayı simülasyonu yapan (Manager Approval) gelişmiş AI satış sistemidir. Sadece Professional ve Enterprise paketlerinde bulunur."
+                            />
+                            <FAQItem
+                                question="Otonom Ciro Kurtarma™ nasıl çalışır?"
+                                answer="Geçmişte 'pahalı' deyip gitmiş hastaları AI otomatik olarak analiz eder, yeniden ikna eder ve kliniğe geri döndürür. Professional ve Enterprise paketlerinde mevcuttur."
+                            />
+                        </div>
+                    </div>
+
                 </div>
             </section>
         </AuraLayout>
     );
 }
 
-function PriceCard({ type, title, price, features, loading, onClick, recommended }: any) {
+// Pricing Card Component
+function PricingCard({
+    type,
+    title,
+    price,
+    currency,
+    commission,
+    features,
+    loading,
+    onClick,
+    recommended
+}: any) {
+    const isPro = recommended;
+    const isEnterprise = type === 'enterprise';
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className={`p-12 rounded-[3.5rem] border ${recommended ? 'border-[#00F0FF]/30 bg-[#00F0FF]/5 shadow-[0_0_60px_rgba(0,240,255,0.05)]' : 'border-white/5 bg-white/[0.01]'} space-y-10 relative overflow-hidden group`}
+            className={`
+                p-8 md:p-10 rounded-3xl border relative overflow-hidden group
+                ${isPro ? 'border-cyan-500/50 bg-[#0a0a0a] shadow-[0_0_30px_rgba(34,211,238,0.15)] md:-translate-y-4' : 'border-white/10 bg-white/[0.02] opacity-80 hover:opacity-100'}
+                space-y-8 transition-all
+            `}
         >
-            {recommended && (
-                <div className="absolute top-8 right-8 bg-[#00F0FF] text-black text-[9px] font-black px-4 py-1.5 rounded-full uppercase tracking-tighter shadow-xl">
-                    POPÜLER ALPHA
+            {isPro && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg uppercase tracking-wider">
+                    EN POPÜLER
                 </div>
             )}
 
             <div className="space-y-4">
-                <h3 className="text-3xl font-bold text-white uppercase italic font-space tracking-tight">{title}</h3>
-                <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-black text-white font-space tracking-tighter">
-                        {typeof price === 'number' ? `$${price}` : price}
-                    </span>
-                    {typeof price === 'number' && <span className="text-slate-500 text-sm font-bold uppercase tracking-widest">/AY</span>}
+                <h3 className={`text-2xl md:text-3xl font-bold uppercase tracking-tight ${isPro ? 'text-white' : 'text-gray-300'}`}>
+                    {title}
+                </h3>
+                <div className="space-y-2">
+                    <div className="flex items-baseline gap-2">
+                        <span className={`text-4xl md:text-5xl font-black tracking-tighter ${isPro ? 'text-white' : 'text-white'}`}>
+                            {typeof price === 'number' ? `${currency}${price}` : price}
+                        </span>
+                        {typeof price === 'number' && <span className="text-gray-500 text-sm font-bold uppercase">/ay</span>}
+                    </div>
+                    {/* Commission Badge */}
+                    <div className={`text-xs font-mono inline-block px-3 py-1.5 rounded-lg border ${isPro
+                        ? 'bg-green-900/20 border-green-500/20 text-green-400'
+                        : isEnterprise
+                            ? 'bg-purple-900/20 border-purple-500/20 text-purple-400'
+                            : 'bg-cyan-900/20 border-cyan-500/20 text-cyan-400'
+                        }`}>
+                        + %{commission} Başarı Komisyonu
+                    </div>
                 </div>
             </div>
 
-            <div className="space-y-4 pt-4">
+            <p className="text-sm text-gray-400 leading-relaxed min-h-[3rem]">
+                {isEnterprise
+                    ? 'Hastane grupları ve zincir klinikler için özel altyapı.'
+                    : isPro
+                        ? 'Büyüyen klinikler için tam teşekküllü satış makinesi.'
+                        : 'Küçük klinikler ve tek hekimler için temel otomasyon.'
+                }
+            </p>
+
+            <ul className="space-y-3 text-sm text-gray-300">
                 {features.map((f: string, i: number) => (
-                    <div key={i} className="flex items-center gap-4 group/item">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center ${recommended ? 'bg-[#00F0FF]/20 text-[#00F0FF]' : 'bg-white/5 text-slate-500'}`}>
-                            <Check size={12} />
+                    <li key={i} className="flex items-start gap-3 group/item">
+                        <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${isPro ? 'text-green-400' : 'text-cyan-400'
+                            }`}>
+                            {isPro ? <Check size={16} className="font-bold" /> : <Check size={14} />}
                         </div>
-                        <span className="text-sm font-medium text-slate-400 group-hover/item:text-white transition-colors">{f}</span>
-                    </div>
+                        <span
+                            className="group-hover/item:text-white transition-colors"
+                            dangerouslySetInnerHTML={{ __html: f }}
+                        />
+                    </li>
                 ))}
-            </div>
+            </ul>
 
             <button
                 onClick={onClick}
                 disabled={loading}
-                className={`w-full py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] transition-all flex items-center justify-center gap-4 ${recommended
-                        ? 'bg-[#00F0FF] text-black hover:bg-white'
-                        : 'bg-white/5 text-white border border-white/10 hover:border-white'
-                    }`}
+                className={`
+                    w-full py-4 rounded-xl text-xs md:text-sm font-black uppercase tracking-wider
+                    transition-all flex items-center justify-center gap-3
+                    ${isPro
+                        ? 'bg-cyan-500 text-black hover:bg-cyan-400 shadow-lg hover:shadow-cyan-500/50'
+                        : 'bg-white/5 text-white border border-white/20 hover:border-white hover:bg-white/10'
+                    }
+                `}
             >
-                {loading ? 'Processing...' : (type === 'enterprise' ? 'İletişime Geç' : 'ALPHA LİSANS AL')}
-                <ArrowRight size={14} />
+                {loading ? 'İŞLENİYOR...' : (isEnterprise ? 'İLETİŞİME GEÇ' : 'ALPHA LİSANS AL')}
+                <ArrowRight size={16} />
             </button>
         </motion.div>
+    );
+}
+
+// Comparison Row Component
+function ComparisonRow({ feature, starter, pro, enterprise }: any) {
+    const renderCell = (value: any, isPro = false) => {
+        if (typeof value === 'boolean') {
+            return value ? (
+                <Check size={20} className="text-green-400 mx-auto" />
+            ) : (
+                <X size={20} className="text-red-400/30 mx-auto" />
+            );
+        }
+        if (typeof value === 'string') {
+            return <span className={`font-bold ${isPro ? 'text-white' : 'text-gray-400'}`}>{value}</span>;
+        }
+        return value;
+    };
+
+    return (
+        <tr className="hover:bg-white/[0.02] transition-colors">
+            <td className="p-4 font-medium">{feature}</td>
+            <td className="p-4 text-center">{renderCell(starter)}</td>
+            <td className="p-4 text-center bg-cyan-900/5">{renderCell(pro, true)}</td>
+            <td className="p-4 text-center">{renderCell(enterprise)}</td>
+        </tr>
+    );
+}
+
+// FAQ Item Component
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+    const [isOpen, setIsOpen] = useState(false);
+
+    return (
+        <div className="bg-white/[0.02] backdrop-blur-3xl border border-white/10 rounded-xl overflow-hidden">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full p-6 text-left flex justify-between items-center gap-4 hover:bg-white/[0.02] transition-colors"
+            >
+                <span className="font-bold text-white">{question}</span>
+                <ChevronDown
+                    size={20}
+                    className={`text-cyan-400 flex-shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                />
+            </button>
+            {isOpen && (
+                <div className="px-6 pb-6 text-gray-400 text-sm leading-relaxed border-t border-white/5 pt-4">
+                    {answer}
+                </div>
+            )}
+        </div>
     );
 }

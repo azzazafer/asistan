@@ -1,166 +1,196 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Rocket, CheckCircle2, MessageCircle, Database, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
+import { ShieldCheck, Building2, User, CreditCard, ArrowRight, Wallet, CheckCircle } from 'lucide-react';
 
-function OnboardingContent() {
-    const searchParams = useSearchParams();
-    const sessionId = searchParams.get('session_id');
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+export default function OnboardingPage() {
+    const [step, setStep] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [formData, setFormData] = useState({
+        tenantId: `CLINIC-${Math.floor(Math.random() * 10000)}`, // Auto-gen for demo
+        contactName: '',
+        contactSurname: '',
+        email: '',
+        gsmNumber: '',
+        address: '',
+        iban: '',
+        identityNumber: '',
+        legalCompanyTitle: '',
+        subMerchantType: 'PRIVATE_COMPANY'
+    });
 
-    useEffect(() => {
-        if (sessionId) {
-            // Verify session and show success
-            setTimeout(() => {
-                setLoading(false);
-            }, 2000);
-        } else {
-            // No session, but we allow viewing the setup guide
+    const [result, setResult] = useState<any>(null);
+
+    const handleChange = (e: any) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        setLoading(true);
+
+        try {
+            const res = await fetch('/api/onboarding/submerchant', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+
+            const data = await res.json();
+
+            if (!res.ok) throw new Error(data.error || 'Onboarding Failed');
+
+            setResult(data);
+            setStep(3); // Success Screen
+        } catch (error: any) {
+            alert(error.message);
+        } finally {
             setLoading(false);
         }
-    }, [sessionId]);
-
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white mx-auto mb-4"></div>
-                    <p className="text-white text-xl">Hesabınız hazırlanıyor...</p>
-                </div>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center">
-                <div className="bg-red-500/20 backdrop-blur-lg rounded-2xl p-8 max-w-md">
-                    <h1 className="text-2xl font-bold text-white mb-4">Hata</h1>
-                    <p className="text-white">{error}</p>
-                </div>
-            </div>
-        );
-    }
+    };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center p-4">
-            <div className="max-w-2xl w-full">
-                {/* Success Message */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8 text-center mb-8">
-                    <div className={`w-20 h-20 ${sessionId ? 'bg-green-500' : 'bg-blue-500'} rounded-full flex items-center justify-center mx-auto mb-6`}>
-                        {sessionId ? (
-                            <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                        ) : (
-                            <Rocket className="w-12 h-12 text-white" />
-                        )}
+        <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-6 font-sans">
+            <div className="max-w-4xl w-full grid grid-cols-1 md:grid-cols-2 bg-[#0A0A0A] rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
+
+                {/* Visual Side */}
+                <div className="hidden md:flex flex-col justify-between p-12 bg-gradient-to-br from-indigo-900/20 to-black relative">
+                    <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-20"></div>
+                    <div>
+                        <div className="flex items-center gap-3 text-indigo-400 mb-6">
+                            <ShieldCheck size={32} />
+                            <span className="font-bold tracking-widest text-xs uppercase">Aura Security</span>
+                        </div>
+                        <h1 className="text-4xl font-bold leading-tight mb-4">
+                            Klinik Kimlik <br />Doğrulaması
+                        </h1>
+                        <p className="text-gray-400">
+                            Ödemelerinizi güvenle alabilmek için yasal alt üye (sub-merchant) kaydınızı tamamlayın.
+                        </p>
                     </div>
-
-                    <h1 className="text-4xl font-bold text-white mb-4">
-                        {sessionId ? 'Hoş Geldiniz! 🎉' : 'Sistem Kurulum Rehberi'}
-                    </h1>
-                    <p className="text-xl text-purple-200 mb-8">
-                        {sessionId ? 'Ödemeniz başarıyla alındı. Aura OS hesabınız aktif edildi!' : 'Aura OS operasyonunuzu başlatmak için aşağıdaki adımları takip edin.'}
-                    </p>
-                </div>
-
-                {/* Next Steps */}
-                <div className="bg-white/10 backdrop-blur-lg rounded-2xl p-8">
-                    <h2 className="text-2xl font-bold text-white mb-6">Sonraki Adımlar</h2>
-
                     <div className="space-y-4">
-                        <div className="flex items-start">
-                            <div className="flex-shrink-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                                1
-                            </div>
-                            <div>
-                                <h3 className="text-white font-semibold mb-1">Email Kontrol Edin</h3>
-                                <p className="text-purple-200">
-                                    Giriş bilgileriniz ve kurulum talimatları email adresinize gönderildi.
-                                </p>
-                            </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-green-400"><CheckCircle size={16} /></div>
+                            <span>BDDK Lisanslı Altyapı</span>
                         </div>
-
-                        <div className="flex items-start">
-                            <div className="flex-shrink-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                                2
-                            </div>
-                            <div>
-                                <h3 className="text-white font-semibold mb-1">Dashboard'a Giriş Yapın</h3>
-                                <p className="text-purple-200">
-                                    Admin paneline giriş yaparak ilk ayarlarınızı yapın.
-                                </p>
-                            </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-green-400"><CheckCircle size={16} /></div>
+                            <span>Otomatik Hakediş Dağıtımı</span>
                         </div>
-
-                        <div className="flex items-start">
-                            <div className="flex-shrink-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                                3
-                            </div>
-                            <div>
-                                <h3 className="text-white font-semibold mb-1">WhatsApp Bağlayın</h3>
-                                <p className="text-purple-200">
-                                    WhatsApp Business numaranızı sisteme bağlayın.
-                                </p>
-                            </div>
+                        <div className="flex items-center gap-4 text-sm text-gray-400">
+                            <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-green-400"><CheckCircle size={16} /></div>
+                            <span>KVKK Uyumluluğu</span>
                         </div>
-
-                        <div className="flex items-start">
-                            <div className="flex-shrink-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold mr-4">
-                                4
-                            </div>
-                            <div>
-                                <h3 className="text-white font-semibold mb-1">İlk Doktorunuzu Ekleyin</h3>
-                                <p className="text-purple-200">
-                                    Doktor bilgilerini ve takvimini sisteme girin.
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="mt-8 flex gap-4">
-                        <a
-                            href="/dashboard"
-                            className="flex-1 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-center transition-colors"
-                        >
-                            Dashboard'a Git
-                        </a>
-                        <a
-                            href="https://docs.auraos.com"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex-1 py-3 bg-white/20 hover:bg-white/30 text-white rounded-lg font-semibold text-center transition-colors"
-                        >
-                            Dokümantasyon
-                        </a>
                     </div>
                 </div>
 
-                {/* Support */}
-                <div className="mt-8 text-center">
-                    <p className="text-purple-200">
-                        Yardıma mı ihtiyacınız var?{' '}
-                        <a href="mailto:support@auraos.com" className="text-purple-300 hover:text-white underline">
-                            Destek ekibimizle iletişime geçin
-                        </a>
-                    </p>
+                {/* Form Side */}
+                <div className="p-10">
+                    {step === 1 && (
+                        <div className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                            <div className="flex justify-between items-center mb-2">
+                                <h2 className="text-xl font-bold">Kişisel Bilgiler</h2>
+                                <span className="text-xs font-bold text-indigo-500 bg-indigo-500/10 px-3 py-1 rounded-full">ADIM 1/2</span>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase">Ad</label>
+                                    <input name="contactName" onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all" placeholder="Ahmet" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase">Soyad</label>
+                                    <input name="contactSurname" onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all" placeholder="Yılmaz" />
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase">Email</label>
+                                <input name="email" type="email" onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all" placeholder="dr@klinik.com" />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase">Telefon (+90...)</label>
+                                <input name="gsmNumber" onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all" placeholder="+90555..." />
+                            </div>
+
+                            <button onClick={() => setStep(2)} className="w-full bg-white text-black font-bold py-4 rounded-xl mt-4 hover:bg-gray-200 transition-colors flex items-center justify-center gap-2">
+                                Devam Et <ArrowRight size={18} />
+                            </button>
+                        </div>
+                    )}
+
+                    {step === 2 && (
+                        <form onSubmit={handleSubmit} className="space-y-6 animate-in fade-in slide-in-from-right-4 duration-500">
+                            <div className="flex justify-between items-center mb-2">
+                                <h2 className="text-xl font-bold">Finansal Bilgiler</h2>
+                                <span className="text-xs font-bold text-indigo-500 bg-indigo-500/10 px-3 py-1 rounded-full">ADIM 2/2</span>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase">Yasal Firma Adı</label>
+                                <input name="legalCompanyTitle" onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all" placeholder="Dr. Ahmet Yılmaz Muayenehanesi" />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase">TCKN (Şahıs)</label>
+                                    <input name="identityNumber" maxLength={11} onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all" placeholder="11 haneli" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold text-gray-500 uppercase">Firma Tipi</label>
+                                    <select name="subMerchantType" onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all text-gray-400">
+                                        <option value="PRIVATE_COMPANY">Şahıs Şirketi</option>
+                                        <option value="LIMITED_COMPANY">Limited Şirket</option>
+                                        <option value="INCORPORATED_COMPANY">Anonim Şirket</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase">IBAN (TR...)</label>
+                                <input name="iban" onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all" placeholder="TR..." />
+                            </div>
+
+                            <div className="space-y-2">
+                                <label className="text-xs font-bold text-gray-500 uppercase">Adres</label>
+                                <textarea name="address" onChange={handleChange} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-indigo-500 outline-none transition-all h-20" placeholder="Tam şirket adresi..." />
+                            </div>
+
+                            <div className="flex gap-4 pt-4">
+                                <button type="button" onClick={() => setStep(1)} className="flex-1 bg-white/5 text-white font-bold py-4 rounded-xl hover:bg-white/10 transition-colors">
+                                    Geri
+                                </button>
+                                <button type="submit" disabled={loading} className="flex-[2] bg-indigo-600 text-white font-bold py-4 rounded-xl hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2">
+                                    {loading ? 'İşleniyor...' : 'Hesabı Onayla'}
+                                </button>
+                            </div>
+                        </form>
+                    )}
+
+                    {step === 3 && (
+                        <div className="text-center space-y-6 animate-in zoom-in duration-300 py-10">
+                            <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-green-500/50">
+                                <CheckCircle size={40} className="text-white" />
+                            </div>
+                            <h2 className="text-3xl font-bold">Kayıt Başarılı!</h2>
+                            <p className="text-gray-400 max-w-xs mx-auto">
+                                Alt üye hesabınız (Sub-merchant) oluşturuldu ve Iyzico sistemine tanımlandı.
+                            </p>
+
+                            <div className="bg-white/5 p-4 rounded-xl text-left text-xs font-mono text-gray-300 overflow-hidden">
+                                <div className="mb-2 text-gray-500 uppercase font-bold">SYSTEM RESPONSE</div>
+                                <pre>{JSON.stringify(result, null, 2)}</pre>
+                            </div>
+
+                            <button onClick={() => window.location.href = '/pricing'} className="w-full bg-white text-black font-bold py-4 rounded-xl hover:scale-105 transition-transform flex items-center justify-center gap-2">
+                                <Wallet size={18} />
+                                Şimdi Lisans Satın Al
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>
-    );
-}
-
-export default function OnboardingPage() {
-    return (
-        <Suspense fallback={
-            <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900 flex items-center justify-center">
-                <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-white"></div>
-            </div>
-        }>
-            <OnboardingContent />
-        </Suspense>
     );
 }

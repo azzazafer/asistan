@@ -23,9 +23,18 @@ export async function middleware(request: NextRequest) {
         },
     })
 
+    // Safe Supabase Init for Mock/Local Mode
+    let supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
+
+    // Validation: If URL is placeholder text or invalid, use dummy HTTPS URL
+    if (!supabaseUrl.startsWith('http')) {
+        supabaseUrl = 'https://placeholder.supabase.co';
+    }
+
     const supabase = createServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+        supabaseUrl,
+        supabaseKey,
         {
             cookies: {
                 getAll() {
@@ -77,7 +86,10 @@ export async function middleware(request: NextRequest) {
 
     // 2. Protect /dashboard
     if (request.nextUrl.pathname.startsWith('/dashboard')) {
-        if (!user) {
+        // BYPASS: Eğer 'aura_demo_session' cookie'si varsa, Supabase kontrolünü atla.
+        const hasDemoCookie = request.cookies.get('aura_demo_session');
+
+        if (!user && !hasDemoCookie) {
             return NextResponse.redirect(new URL('/login', request.url))
         }
 

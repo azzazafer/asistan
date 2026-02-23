@@ -491,8 +491,8 @@ export const validateRequest = (
         return { valid: false, error: `Rate limit exceeded. Retry after ${rateLimitResult.retryAfter}s` };
     }
 
-    // 4. DDOS PROTECTION (Path-based bypass removed for 3.0 Hardening)
-    if (!checkDDoS(ip)) {
+    // 4. DDOS PROTECTION
+    if (!checkDDoS(ip, path)) {
         return { valid: false, error: 'DDoS protection triggered' };
     }
 

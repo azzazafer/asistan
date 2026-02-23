@@ -150,12 +150,28 @@ export class SalesCloser {
         const staleLeads = await this.identifyStaleLeads(tenantId);
 
         let sentCount = 0;
+        let blockedCount = 0;
         const { sendWhatsAppMessage } = require('../messaging');
+        const { shouldSendAutomatedMessage } = require('./sentiment-guard');
 
         for (const lead of staleLeads) {
             if (lead.suggested_nudge) {
-                console.log(`[SalesCloser] Sending nudge to ${lead.name} (${lead.phone})...`);
+                // 🔥 V4: SENTIMENT SAFETY CHECK (MANDATORY)
+                const sentimentCheck = await shouldSendAutomatedMessage(lead);
+
+                if (!sentimentCheck.should_send) {
+                    console.warn(`[V4 Sentiment Guard] ⛔ Blocked nudge to ${lead.name}: ${sentimentCheck.reason}`);
+                    blockedCount++;
+
+                    // TODO: If alternative_action === 'schedule_compassionate_message_3days'
+                    // queue a compassionate check-in for 3 days later
+
+                    continue; // Skip this lead
+                }
+
+                console.log(`[SalesCloser] ✅ Sentiment check passed for ${lead.name}, sending nudge...`);
                 const result = await sendWhatsAppMessage(lead.phone, lead.suggested_nudge);
+
                 if (result.success) {
                     sentCount++;
                     // Update lead history to record the nudge
@@ -178,7 +194,7 @@ export class SalesCloser {
             }
         }
 
-        console.log(`[SalesCloser] Auto-Pilot finished. Sent ${sentCount} nudges.`);
+        console.log(`[SalesCloser] Auto-Pilot finished. Sent: ${sentCount}, Blocked by V4: ${blockedCount}`);
         return sentCount;
     }
 }

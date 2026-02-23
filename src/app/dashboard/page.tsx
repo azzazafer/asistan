@@ -44,6 +44,7 @@ import {
 import { ZenControls } from '@/components/dashboard/ZenControls';
 import { HBYSStatusIndicator } from '@/components/dashboard/HBYSStatusIndicator';
 import { LoyaltyShieldStatus } from '@/components/dashboard/LoyaltyShieldStatus';
+import { LeadDetailPanel } from '@/components/dashboard/LeadDetailPanel';
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { generateMedicalReport } from "@/lib/pdf";
@@ -58,10 +59,14 @@ import { getNeuralForecast } from "@/lib/analytics";
 import { getRankColor as getScoreColor } from "@/lib/scoring";
 
 export default function Dashboard() {
-  const [supabase] = useState(() => createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
-  ));
+  const [supabase] = useState(() => {
+    let url = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+    if (!url.startsWith('http')) url = 'https://placeholder.supabase.co';
+    return createBrowserClient(
+      url,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key'
+    );
+  });
 
   const [lang, setLang] = useState<DashboardLang>('en');
   const t = DASHBOARD_TRANSLATIONS[lang];
@@ -128,6 +133,19 @@ export default function Dashboard() {
     { name: "Ocean", src: "/zen-ocean.mp3" },
     { name: "Forest", src: "/zen-forest.mp3" }
   ];
+
+  /* --- INTERACTIVE PANEL STATE --- */
+  const [selectedLeadForPanel, setSelectedLeadForPanel] = useState<any>(null);
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+
+  const handleLeadClick = (lead: any) => {
+    // DEBUG CLICK
+    console.log("Leading clicked:", lead);
+    toast("DEBUG: Clicked " + lead.name, { icon: '🖱️' });
+    setSelectedLeadForPanel(lead);
+    setIsPanelOpen(true);
+  };
+  /* ------------------------------- */
 
 
 
@@ -221,6 +239,18 @@ export default function Dashboard() {
 
     // Auth Check
     const checkSession = async () => {
+      // --- DEMO BYPASS ---
+      const demoSession = localStorage.getItem("aura_session");
+      if (demoSession === "active") {
+        // Eğer demo modundaysak, sahte verilerle içeri al
+        setCurrentTenant("Aura Demo Clinic");
+        setTenantId("demo_clinic_1");
+        // Sahte veri yüklemesi yap ve fonksiyondan çık
+        fetchLeads("demo_clinic_1");
+        return;
+      }
+      // -------------------
+
       if (!supabase) return;
       const { data: { session } } = await supabase.auth.getSession();
 
@@ -760,7 +790,11 @@ export default function Dashboard() {
                       <button onClick={() => setActiveTab('leads')} className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 hover:text-black transition-all">Expand Stream</button>
                     </div>
                     <div className="glass-canvas rounded-[3rem] p-4 border-white/40 shadow-2xl">
-                      <LeadsTable leads={filteredLeads.slice(0, 5)} onDownloadPDF={handleDownloadPDF} />
+                      <LeadsTable
+                        leads={filteredLeads.slice(0, 5)}
+                        onDownloadPDF={handleDownloadPDF}
+                        onLeadClick={handleLeadClick}
+                      />
                     </div>
                   </div>
 
@@ -836,6 +870,7 @@ export default function Dashboard() {
                       const newLeads = leads.map(l => (l.id === updatedLead.id || l.phone === updatedLead.phone) ? updatedLead : l);
                       setLeads(newLeads);
                     }}
+                    onLeadClick={handleLeadClick}
                   />
                 </div>
               </motion.div>
@@ -881,6 +916,13 @@ export default function Dashboard() {
           </AnimatePresence>
         </div>
       </main>
+
+      {/* Slide-over Panel */}
+      <LeadDetailPanel
+        isOpen={isPanelOpen}
+        onClose={() => setIsPanelOpen(false)}
+        lead={selectedLeadForPanel}
+      />
     </div>
   );
 }
@@ -921,8 +963,7 @@ function StatItem({ label, value, trend }: any) {
 
 
 
-function LeadsTable({ leads, onDownloadPDF, onLeadUpdate, lang }: { leads: any[], onDownloadPDF: (lead: any) => void, onLeadUpdate?: (lead: any) => void, lang?: string }) {
-  const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+function LeadsTable({ leads, onDownloadPDF, onLeadUpdate, onLeadClick, lang }: { leads: any[], onDownloadPDF: (lead: any) => void, onLeadUpdate?: (lead: any) => void, onLeadClick?: (lead: any) => void, lang?: string }) {
   const [replyText, setReplyText] = useState("");
   const [isSending, setIsSending] = useState(false);
 
@@ -1061,8 +1102,12 @@ function LeadsTable({ leads, onDownloadPDF, onLeadUpdate, lang }: { leads: any[]
                   e.dataTransfer.setData('lead', JSON.stringify(l));
                   e.dataTransfer.effectAllowed = 'copy';
                 }}
-                onClick={() => setSelectedLeadId(selectedLeadId === (l.id || String(i)) ? null : (l.id || String(i)))}
-                className={`group hover:bg-black/[0.02] cursor-pointer transition-all ${selectedLeadId === (l.id || String(i)) ? 'bg-black/[0.03]' : ''} active:cursor-grabbing hover:shadow-lg hover:z-10 relative`}
+                onClick={() => {
+                  if (onLeadClick) {
+                    onLeadClick(l);
+                  }
+                }}
+                className="group hover:bg-black/[0.02] cursor-pointer transition-all active:cursor-grabbing hover:shadow-lg hover:z-10 relative"
               >
                 <td className="p-2">
                   <div>
@@ -1148,147 +1193,6 @@ function LeadsTable({ leads, onDownloadPDF, onLeadUpdate, lang }: { leads: any[]
                 </td>
                 <td className="p-2 text-[9px] font-black text-neutral-500 uppercase tabular-nums border-l border-white/5 group-hover:text-black transition-all whitespace-nowrap hidden sm:table-cell">{l.date}</td>
               </tr>
-              {selectedLeadId === (l.id || String(i)) && (
-                <tr>
-                  <td colSpan={6} className="p-8 bg-black/[0.01] border-b border-black/5">
-                    <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="space-y-6"
-                    >
-                      <div className="flex flex-col lg:flex-row gap-10 mb-8">
-                        <div className="flex-1">
-                          <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 mb-4">Patient Lifetime Journey</h4>
-                          <PatientJourney lead={l} />
-                          <DigitalDocs lead={l} />
-                        </div>
-
-                        {/* Neural Briefing (Ahmet Bey Interface) */}
-                        <div className="lg:w-80 glass-canvas p-6 rounded-3xl bg-indigo-600 text-white shadow-xl relative overflow-hidden group">
-                          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:rotate-12 transition-all">
-                            <BrainCircuit size={80} />
-                          </div>
-                          <h4 className="text-[10px] font-black uppercase tracking-widest mb-4 opacity-60">Neural Briefing (Ahmet Bey)</h4>
-                          <div className="space-y-4">
-                            <p className="text-[11px] font-bold leading-relaxed italic">
-                              {l.summary || "Generating surgical strike brief..."}
-                            </p>
-                            {!l.summary && (
-                              <button
-                                onClick={async (e) => {
-                                  e.stopPropagation();
-                                  const tid = toast.loading("Analyzing chat for Ahmet Bey...");
-                                  const res = await fetch('/api/chat/summary', {
-                                    method: 'POST',
-                                    body: JSON.stringify({ userId: l.phone })
-                                  });
-                                  const data = await res.json();
-                                  if (data.success && onLeadUpdate) {
-                                    onLeadUpdate({ ...l, summary: data.summary });
-                                    toast.success("Briefing Ready", { id: tid });
-                                  } else {
-                                    toast.error("Bridge Error", { id: tid });
-                                  }
-                                }}
-                                className="w-full py-2 bg-white text-indigo-600 rounded-xl text-[9px] font-black uppercase tracking-widest hover:scale-105 transition-all"
-                              >
-                                Generate Briefing
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400">Neural Transcript Archive</h4>
-                        <div className="flex gap-2">
-                          <span className="px-3 py-1 bg-black text-white text-[8px] font-black uppercase rounded-full">Source: {l.channel}</span>
-                          <button onClick={(e) => { e.stopPropagation(); onDownloadPDF(l); }} className="px-3 py-1 bg-black/5 hover:bg-black hover:text-white transition-all text-neutral-600 text-[8px] font-black uppercase rounded-full flex items-center gap-2">
-                            <FileDown size={10} />
-                            Export PDF
-                          </button>
-                        </div>
-                      </div>
-
-                      <div className="max-h-[300px] overflow-y-auto pr-4 space-y-4 no-scrollbar">
-                        {l.history && l.history.length > 0 ? l.history.map((msg: any, idx: number) => (
-                          <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-                            <div className={`max-w-[80%] p-4 rounded-2xl text-[11px] leading-relaxed font-bold ${msg.role === 'user' ? 'bg-black text-white rounded-tr-none' : 'bg-white border border-black/5 text-black rounded-tl-none shadow-sm'}`}>
-                              {msg.content}
-                            </div>
-                            <span className="text-[8px] font-black text-neutral-300 uppercase mt-1 px-2">{msg.role} • {new Date(msg.timestamp).toLocaleTimeString()}</span>
-                          </div>
-                        )) : (
-                          <div className="py-12 text-center">
-                            <p className="text-[10px] font-black text-neutral-300 uppercase tracking-widest">No chat history available for this lead.</p>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Manual Reply Section */}
-                      <div className="pt-6 border-t border-black/5 flex gap-4">
-                        <textarea
-                          value={replyText}
-                          onChange={(e) => setReplyText(e.target.value)}
-                          placeholder={`Reply via ${l.channel}...`}
-                          className="flex-1 p-4 rounded-2xl bg-white border border-black/10 text-sm font-bold focus:outline-none focus:border-black/20 transition-all resize-none h-20"
-                        />
-                        <div className="flex gap-2">
-                          <button className="p-3 rounded-xl bg-black/5 hover:bg-black hover:text-white transition-all text-neutral-500">
-                            <Paperclip size={18} />
-                          </button>
-                          <button
-                            onClick={() => handleScanClick(l)}
-                            disabled={isScanning}
-                            className="p-3 rounded-xl bg-black/5 hover:bg-indigo-600 hover:text-white transition-all text-neutral-500 group/scan relative overflow-hidden"
-                          >
-                            <Scan size={18} className={isScanning ? "animate-spin" : ""} />
-                            {/* Scanning Animation Effect */}
-                            <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/scan:translate-y-[-100%] transition-transform duration-700" />
-                          </button>
-                          <button
-                            onClick={async () => {
-                              const tid = toast.loading("Generating Secure Stripe Link...");
-                              try {
-                                const res = await fetch('/api/payments/create-session', {
-                                  method: 'POST',
-                                  headers: { 'Content-Type': 'application/json' },
-                                  body: JSON.stringify({
-                                    amount: 2500,
-                                    clinicStripeAccountId: 'acct_aura_demo',
-                                    leadId: l.id || l.phone,
-                                    metadata: { source: 'ZenMode_QuickPay' }
-                                  })
-                                });
-                                const data = await res.json();
-                                if (data.url) {
-                                  setReplyText(prev => prev + `\n\nPayment Link: ${data.url}`);
-                                  toast.success("Ready to send!", { id: tid });
-                                }
-                              } catch (e) {
-                                toast.error("Stripe Bridge Error", { id: tid });
-                              }
-                            }}
-                            className="px-6 py-3 bg-[#00f5d4] text-black rounded-xl font-black uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(0,245,212,0.3)] flex items-center gap-2"
-                          >
-                            <Zap size={14} /> <span>Quick Pay</span>
-                          </button>
-                          <button
-                            onClick={() => handleSendReply(l)}
-                            disabled={isSending || !replyText.trim()}
-                            className="px-6 py-3 bg-black text-white rounded-xl font-bold uppercase tracking-widest text-xs hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100 flex items-center gap-2"
-                          >
-                            {isSending ? 'Sending...' : (
-                              <><span>Send</span> <Send size={14} /></>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-
-                    </motion.div>
-                  </td>
-                </tr>
-              )}
             </Fragment>
           ))}
         </tbody>

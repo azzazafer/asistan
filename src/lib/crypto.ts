@@ -21,7 +21,7 @@ if (!ENCRYPTION_SECRET || ENCRYPTION_SECRET.length !== 64) {
 
 const key = ENCRYPTION_SECRET
     ? Buffer.from(ENCRYPTION_SECRET, 'hex')
-    : crypto.scryptSync('development-secret', 'salt', 32);
+    : Buffer.from('904f85e332152a55953f938c532431631557342555543c563426354625345634', 'hex'); // Fixed Dev Key (32 bytes)
 
 /**
  * Encrypts a string using AES-256-GCM.

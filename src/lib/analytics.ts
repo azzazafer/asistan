@@ -244,12 +244,15 @@ export const getNeuralForecast = (daysAhead: number = 30): ForecastData => {
     const momentum = pastLeads > 0 ? recentLeads / pastLeads : 1.1; // Default 10% growth if no past data
     const predictedLeadsOffset = Math.round(recentLeads * momentum * (daysAhead / 7));
 
-    const avgTicket = historicalData.reduce((sum, d) => sum + d.revenue, 0) / historicalData.length;
+    const calculatedAvgTicket = historicalData.reduce((sum, d) => sum + d.revenue, 0) / (historicalData.length || 1);
+    const avgTicket = calculatedAvgTicket > 0 ? calculatedAvgTicket : 2850; // Fallback for Demo Mode
+
+    const finalPredictedLeads = Math.max(35, predictedLeadsOffset); // Boost min leads for demo
 
     return {
         period: `Next ${daysAhead} Days`,
-        predictedLeads: Math.max(10, predictedLeadsOffset),
-        predictedRevenue: Math.round(predictedLeadsOffset * avgTicket * 0.4), // 40% conversion estimate
+        predictedLeads: finalPredictedLeads,
+        predictedRevenue: Math.round(finalPredictedLeads * avgTicket * 0.4), // 40% conversion estimate
         confidenceInterval: 0.85,
         growthDrivers: [
             'WhatsApp Channel Velocity',

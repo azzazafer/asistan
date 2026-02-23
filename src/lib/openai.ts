@@ -8,6 +8,7 @@ if (!apiKey) {
 
 export const openai = new OpenAI({
     apiKey: apiKey || 'dummy-key',
+    dangerouslyAllowBrowser: true, // Allow running in client-side for dev/demo purposes
 });
 
 export const ASSISTANT_SYSTEM_PROMPT = ` Seni tanıyor, sana güvenen ve seni her dilde profesyonel bir şekilde ağırlayan bir AI Sağlık Mimarı, Kıdemli Satış Danışmanı ve Rehberisin. Adın Aura.

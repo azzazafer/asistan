@@ -4,6 +4,10 @@ import { redactPII, validateResponse, detectPromptInjection, logAudit } from '@/
 import { RagService } from './rag-service';
 import { funnelMachine } from './funnel-machine';
 import Redis from 'ioredis';
+
+// 🔥 V4 SALES PSYCHOLOGY IMPORTS (MANDATORY)
+import { analyzeSentiment, shouldSendAutomatedMessage } from './sentiment-guard';
+import { queueDelayedResponse } from './delayed-queue';
 const MAX_SESSION_COST = 1.50; // USD
 
 // Lazy Redis client - only connects when actually used, not during build
@@ -102,6 +106,38 @@ export class AiOrchestrator {
                 return { message: { role: 'assistant', content: "Güvenlik protokolleri gereği bu isteği yerine getiremiyorum." } };
             }
 
+            // 🔥 V4: SENTIMENT SAFETY GUARD (MANDATORY)
+            // Check if user is in emotional crisis BEFORE proceeding
+            const sentiment = await analyzeSentiment(messages);
+            console.log(`[V4 Sentiment Guard] Emotional state: ${sentiment.emotional_state}, Action: ${sentiment.recommended_action}`);
+
+            if (sentiment.recommended_action === 'abort') {
+                console.warn(`[V4 Sentiment Guard] ⚠️ CRISIS DETECTED - Aborting automated response`);
+                return {
+                    message: {
+                        role: 'assistant',
+                        content: language === 'tr'
+                            ? "Sizi anlıyorum. Şu an size bir insan destek uzmanı yönlendiriyorum."
+                            : "I understand. I'm connecting you with a human support specialist."
+                    },
+                    handover: true,
+                    context: { sentiment_crisis: true, reasoning: sentiment.reasoning }
+                };
+            }
+
+            if (sentiment.recommended_action === 'delay_3days') {
+                console.warn(`[V4 Sentiment Guard] 💔 Grief detected - Delaying response by 3 days`);
+                return {
+                    message: {
+                        role: 'assistant',
+                        content: language === 'tr'
+                            ? "Sizi düşünüyoruz. Size uygun bir zamanda tekrar ulaşacağız."
+                            : "We're thinking of you. We'll reach out at a better time."
+                    },
+                    context: { sentiment_delay: true, reasoning: sentiment.reasoning }
+                };
+            }
+
             // 3. VISION ANALYSIS (If image provided)
             let visionContext = "";
             if (imageData) {
@@ -114,16 +150,33 @@ export class AiOrchestrator {
             const knowledgeChunks = await RagService.retrieveRelevantChunks(lastMessage, 'default_clinic');
             const knowledgeContext = knowledgeChunks.join('\n');
 
-            // 5. SYSTEM PROMPT ENRICHMENT
+            // 5. CULTURE & SYSTEM PROMPT ENRICHMENT
+            const { getCultureConfig } = require('./culture-matrix');
+            // Basic mapping from language to culture code
+            let cultureType = 'Global';
+            if (language === 'tr') cultureType = 'Turkey';
+            if (language === 'ar') cultureType = 'Middle East';
+            if (language === 'de') cultureType = 'DACH';
+            if (language === 'en') cultureType = 'UK/IE';
+
+            const cultureData = getCultureConfig(cultureType);
+
             let enrichedPrompt = `${ASSISTANT_SYSTEM_PROMPT}
 
-[CULTURAL CONTEXT]: Language is ${language}. Referral Code: ${refCode || 'none'}.
+[KÜLTÜREL VE PSİKOLOJİK PROFİL (CULTURE MATRIX)]:
+Hedef Kültür: ${cultureType}
+Ton ve Üslup: ${cultureData.tone}
+Öncelikler: ${cultureData.priority.join(', ')}
+
+[DİL KURALI]: Kullanıcının yazdığı veya konuştuğu dili otomatik algıla ve MUTLAKA aynı dilde cevap ver.
+[BAĞLAM KURALI]: Hasta sesli mesajla veya metinle bir konu belirttiyse (örn: diş implantı, saç ekimi, fiyat) MUTLAKA o konuya özel cevap ver. Asla genel 'nasıl yardımcı olabilirim' sorusu sorma.
+[REFERANS KODU]: ${refCode || 'none'}
 ${visionContext}
 
 [SOURCE OF TRUTH]:
 ${knowledgeContext}
 
-Strategy: Act as a Closer. Redirect to booking.`;
+Strategy: Act as a Closer. Redirect to booking. Use the Culturial Profile heavily.`;
 
             // 6. VISION INTENT FORCING
             // If an image is present, FORCE the AI to analyze it (prevents "How can I help?" responses)
@@ -269,10 +322,78 @@ Strategy: Act as a Closer. Redirect to booking.`;
                 aiMessage.content = "Sağlık sürecinizle ilgili en doğru bilgiyi uzmanımız size iletecektir.";
             }
 
+            // 🧠 V4: MANAGER APPROVAL SIMULATION (MANDATORY)
+            // Detect if AI is responding to price objection
+            const aiContent = (aiMessage.content || '').toLowerCase();
+            const userContent = lastMessage.toLowerCase();
+
+            const isPriceObjection = (
+                userContent.includes('pahalı') ||
+                userContent.includes('expensive') ||
+                userContent.includes('fiyat') ||
+                userContent.includes('price') ||
+                userContent.includes('غالي') // Arabic: expensive
+            );
+
+            const isOfferingDiscount = (
+                aiContent.includes('indirim') ||
+                aiContent.includes('discount') ||
+                aiContent.includes('taksit') ||
+                aiContent.includes('installment') ||
+                aiContent.includes('özel') ||
+                aiContent.includes('special')
+            );
+
+            // If AI is about to offer discount/package, DELAY the response
+            // DEMO FIX: Yorum satırına alındı (Serverless ortamda Vercel 10s Timeout patlamaması için)
+            /*
+            if (isPriceObjection && isOfferingDiscount) {
+                console.log('[V4 Manager Approval] 🕐 Price objection detected - Implementing delayed approval');
+
+                // Send immediate "checking with manager" message
+                const checkingMessage = language === 'tr'
+                    ? "Anlıyorum. Size özel bir paket oluşturabilir miyim diye yöneticime danışıyorum. Lütfen kısa bir süre bekleyin... ⏳"
+                    : "I understand. Let me consult with the manager to see if we can create a special package for you. Please wait a moment... ⏳";
+
+                // Queue the actual offer for 45 seconds later
+                try {
+                    await queueDelayedResponse(
+                        userId,
+                        'manager_approval',
+                        45, // 45 seconds delay
+                        aiMessage.content || '',
+                        { original_objection: userContent }
+                    );
+
+                    console.log('[V4 Manager Approval] ✅ Delayed response queued (45 seconds)');
+                } catch (error: any) {
+                    console.error('[V4 Manager Approval] Failed to queue delayed response:', error);
+                    // Fallback: Send original message immediately if queue fails
+                }
+
+                // Return the "checking" message instead of the offer
+                return {
+                    message: {
+                        role: 'assistant',
+                        content: checkingMessage
+                    },
+                    context: {
+                        v4_delayed_approval: true,
+                        delay_seconds: 45,
+                        sentiment: sentiment.emotional_state
+                    }
+                };
+            }
+            */
+
             return {
                 message: {
                     role: aiMessage.role,
                     content: aiMessage.content || ''
+                },
+                context: {
+                    sentiment: sentiment.emotional_state,
+                    v4_active: true
                 }
             };
 
