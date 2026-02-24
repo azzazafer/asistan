@@ -456,3 +456,4 @@ Strategy: Act as a Closer. Redirect to booking. Use the Culturial Profile heavil
         } catch { }
     }
 }
+ 
