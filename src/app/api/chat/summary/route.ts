@@ -12,6 +12,10 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
         }
 
+        if (!supabase) {
+            return NextResponse.json({ error: 'Database not configured' }, { status: 503 });
+        }
+
         // 1. Fetch history from DB (Simplification: fetch from supabase directly)
         const { data: lead } = await supabase
             .from('leads')
@@ -22,6 +26,7 @@ export async function POST(req: Request) {
         if (!lead || !lead.history) {
             return NextResponse.json({ error: 'Lead history not found' }, { status: 404 });
         }
+
 
         // 2. Generate Summary via AI Orchestrator
         const summary = await AiOrchestrator.generateSummary(userId, lead.history);
