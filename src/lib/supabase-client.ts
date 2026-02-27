@@ -63,4 +63,5 @@ function getSupabaseClient(): SupabaseClient | null {
     return client;
 }
 
-export const supabase: ReturnType<typeof createClient> = getSupabaseClient() as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const supabase = getSupabaseClient() as any;
