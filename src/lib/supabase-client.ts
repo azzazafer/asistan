@@ -63,4 +63,4 @@ function getSupabaseClient(): SupabaseClient | null {
     return client;
 }
 
-export const supabase = getSupabaseClient();
+export const supabase: ReturnType<typeof createClient> = getSupabaseClient() as any;
