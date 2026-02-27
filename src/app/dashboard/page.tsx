@@ -311,7 +311,7 @@ export default function Dashboard() {
     const handleOnline = () => {
       setIsOnline(true);
       toast.success("Connection Restored. Syncing data...");
-      syncWithServer(addLead);
+      syncWithServer(tenantId);
     };
     const handleOffline = () => {
       setIsOnline(false);
