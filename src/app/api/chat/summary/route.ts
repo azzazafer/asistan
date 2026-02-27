@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         }
 
         // 1. Fetch history from DB (Simplification: fetch from supabase directly)
-        const { data: lead } = await supabase
+        const { data: lead } = await (supabase as any)
             .from('leads')
             .select('history')
             .eq('phone', userId)
