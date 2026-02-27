@@ -10,7 +10,7 @@ import { RagService } from '@/lib/ai/rag-service';
 export async function GET(req: NextRequest) {
     // Guvenlik: sadece admin anahtariyla calisir
     const key = req.headers.get('x-admin-key') || req.nextUrl.searchParams.get('key');
-    const validKey = process.env.AURA_ALPHA_CLEARANCE_KEY;
+    const validKey = process.env.CRON_SECRET || process.env.AURA_ALPHA_CLEARANCE_KEY;
 
     if (!validKey || key !== validKey) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
