@@ -92,3 +92,50 @@ export const saveLeadLocally = (lead: any): void => {
         }
     }
 };
+
+/**
+ * Returns all leads stored in local browser memory.
+ * Falls back to empty array in server-side context.
+ */
+export const getLocalLeads = (): any[] => {
+    if (typeof window === 'undefined') return [];
+    try {
+        const memory = JSON.parse(localStorage.getItem('aura_lead_memory') || '{}');
+        return Object.values(memory);
+    } catch {
+        return [];
+    }
+};
+
+/**
+ * Syncs local lead memory with the server (Supabase).
+ * Called from dashboard to reconcile offline-cached leads.
+ */
+export const syncWithServer = async (tenantId: string): Promise<{ synced: number; errors: number }> => {
+    const localLeads = getLocalLeads();
+    if (localLeads.length === 0) return { synced: 0, errors: 0 };
+
+    const { addLead } = await import('./leads');
+    let synced = 0;
+    let errors = 0;
+
+    for (const lead of localLeads) {
+        try {
+            await addLead({ ...lead, tenant_id: tenantId });
+            synced++;
+        } catch {
+            errors++;
+        }
+    }
+
+    if (synced > 0) {
+        // Basarili sync sonrasi local memory'i temizle
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('aura_lead_memory');
+        }
+    }
+
+    console.log(`[Persistence] Sync: ${synced} basarili, ${errors} hatali.`);
+    return { synced, errors };
+};
+
