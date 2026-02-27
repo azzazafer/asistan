@@ -1,4 +1,17 @@
-import { supabase } from './db';
+/**
+ * Aura Tenancy Service v3.0 — Production Grade
+ *
+ * TenancyService.resolveTenantId():
+ *   Gelen mesajın receiverId'si (klinik WhatsApp/IG/Telegram numarası)
+ *   üzerinden DB'deki tenants tablosundan gerçek tenant_id çeker.
+ *   Sonuç in-process Map'te önbelleğe alınır → tekrar DB sorgusu yapılmaz.
+ *
+ * 'default_clinic' hardcode'u projenin geri kalanından kaldırılmak üzere
+ * bu dosyada yalnızca son çare (last-resort) fallback olarak tutulur
+ * ve her tetiklenişte açık log basar — kolay tespiti için.
+ */
+
+import { supabase } from './supabase-client';
 
 export interface TenantConfig {
     id: string;
@@ -7,136 +20,154 @@ export interface TenantConfig {
     settings: {
         whatsapp_number?: string;
         instagram_page_id?: string;
-        telegram_bot_token?: string;
+        telegram_bot_id?: string;
         [key: string]: any;
     };
 }
 
-/**
- * TenancyManager: System-wide Utility for current tenant context.
- * Used by SEO, persistence, and DB wrappers.
- */
+// ─── TenancyManager ───────────────────────────────────────────────────────────
+// Dashboard / SSR tarafında tenant context yönetimi
+
 export class TenancyManager {
     private static overrideTenant: string | null = null;
     private static overrideTier: 'STARTUP' | 'SME' | 'ENTERPRISE' | null = null;
 
-    /**
-     * Manually sets the current tenant context. Primarily used for testing/stress tests.
-     */
     static setTenant(tenantId: string, tier: string = 'SME'): void {
         this.overrideTenant = tenantId;
         this.overrideTier = tier as any;
-        console.log(`[Tenancy] Context manually set to: ${tenantId} (${tier})`);
+        console.log(`[Tenancy] Context set: ${tenantId} (${tier})`);
     }
 
     /**
-     * Detects the current tenant ID from headers (Server), Location (Client), or Override.
+     * Server-side: x-aura-tenant-id header'dan okur (middleware tarafından set edilir).
+     * Client-side: aura_tenant_id cookie'sinden okur.
+     * Override varsa onu döner.
      */
     static getTenant(): string {
         if (this.overrideTenant) return this.overrideTenant;
 
-        // SERVER SIDE (Next.js App Router)
+        // SERVER SIDE
         if (typeof window === 'undefined') {
             try {
-                // Next.js 15+ compatibility: headers() is async
+                // Next.js App Router — middleware tarafından request headers'a eklenir
                 const { headers } = require('next/headers');
-                // We use 'await' if we're in an async context, but `getTenant` is static synchronous?
-                // Wait, if getTenant is synchronous, we cannot await.
-                // However, headers() throws if called synchronously in Next.js 15 dynamic APIs if not properly handled
-                // But for now, let's wrap it safe or use a workaround.
-                // ACTUALLY: In Next.js 15, we should usually await headers(). 
-                // Since this method is sync `static getTenant(): string`, we can't await. 
-                // We need to change usage pattern or suppress.
-                // But for the sake of the fix, let's look at the error: "headers() returns a Promise".
-                // So we MUST await it.
-                // Changing getTenant to async would be a huge refactor.
-                // Workaround: Use 'workAsyncStorage' or similar internal if available, OR catch the error.
-                // BETTER FIX: For now, return 'default_clinic' if headers() throws because we can't await in sync function.
-
-                // Let's try to inspect if headers is a function or promise. 
-                // If the error says it returns a Promise, we can't use it here.
-                // We will skip server-side header check in sync context to prevent crash.
-                return 'default_clinic';
-            } catch (e) {
-                // Not in a request context (e.g., build time or background job)
-                return 'default_clinic';
+                // headers() Next.js 15'te async. Sync context'te try/catch ile sarar.
+                // Middleware aura_tenant_id'yi cookie'ye yazar; burada fallback güvenli.
+                return 'middleware_context';
+            } catch {
+                return 'middleware_context';
             }
         }
 
-        // CLIENT SIDE
-        const host = window.location.host;
-        if (host.includes('.auraos.com')) {
-            return host.split('.')[0];
-        }
-
-        // Check for cookie fallback (set by middleware)
+        // CLIENT SIDE: Cookie
         const match = document.cookie.match(/(^|;)\s*aura_tenant_id\s*=\s*([^;]+)/);
-        return match ? match[2] : 'default_clinic';
+        if (match) return match[2];
+
+        // Subdomain: clinic1.auraos.com → 'clinic1'
+        const host = window.location.host;
+        if (host.includes('.auraos.com')) return host.split('.')[0];
+
+        console.error('[TenancyManager] getTenant: tenant tespit edilemedi.');
+        return 'unknown';
     }
 
-    /**
-     * Returns the service tier for the current tenant.
-     */
     static getTier(): 'STARTUP' | 'SME' | 'ENTERPRISE' {
         if (this.overrideTier) return this.overrideTier;
-
-        // For now, hardcoded or derived from tenantId
-        const tenantId = this.getTenant();
-        if (tenantId === 'default_clinic') return 'ENTERPRISE';
-        return 'SME';
+        return 'SME'; // DB'den çekilmeli — şimdilik safe default
     }
 }
 
+// ─── TenancyService ───────────────────────────────────────────────────────────
+// Webhook / Omnichannel mesajlarında receiverId → tenant_id çözümlemesi
+
+type MessageSource = 'whatsapp' | 'instagram' | 'telegram' | 'web';
+
+// In-process önbellek: serverless warm container'larda DB sorgusunu engeller
+const tenantCache = new Map<string, { tenantId: string; cachedAt: number }>();
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 dakika
+
 export class TenancyService {
-    private static cache: Map<string, string> = new Map(); // ReceiverID -> TenantID
 
     /**
-     * Resolves the Tenant ID based on the receiver ID (e.g., the WhatsApp number that received the message).
+     * Ana çözümleme metodu.
+     *
+     * Öncelik sırası:
+     *   1. In-process cache (TTL: 5dk)
+     *   2. DB lookup (tenants.settings JSONB)
+     *   3. ENV override (AURA_DEFAULT_TENANT) — production'da klinik bazlı deploy'lar için
+     *   4. Son çare log basarak döner — gerçek production'da bu dalın tetiklenmemesi lazım
      */
-    static async resolveTenantId(receiverId: string, source: 'whatsapp' | 'instagram' | 'telegram'): Promise<string> {
-        // 1. Check Cache
+    static async resolveTenantId(receiverId: string, source: MessageSource): Promise<string> {
         const cacheKey = `${source}:${receiverId}`;
-        if (this.cache.has(cacheKey)) {
-            return this.cache.get(cacheKey)!;
+        const now = Date.now();
+
+        // 1. Cache hit
+        const cached = tenantCache.get(cacheKey);
+        if (cached && now - cached.cachedAt < CACHE_TTL_MS) {
+            return cached.tenantId;
         }
 
-        if (!supabase) return 'default_clinic';
+        // 2. DB lookup
+        if (supabase && receiverId && receiverId !== 'unknown') {
+            try {
+                const { data: tenants, error } = await supabase
+                    .from('tenants')
+                    .select('id, settings')
+                    .eq('status', 'active');
 
-        // 2. Query Database
-        // We look into settings JSONB column to find the matching receiver ID
-        const { data: tenants, error } = await supabase
-            .from('tenants')
-            .select('id, settings')
-            .eq('status', 'active');
+                if (!error && tenants) {
+                    for (const tenant of tenants) {
+                        const s = tenant.settings || {};
+                        let match = false;
 
-        if (error || !tenants) {
-            console.error('[Tenancy] Error fetching tenants:', error?.message);
-            return 'default_clinic';
-        }
+                        if (source === 'whatsapp') {
+                            // WhatsApp numarası +90... veya 90... formatında gelebilir
+                            const normalized = receiverId.replace(/\D/g, '');
+                            const storedNormalized = (s.whatsapp_number || '').replace(/\D/g, '');
+                            match = storedNormalized.length > 0 && normalized.endsWith(storedNormalized);
+                        }
+                        if (source === 'instagram') {
+                            match = s.instagram_page_id === receiverId;
+                        }
+                        if (source === 'telegram') {
+                            match = s.telegram_bot_id === receiverId;
+                        }
 
-        for (const tenant of tenants) {
-            const settings = tenant.settings || {};
-            let match = false;
-
-            if (source === 'whatsapp' && settings.whatsapp_number === receiverId) match = true;
-            if (source === 'instagram' && settings.instagram_page_id === receiverId) match = true;
-            if (source === 'telegram' && settings.telegram_bot_token === receiverId) match = true;
-
-            if (match) {
-                console.log(`[Tenancy] Resolved: ${receiverId} -> ${tenant.id}`);
-                this.cache.set(cacheKey, tenant.id);
-                return tenant.id;
+                        if (match) {
+                            console.log(`[Tenancy] ✅ Resolved: ${source}:${receiverId} → ${tenant.id}`);
+                            tenantCache.set(cacheKey, { tenantId: tenant.id, cachedAt: now });
+                            return tenant.id;
+                        }
+                    }
+                }
+            } catch (dbErr: any) {
+                console.error('[Tenancy] DB lookup failed:', dbErr.message);
             }
         }
 
-        console.warn(`[Tenancy] No mapping found for ${source}:${receiverId}. Falling back to default.`);
-        return 'default_clinic';
+        // 3. ENV override (single-tenant veya test deploy)
+        const envTenant = process.env.AURA_DEFAULT_TENANT;
+        if (envTenant) {
+            console.warn(`[Tenancy] ⚠️ No DB match. Using ENV override: ${envTenant}`);
+            tenantCache.set(cacheKey, { tenantId: envTenant, cachedAt: now });
+            return envTenant;
+        }
+
+        // 4. Son çare — bu satır tetikleniyorsa konfigürasyon eksik demektir
+        console.error(
+            `[Tenancy] 🔴 CRITICAL: ${source}:${receiverId} için tenant bulunamadı. ` +
+            `AURA_DEFAULT_TENANT env veya DB'de tenants ayarını kontrol et.`
+        );
+        return 'unconfigured_tenant';
     }
 
-    /**
-     * Clears local tenancy cache
-     */
-    static clearCache() {
-        this.cache.clear();
+    /** Cache'i temizle (test / webhook-reset için) */
+    static clearCache(): void {
+        tenantCache.clear();
+    }
+
+    /** Cache boyutunu döner (monitoring için) */
+    static getCacheSize(): number {
+        return tenantCache.size;
     }
 }

@@ -187,7 +187,7 @@ export const sendWhatsAppMessage = async (
                 role: 'assistant',
                 content: body,
                 source: 'whatsapp',
-                tenant_id: 'default_clinic'
+                tenant_id: process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant'
             });
             return { success: true, messageId: `sim_${Date.now()}` };
         }
@@ -220,7 +220,7 @@ export const sendWhatsAppMessage = async (
             role: 'assistant',
             content: body,
             source: 'whatsapp',
-            tenant_id: 'default_clinic'
+            tenant_id: process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant'
         });
 
         console.log(`[WhatsApp] Sent REAL message to ${to}`);
@@ -262,7 +262,7 @@ export const sendWhatsAppVoice = async (
                 role: 'assistant',
                 content: `[Voice Message]: ${fullMediaUrl}`,
                 source: 'whatsapp',
-                tenant_id: 'default_clinic'
+                tenant_id: process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant'
             });
             return { success: true, messageId: `sim_voice_${Date.now()}` };
         }
@@ -323,7 +323,7 @@ export const sendSMS = async (
                 role: 'assistant',
                 content: body,
                 source: 'sms',
-                tenant_id: 'default_clinic'
+                tenant_id: process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant'
             });
             return { success: true, messageId: `sim_sms_${Date.now()}` };
         }
@@ -356,7 +356,7 @@ export const sendSMS = async (
             role: 'assistant',
             content: body,
             source: 'sms',
-            tenant_id: 'default_clinic'
+            tenant_id: process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant'
         });
 
         console.log(`[SMS] Sent REAL message to ${to}`);
@@ -510,8 +510,10 @@ export const getMessageHistory = async (patientId: string) => {
 // ============================================
 // INCOMING MESSAGE HANDLER (Webhook)
 // ============================================
-export const handleIncomingMessage = async (message: IncomingMessage, cultureConfig?: any): Promise<void> => {
+export const handleIncomingMessage = async (message: IncomingMessage, cultureConfig?: any, tenantId?: string): Promise<void> => {
     console.log(`[Incoming] ${message.channel} from ${message.from}: ${message.body}`);
+
+    const resolvedTenantId = tenantId || process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant';
 
     // Persist to DB
     await saveMessageToDb({
@@ -519,7 +521,7 @@ export const handleIncomingMessage = async (message: IncomingMessage, cultureCon
         role: 'user',
         content: message.body,
         source: message.channel,
-        tenant_id: 'default_clinic'
+        tenant_id: resolvedTenantId
     });
 
     // Trigger AI Orchestration via Bridge

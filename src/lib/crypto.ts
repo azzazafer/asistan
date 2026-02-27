@@ -81,3 +81,23 @@ export function decrypt(encryptedData: string): string {
         return "[DECRYPTION_FAILED]";
     }
 }
+
+/**
+ * Deterministic Hashing for Search Optimization (HMAC-SHA256)
+ * Normalized phone numbers are hashed to allow fast database lookups (indexable).
+ * This maintains privacy while enabling O(1) searches.
+ */
+export function generateSearchHash(text: string): string {
+    if (!text) return "";
+
+    // Normalize: only keep digits
+    const normalized = text.replace(/\D/g, '');
+
+    const hashSecret = process.env.HASH_SECRET || 'aura_fallback_secret_for_search_hashing_2026';
+
+    return crypto
+        .createHmac('sha256', hashSecret)
+        .update(normalized)
+        .digest('hex');
+}
+

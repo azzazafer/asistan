@@ -56,11 +56,9 @@ export class OmnichannelBridge {
         }
 
         // 0. VERSION CHECK (DEBUG)
-        console.log("[Bridge] VERSION: 2026-01-21-Voice-OpenAI-V2-FORCE");
+        console.log("[Bridge] VERSION: 2026-02-24-V5-FINAL-LANGUAGE");
 
-        // 1. TYPING INDICATOR (Sales Psychology)
-        console.log(`[Bridge] Activating typing indicator for ${message.userId}...`);
-        await this.sendTypingIndicator(message.userId, message.source);
+
 
         // 2. REFERRAL DETECTION
         let isReferral = false;
@@ -127,17 +125,40 @@ export class OmnichannelBridge {
         const history = await getMessageHistory(message.userId);
         const context = [...history, { role: 'user', content: message.content }];
 
-        const detectLanguage = (text: string): string => {
+        const detectLanguage = (text: string, hist: any[]): string => {
+            // 1. Script Detection (Highest Priority)
             if (/[\u0600-\u06FF]/.test(text)) return 'ar';
             if (/[\u0400-\u04FF]/.test(text)) return 'ru';
             if (/[äöüßÄÖÜ]/.test(text)) return 'de';
-            const trChars = /[çğışöüÇĞİŞÖÜ]/;
-            if (trChars.test(text)) return 'tr';
-            if (/^[a-zA-Z\s]+$/.test(text)) return 'en';
-            return 'tr';
+            if (/[çğışöüÇĞİŞÖÜİ]/.test(text)) return 'tr';
+
+            // 2. Common Word Detection
+            const trWords = /\b(merhaba|selam|nasilsin|fiyat|doktor|bilgi|ucret)\b/i;
+            if (trWords.test(text)) return 'tr';
+
+            const enWords = /\b(hello|hi|price|implant|dent|hair|cost|treatment|clinic|book)\b/i;
+            if (enWords.test(text)) return 'en';
+
+            // 3. History Persistence
+            const lastUserMsg = [...hist].reverse().find(h => h.role === 'user');
+            if (lastUserMsg) {
+                if (/[\u0600-\u06FF]/.test(lastUserMsg.content)) return 'ar';
+                if (/[çğışöüÇĞİŞÖÜİ]/.test(lastUserMsg.content)) return 'tr';
+            }
+
+            return 'auto';
         };
 
-        const detectedLanguage = detectLanguage(message.content);
+        const detectedLanguage = detectLanguage(message.content, history);
+
+        // 1. TYPING INDICATOR (Sales Psychology - now localized)
+        console.log(`[Bridge] Activating typing indicator for ${message.userId} in ${detectedLanguage}...`);
+        await this.sendTypingIndicator(message.userId, message.source, detectedLanguage === 'auto' ? 'tr' : detectedLanguage);
+
+
+        // CRITICAL V4 FIX: Hard-enforce the language in the context
+        const languageNotice = `\n[CRITICAL]: User speaks ${detectedLanguage.toUpperCase()}. You MUST respond in ${detectedLanguage.toUpperCase()} only. Do NOT use Turkish unless the user spoke Turkish.`;
+        message.content += languageNotice;
 
         let auraResponse: AuraResponse | null = null;
 
@@ -148,7 +169,8 @@ export class OmnichannelBridge {
             try {
                 const visionResult = await VisionFast.quickAnalyze({
                     imageData: message.mediaUrl,
-                    userMessage: message.content
+                    userMessage: message.content,
+                    language: detectedLanguage === 'auto' ? 'tr' : detectedLanguage
                 });
 
                 auraResponse = {
@@ -191,7 +213,7 @@ export class OmnichannelBridge {
                 const hasPayIntent = payTriggers.some(t => message.content.toLowerCase().includes(t));
 
                 if (hasPayIntent) {
-                    console.log(`[Bridge] High-Intent Financial Trigger Detected for ${message.userId}. Updating CRM status...`);
+                    console.log(`[Bridge] High-Intent Financial Trigger for ${message.userId}. CRM sync...`);
                     const lead = await getLeadByPhone(message.userId, tenantId);
                     if (lead) {
                         await addLead({
@@ -492,7 +514,7 @@ export class OmnichannelBridge {
         };
     }
 
-    static async sendTypingIndicator(target: string, source: MessageSource) {
+    static async sendTypingIndicator(target: string, source: MessageSource, language: string = 'tr') {
         try {
             if (source === 'whatsapp') {
                 // Send actual typing indicator via Twilio
@@ -500,12 +522,20 @@ export class OmnichannelBridge {
                 const authToken = process.env.TWILIO_AUTH_TOKEN;
                 const fromNumber = process.env.TWILIO_WHATSAPP_NUMBER || 'whatsapp:+14155238886';
 
+                const statusMsgs: any = {
+                    tr: '⏳ Analiz yapılıyor...',
+                    ar: '⏳ جارٍ التحليل...',
+                    de: '⏳ Analysiere...',
+                    en: '⏳ Analyzing...'
+                };
+                const statusBody = statusMsgs[language] || statusMsgs['en'];
+
                 if (accountSid && authToken) {
                     const auth = Buffer.from(`${accountSid}:${authToken}`).toString('base64');
                     const formData = new URLSearchParams();
                     formData.append('To', target.startsWith('whatsapp:') ? target : `whatsapp:${target}`);
                     formData.append('From', fromNumber);
-                    formData.append('Body', '⏳ Analyzing...'); // Optimistic feedback message
+                    formData.append('Body', statusBody); // Localized feedback
 
                     // Send a quick acknowledgment message
                     await fetch(`https://api.twilio.com/2010-04-01/Accounts/${accountSid}/Messages.json`, {

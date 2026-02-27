@@ -1,13 +1,23 @@
 import Iyzipay from 'iyzipay';
 import { createClient } from '@supabase/supabase-js';
 
-// Initialize Iyzipay
-// Initialize Iyzipay
-const iyzipay = new Iyzipay({
-    apiKey: process.env.IYZICO_API_KEY || '',
-    secretKey: process.env.IYZICO_SECRET_KEY || '',
-    uri: process.env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com'
-});
+const apiKey = process.env.IYZICO_API_KEY || '';
+const secretKey = process.env.IYZICO_SECRET_KEY || '';
+
+// Initialize Iyzipay (with guard for empty keys)
+let iyzipay: any = null;
+if (apiKey && secretKey) {
+    iyzipay = new Iyzipay({
+        apiKey,
+        secretKey,
+        uri: process.env.IYZICO_BASE_URL || 'https://sandbox-api.iyzipay.com'
+    });
+} else {
+    console.warn('[Iyzico] Initializing with FAKE/MOCK credentials for build/dev.');
+    // Provide dummy keys if needed, but since we have mock checks anyway, 
+    // let's just use empty strings or handle null.
+    // Real calls will check for "sandbox-api-key-123"
+}
 
 // Initialize Supabase (Gracefully)
 let supabase: any = null;
@@ -71,7 +81,7 @@ export async function createSubMerchant(config: SubMerchantConfig) {
     }
 
     return new Promise((resolve, reject) => {
-        const request = {
+        const request: any = {
             locale: Iyzipay.LOCALE.TR,
             conversationId: config.tenantId,
             subMerchantExternalId: config.tenantId,
@@ -81,6 +91,7 @@ export async function createSubMerchant(config: SubMerchantConfig) {
             taxNumber: config.identityNumber, // Using TCKN for Private Company
             contactName: config.contactName,
             contactSurname: config.contactSurname,
+            name: `${config.contactName} ${config.contactSurname}`, // Required by Iyzico types
             legalCompanyTitle: config.legalCompanyTitle,
             email: config.email,
             gsmNumber: config.gsmNumber,
@@ -88,6 +99,10 @@ export async function createSubMerchant(config: SubMerchantConfig) {
             identityNumber: config.identityNumber,
             currency: Iyzipay.CURRENCY.TRY,
         };
+
+        if (!iyzipay) {
+            return reject(new Error('Iyzipay NOT INITIALIZED. Check API Keys.'));
+        }
 
         iyzipay.subMerchant.create(request, async (err: any, result: any) => {
             if (err) {
@@ -198,7 +213,7 @@ export async function createMarketplacePayment(config: PaymentConfig) {
     const platformFee = (price * 0.15).toFixed(2); // 15% remains on Platform
 
     return new Promise((resolve, reject) => {
-        const request = {
+        const request: any = {
             locale: Iyzipay.LOCALE.TR,
             conversationId: `TRX-${Date.now()}`,
             price: price.toString(),
@@ -207,6 +222,7 @@ export async function createMarketplacePayment(config: PaymentConfig) {
             basketId: `B-${Date.now()}`,
             paymentGroup: Iyzipay.PAYMENT_GROUP.PRODUCT,
             paymentChannel: Iyzipay.PAYMENT_CHANNEL.WEB, // Or MARKETPLACE specific if needed
+            installments: 1, // Required by type definition
 
             // Card Info
             paymentCard: {
@@ -267,6 +283,10 @@ export async function createMarketplacePayment(config: PaymentConfig) {
                 }
             ]
         };
+
+        if (!iyzipay) {
+            return reject(new Error('Iyzipay NOT INITIALIZED. Check API Keys.'));
+        }
 
         iyzipay.payment.create(request, async (err: any, result: any) => {
             if (err) return reject(err);

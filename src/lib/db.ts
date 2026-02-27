@@ -42,7 +42,7 @@ export const getProfile = async (id: string): Promise<UserProfile | null> => {
             if (user && user.id === id) {
                 const newProfile: UserProfile = {
                     id: user.id,
-                    tenant_id: user.user_metadata?.tenant_id || 'default_clinic',
+                    tenant_id: user.user_metadata?.tenant_id || process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant',
                     name: user.user_metadata?.full_name || '',
                     language: 'tr',
                     history: []
@@ -107,7 +107,7 @@ export const getAgentByCode = async (code: string): Promise<Agent | null> => {
     return data;
 };
 
-export const fetchLeadsFromCloud = async (tenantId: string = 'default_clinic') => {
+export const fetchLeadsFromCloud = async (tenantId: string = process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant') => {
     const { decryptAES256 } = await import('./security');
     if (supabase) {
         const { data, error } = await supabase
@@ -133,7 +133,7 @@ export const saveLeadToCloud = async (lead: any) => {
     if (supabase) {
         // Ensure lead matches DB schema and sensitive data is encrypted
         const dbLead = {
-            tenant_id: lead.tenant_id || 'default_clinic',
+            tenant_id: lead.tenant_id || process.env.AURA_DEFAULT_TENANT || 'unconfigured_tenant',
             name: lead.name,
             phone: encryptAES256(lead.phone),
             treatment: lead.treatment,

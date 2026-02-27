@@ -23,4 +23,22 @@ export interface Lead {
     summary?: string;
     ai_paused?: boolean;
     last_message_at?: string;
+    phone_hash?: string;
+    // 🔥 Neural Core v2.0 Fields
+    pain_point_vault?: string[];
+    anchor_value?: number;
+    bias_analysis?: { emotional_fear: number; technical_barrier: number };
+    cialdini_matrix?: {
+        authority: number;
+        reciprocity: number;
+        scarcity: number;
+        social_proof: number;
+        liking: number;
+        consistency: number;
+    };
+    suggested_strategy?: string;
+    next_diagnostic_question?: string;
+    closing_probability?: number;
+    neural_status?: 'ACTIVE' | 'GHOSTED' | 'WON' | 'LOST';
 }
+

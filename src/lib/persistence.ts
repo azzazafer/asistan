@@ -1,82 +1,94 @@
-/**
- * Aura Offline Persistence Layer v2.0
- * Ensures lead data and user sessions are preserved even without internet.
- * Features: Metadata Fingerprinting, Cryptographic Integrity, Conflict Resolution.
- */
-
-import { Lead } from './types';
-import { SecureLogger } from './secure-logs';
-import { TenancyManager } from './tenancy';
-
-const STORAGE_KEY_LEADS = 'aura_offline_leads';
-const STORAGE_KEY_SYNC_QUEUE = 'aura_sync_queue';
-
-export const saveLeadLocally = (lead: Lead) => {
-    if (typeof window === 'undefined') return;
-
-    const tenantId = TenancyManager.getTenant();
-    const leadWithTenancy = {
-        ...lead,
-        tenant_id: tenantId,
-        lastModified: new Date().toISOString(),
-        score: lead.score || 0,
-        score_rank: lead.score_rank || 'C'
-    };
-
-    const existing = getLocalLeads();
-    localStorage.setItem(STORAGE_KEY_LEADS, JSON.stringify([leadWithTenancy, ...existing]));
-
-    // Securely log the offline action
-    SecureLogger.logSecure('OFFLINE_LEAD_SAVE', 'local_user', { leadId: lead.id });
-
-    // Add to sync queue
-    addToSyncQueue(leadWithTenancy);
-};
-
-export const getLocalLeads = (): Lead[] => {
-    if (typeof window === 'undefined') return [];
-    const stored = localStorage.getItem(STORAGE_KEY_LEADS);
-    return stored ? JSON.parse(stored) : [];
-};
-
-const addToSyncQueue = (lead: Lead) => {
-    const queue = getSyncQueue();
-    // Dedup and add (Conflict resolution: new offline data overrides old queue)
-    const filteredQueue = queue.filter(item => item.id !== lead.id);
-    localStorage.setItem(STORAGE_KEY_SYNC_QUEUE, JSON.stringify([...filteredQueue, lead]));
-};
-
-export const getSyncQueue = (): Lead[] => {
-    if (typeof window === 'undefined') return [];
-    const stored = localStorage.getItem(STORAGE_KEY_SYNC_QUEUE);
-    return stored ? JSON.parse(stored) : [];
-};
-
-export const clearSyncQueue = () => {
-    if (typeof window === 'undefined') return;
-    localStorage.removeItem(STORAGE_KEY_SYNC_QUEUE);
-};
+import { supabase } from './supabase-client';
+import { ScoreResult } from './scoring';
 
 /**
- * Attempt to sync local leads with the server.
- * Conflict Resolution: "Server Wins" policy for base data, but "Offline Merge" for analytics.
+ * Aura Persistence Layer v1.0
+ * Handles the storage and retrieval of Neural Core states for long-term strategic memory.
  */
-export const syncWithServer = async (addLeadFn: (lead: Lead) => Promise<void>) => {
-    const queue = getSyncQueue();
-    if (queue.length === 0) return;
 
-    console.log(`[Aura Cloud Sync] Processing ${queue.length} items with Architectural Integrity checks...`);
+export const upsertLeadNeuralState = async (leadId: string, state: ScoreResult): Promise<void> => {
+    if (!supabase) return;
 
-    try {
-        for (const lead of queue) {
-            // Check cryptographic integrity before syncing (Zero-Trust)
-            await addLeadFn(lead);
-            SecureLogger.logSecure('CLOUD_SYNC_SUCCESS', 'system', { leadId: lead.id });
+    const { error } = await supabase
+        .from('leads')
+        .update({
+            pain_point_vault: state.pain_point_vault,
+            bias_analysis: state.bias_analysis,
+            cialdini_matrix: state.cialdini_matrix,
+            anchor_value: state.anchor_value,
+            closing_probability: state.closing_probability,
+            neural_score: state.score,
+            neural_rank: state.rank,
+            neural_status: state.status,
+            reasons: state.reasons,
+            suggested_strategy: state.suggested_strategy,
+            next_diagnostic_question: state.next_diagnostic_question,
+            last_activity_timestamp: new Date().toISOString()
+        })
+        .eq('id', leadId);
+
+    if (error) {
+        console.error(`[Neural Core Persistence] Failed to upsert state for lead ${leadId}:`, error);
+        throw new Error('Database persistence failure');
+    }
+};
+
+export const getLeadNeuralState = async (leadId: string): Promise<ScoreResult | null> => {
+    if (!supabase) return null;
+
+    const { data, error } = await supabase
+        .from('leads')
+        .select(`
+            pain_point_vault,
+            bias_analysis,
+            cialdini_matrix,
+            anchor_value,
+            closing_probability,
+            neural_score,
+            neural_rank,
+            neural_status,
+            reasons,
+            suggested_strategy,
+            next_diagnostic_question
+        `)
+        .eq('id', leadId)
+        .single();
+
+    if (error) {
+        if (error.code === 'PGRST116') return null; // Not found
+        console.error(`[Neural Core Persistence] Failed to fetch state for lead ${leadId}:`, error);
+        return null;
+    }
+
+    if (!data) return null;
+
+    // Map database fields back to ScoreResult interface
+    return {
+        score: data.neural_score,
+        rank: data.neural_rank,
+        status: data.neural_status,
+        reasons: data.reasons || [],
+        pain_point_vault: data.pain_point_vault || [],
+        anchor_value: data.anchor_value || 0,
+        bias_analysis: data.bias_analysis,
+        cialdini_matrix: data.cialdini_matrix,
+        suggested_strategy: data.suggested_strategy,
+        next_diagnostic_question: data.next_diagnostic_question,
+        closing_probability: data.closing_probability || 0
+    } as ScoreResult;
+};
+
+/**
+ * Saves lead data locally (Browser Storage) for secondary redundancy.
+ */
+export const saveLeadLocally = (lead: any): void => {
+    if (typeof window !== 'undefined') {
+        try {
+            const memory = JSON.parse(localStorage.getItem('aura_lead_memory') || '{}');
+            memory[lead.phone] = { ...lead, last_seen: new Date().toISOString() };
+            localStorage.setItem('aura_lead_memory', JSON.stringify(memory));
+        } catch (e) {
+            console.warn("[Memory] Local persistence failed:", e);
         }
-        clearSyncQueue();
-        console.log('[Aura Cloud Sync] Synchronization Cycle Optimal.');
-    } catch (error) {
-        console.warn('[Aura Cloud Sync] Network Congestion / Server Reject. Backing off.', error);
-        SecureLogger.logSecure('CLOUD_SYNC_FAILURE', 'system', { error: (error as Error).message });
     }
 };

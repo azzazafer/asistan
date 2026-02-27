@@ -9,6 +9,7 @@ import { openai } from '../openai';
 interface QuickAnalyzeParams {
     imageData: string; // Base64 data URL
     userMessage?: string;
+    language?: string; // e.g. 'ar', 'en', 'tr', 'de'
 }
 
 export class VisionFast {
@@ -17,32 +18,37 @@ export class VisionFast {
      * Returns dental analysis within 5-7 seconds
      */
     static async quickAnalyze(params: QuickAnalyzeParams): Promise<string> {
-        const { imageData, userMessage } = params;
+        const { imageData, userMessage, language = 'tr' } = params;
 
         try {
-            console.log('⚡ [VISION-FAST] Starting quick analysis...');
+            console.log(`⚡ [VISION-FAST] Starting quick analysis for language: ${language}...`);
 
-            // Force simple, focused prompt for speed
+            // Language specific default prompt
+            const defaultPrompts: any = {
+                tr: "Bu diş görselini analiz et. Çürük, plak, diş eti sorunları ve estetik durumu kısaca listele. Randevuya çağır.",
+                ar: "حلل هذه الصورة السريرية للأسنان. اذكر التسوس واللويحة ومشاكل اللثة والناحية التجميلية باختصار. وجه المريض لتحديد موعد.",
+                de: "Analysieren Sie dieses klinische Zahnbild. Listen Sie Karies, Plaque, Zahnfleischprobleme und ästhetik kurz auf. Termin vereinbaren.",
+                en: "Analyze this clinical dental image. Briefly list decay, plaque, gum issues and aesthetic status. Direct to appointment booking."
+            };
+
             const promptText = userMessage && userMessage.trim().length > 5
-                ? `Görsel ile ilgili soru: ${userMessage}. Lütfen görseli kısaca analiz et.`
-                : "Bu diş görselini analiz et. Çürük, plak, diş eti sorunları ve estetik durumu kısaca listele. Randevuya çağır.";
+                ? `[LANGUAGE: ${language}] User question: ${userMessage}. Analyze image and respond in ${language.toUpperCase()}.`
+                : defaultPrompts[language] || defaultPrompts['en'];
 
             // Construct minimal payload (NO HISTORY - saves tokens and time)
             const messages = [
                 {
                     role: "system",
-                    content: `Sen Aura OS, profesyonel diş hekimi asistanısın.
+                    content: `You are Aura OS, a combined AI Health Architect and Senior Sales Closer.
           
-GÖREV: Görseli hızlı analiz et ve kısa cevap ver.
-- Çürük, plak, diş eti sorunları varsa belirt
-- Estetik sorunları not et
-- Kliniğe randevu almaya yönlendir
-- Uzun paragraflar yazma, net ve kısa ol
+MISSION: Analyze image fast and respond briefly in ${language.toUpperCase()} only.
+- Detect decay, plaque, gum issues or aesthetic problems.
+- Always direct to clinic booking after analysis.
+- IMPORTANT: Use professional terminology in ${language.toUpperCase()}.
 
-⚠️ SES MODU: Metinlerin seslendirildiğini bil. 
-- ASLA "ben konuşamam" veya "sesli mesaj gönderemem" deme
-- Doğrudan konuş, sanki telefonda sohbet ediyormuşsun gibi
-- "Resimde görüldüğü gibi" yerine "Dişlerinizde gördüğüm kadarıyla" de`
+⚠️ VOICE MODE: Responses are converted to voice.
+- Direct conversational style.
+- Instead of "as seen in image", say "In your teeth/smile I see...".`
                 },
                 {
                     role: "user",

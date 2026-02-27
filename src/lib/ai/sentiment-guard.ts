@@ -1,12 +1,11 @@
-import { openai } from '@/lib/openai';
-
 /**
- * SENTIMENT SAFETY GUARD V4
- * Prevents AI from sending insensitive messages to leads in emotional crisis
+ * SENTIMENT SAFETY GUARD V5 — Zero-cost, Zero-latency
+ * GPT çağrısı YOK. Kriz tespiti keyword scan ile yapılır.
+ * Duygu skoru orchestrator.ts'deki tek GPT çağrısından JSON olarak gelir.
  */
 
-interface SentimentAnalysis {
-    score: number; // -1 (very negative) to +1 (very positive)
+export interface SentimentAnalysis {
+    score: number;                   // -1 (çok negatif) ile +1 (çok pozitif)
     grief_detected: boolean;
     crisis_keywords: string[];
     emotional_state: 'neutral' | 'positive' | 'negative' | 'crisis';
@@ -14,24 +13,21 @@ interface SentimentAnalysis {
     reasoning: string;
 }
 
-/**
- * Keywords that indicate emotional crisis or grief
- */
 const GRIEF_KEYWORDS = [
     // Turkish
-    'cenaze', 'vefat', 'öldü', 'kaybettik', 'hastane', 'kaza', 'ameliyat',
-    'yoğun bakım', 'hasta', 'acil', 'kanser', 'rahatsız', 'üzgün',
+    'cenaze', 'vefat', 'öldü', 'kaybettik', 'yoğun bakım', 'kaza', 'kanser',
     // English
-    'funeral', 'died', 'passed away', 'hospital', 'accident', 'surgery',
-    'icu', 'emergency', 'cancer', 'sick', 'sad', 'grieving',
+    'funeral', 'died', 'passed away', 'icu', 'emergency', 'cancer', 'grieving',
     // Arabic
-    'جنازة', 'وفاة', 'مات', 'مستشفى', 'حادث', 'عملية'
+    'جنازة', 'وفاة', 'مات', 'عملية'
 ];
 
 /**
- * Analyze emotional state from recent messages
+ * Saf keyword taraması — GPT çağrısı yapmaz.
+ * Orchestrator'daki tek GPT çağrısına eklenmiş sentiment JSON alanını
+ * doğrudan kullan; bu fonksiyon sadece kriz bypass guard olarak çalışır.
  */
-export async function analyzeSentiment(messages: any[]): Promise<SentimentAnalysis> {
+export function analyzeSentimentSync(messages: any[]): SentimentAnalysis {
     if (!messages || messages.length === 0) {
         return {
             score: 0,
@@ -39,147 +35,87 @@ export async function analyzeSentiment(messages: any[]): Promise<SentimentAnalys
             crisis_keywords: [],
             emotional_state: 'neutral',
             recommended_action: 'proceed',
-            reasoning: 'No message history available'
+            reasoning: 'No message history'
         };
     }
 
-    // Get last 3 messages for context
-    const lastThree = messages.slice(-3);
-    const lastThreeContent = lastThree.map(m => m.content || '').join(' ').toLowerCase();
+    const lastThreeContent = messages
+        .slice(-3)
+        .map(m => (m.content || '').toLowerCase())
+        .join(' ');
 
-    // 1. FAST PATH: Keyword Detection
-    const detectedKeywords = GRIEF_KEYWORDS.filter(keyword =>
-        lastThreeContent.includes(keyword.toLowerCase())
+    const detectedKeywords = GRIEF_KEYWORDS.filter(kw =>
+        lastThreeContent.includes(kw.toLowerCase())
     );
 
     if (detectedKeywords.length > 0) {
-        console.log(`[Sentiment Guard] ⚠️ Crisis keywords detected: ${detectedKeywords.join(', ')}`);
+        console.warn(`[Sentiment Guard] ⚠️ Crisis keywords: ${detectedKeywords.join(', ')}`);
         return {
             score: -0.9,
             grief_detected: true,
             crisis_keywords: detectedKeywords,
             emotional_state: 'crisis',
             recommended_action: 'delay_3days',
-            reasoning: `Detected grief/crisis keywords: ${detectedKeywords.join(', ')}`
+            reasoning: `Crisis keywords detected: ${detectedKeywords.join(', ')}`
         };
     }
 
-    // 2. SLOW PATH: AI Analysis (if no keywords found)
-    try {
-        const response = await openai.chat.completions.create({
-            model: 'gpt-4o',
-            messages: [
-                {
-                    role: 'system',
-                    content: `You are an emotional intelligence analyzer for healthcare conversations.
-          
-          Analyze the emotional state of the last few messages.
-          
-          Return JSON format:
-          {
-            "score": -1 to +1 (emotional valence),
-            "is_grieving": boolean,
-            "emotional_state": "neutral" | "positive" | "negative" | "crisis",
-            "reasoning": "brief explanation"
-          }
-          
-          IMPORTANT: Detect subtle signs of crisis even if not explicitly stated.
-          Examples of crisis: mentions of death, serious illness, accidents, hospital stays.`
-                },
-                {
-                    role: 'user',
-                    content: JSON.stringify(lastThree.map(m => ({
-                        role: m.role,
-                        content: m.content
-                    })))
-                }
-            ],
-            response_format: { type: 'json_object' },
-            temperature: 0.3 // Low temperature for consistent analysis
-        });
-
-        const analysis = JSON.parse(response.choices[0].message.content || '{}');
-
-        console.log(`[Sentiment Guard] AI Analysis:`, analysis);
-
-        return {
-            score: analysis.score || 0,
-            grief_detected: analysis.is_grieving || false,
-            crisis_keywords: [],
-            emotional_state: analysis.emotional_state || 'neutral',
-            recommended_action: analysis.is_grieving ? 'delay_3days' : 'proceed',
-            reasoning: analysis.reasoning || 'AI sentiment analysis'
-        };
-
-    } catch (error: any) {
-        console.error('[Sentiment Guard] AI analysis failed:', error);
-        // Fail-safe: If AI fails, proceed cautiously
-        return {
-            score: 0,
-            grief_detected: false,
-            crisis_keywords: [],
-            emotional_state: 'neutral',
-            recommended_action: 'proceed',
-            reasoning: 'Analysis failed, defaulting to safe proceed'
-        };
-    }
+    return {
+        score: 0,
+        grief_detected: false,
+        crisis_keywords: [],
+        emotional_state: 'neutral',
+        recommended_action: 'proceed',
+        reasoning: 'Keyword scan passed — full analysis in orchestrator GPT response'
+    };
 }
 
 /**
- * Generate compassionate message for delayed follow-up (3 days later)
+ * Async wrapper — geriye dönük uyumluluk için bırakıldı.
+ * Artık GPT çağrısı yapmaz, keyword scan döner.
  */
-export async function generateCompassionateMessage(
-    leadName: string,
-    language: string = 'tr'
-): Promise<string> {
-    const response = await openai.chat.completions.create({
-        model: 'gpt-4o',
-        messages: [
-            {
-                role: 'system',
-                content: `You are Aura, a compassionate healthcare assistant.
-        
-        The patient (${leadName}) was going through a difficult time (detected grief/crisis).
-        It's been 3 days. Write a SHORT, compassionate check-in message.
-        
-        Language: ${language}
-        
-        Rules:
-        - Be empathetic and professional
-        - Don't mention sales or appointments
-        - Just ask how they're doing
-        - Keep it under 2 sentences
-        - Warm but not overly emotional`
-            },
-            {
-                role: 'user',
-                content: `Generate compassionate check-in message for ${leadName}`
-            }
-        ],
-        temperature: 0.7
-    });
-
-    return response.choices[0].message.content ||
-        (language === 'tr'
-            ? `${leadName}, nasılsınız? Sizi düşünüyoruz.`
-            : `${leadName}, how are you doing? Thinking of you.`);
+export async function analyzeSentiment(messages: any[]): Promise<SentimentAnalysis> {
+    return analyzeSentimentSync(messages);
 }
 
 /**
- * Check if lead should receive automated follow-up
- * Returns false if lead is in emotional crisis
+ * orchestrator.ts'den gelen finalAnalysis.sentiment ile zenginleştirilmiş analiz.
+ * Kriz tespiti keyword scan'den yapılır; skor GPT'den gelir.
+ */
+export function mergeSentimentFromGpt(
+    keywordSentiment: SentimentAnalysis,
+    gptSentiment?: { score?: number; emotional_state?: string; crisis_alert?: boolean }
+): SentimentAnalysis {
+    if (!gptSentiment) return keywordSentiment;
+
+    // Kriz keyword bulunduysa keyword taraması üstündür
+    if (keywordSentiment.grief_detected) return keywordSentiment;
+
+    return {
+        ...keywordSentiment,
+        score: gptSentiment.score ?? keywordSentiment.score,
+        emotional_state: (gptSentiment.emotional_state as any) ?? keywordSentiment.emotional_state,
+        grief_detected: gptSentiment.crisis_alert ?? false,
+        recommended_action: gptSentiment.crisis_alert ? 'delay_3days' : 'proceed',
+        reasoning: 'Merged: keyword scan + orchestrator GPT analysis'
+    };
+}
+
+/**
+ * Automated follow-up için kriz kontrolü.
+ * GPT çağrısı yapmaz.
  */
 export async function shouldSendAutomatedMessage(lead: any): Promise<{
     should_send: boolean;
     reason: string;
     alternative_action?: string;
 }> {
-    const sentiment = await analyzeSentiment(lead.history || []);
+    const sentiment = analyzeSentimentSync(lead.history || []);
 
     if (sentiment.recommended_action === 'abort') {
         return {
             should_send: false,
-            reason: 'Lead in severe crisis, message aborted',
+            reason: 'Lead in severe crisis — message aborted',
             alternative_action: 'escalate_to_human'
         };
     }
@@ -187,13 +123,13 @@ export async function shouldSendAutomatedMessage(lead: any): Promise<{
     if (sentiment.recommended_action === 'delay_3days') {
         return {
             should_send: false,
-            reason: `Emotional crisis detected: ${sentiment.reasoning}`,
+            reason: `Crisis detected: ${sentiment.reasoning}`,
             alternative_action: 'schedule_compassionate_message_3days'
         };
     }
 
     return {
         should_send: true,
-        reason: 'Sentiment check passed, safe to proceed'
+        reason: 'Sentiment keyword check passed'
     };
 }

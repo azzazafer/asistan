@@ -99,16 +99,16 @@ export async function middleware(request: NextRequest) {
             // Assume 'tenant_id' is in user_metadata OR we query the profile.
             // For Phase 6, we'll check the 'tenants' table via the owner_id or joined profile
             // Optimally: user.app_metadata.tenant_id (if set up).
-            // Fallback: Query 'tenants' where owner_id = user.id (Simple 1-to-1)
+            if (user && user.id) {
+                const { data: tenant } = await supabase
+                    .from('tenants')
+                    .select('status')
+                    .eq('owner_id', user.id)
+                    .single()
 
-            const { data: tenant } = await supabase
-                .from('tenants')
-                .select('status')
-                .eq('owner_id', user.id)
-                .single()
-
-            if (tenant && tenant.status !== 'active') {
-                return NextResponse.redirect(new URL('/payment-locked', request.url))
+                if (tenant && tenant.status !== 'active') {
+                    return NextResponse.redirect(new URL('/payment-locked', request.url))
+                }
             }
 
         } catch (e) {

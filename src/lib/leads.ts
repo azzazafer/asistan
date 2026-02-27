@@ -1,9 +1,9 @@
 import { supabase } from './db';
 import { calculateRank } from './gamification';
 import { calculateLeadScore } from './scoring';
-import { saveLeadLocally } from './persistence';
+import { saveLeadLocally, getLeadNeuralState } from './persistence';
 import { Lead, SubjectRank } from './types';
-import { encrypt, decrypt } from './crypto';
+import { encrypt, decrypt, generateSearchHash } from './crypto';
 import { redactPII } from './security';
 import { LearningService } from './ai/learning';
 
@@ -30,28 +30,23 @@ export const getLeads = async (tenantId: string): Promise<Lead[]> => {
 
 export const getLeadByPhone = async (phone: string, tenantId: string): Promise<Lead | null> => {
     if (supabase) {
-        // We search by exact phone comparison (assuming non-collision or searching by encrypted variant if deterministic)
-        // Note: For real production search on encrypted fields, usually a hash index is used.
-        // For now, we fetch leads and decrypt them for identification.
+        const phoneHash = generateSearchHash(phone);
 
-        const { data: leads, error } = await supabase
+        const { data: found, error } = await supabase
             .from('leads')
             .select('*')
-            .eq('tenant_id', tenantId);
+            .eq('tenant_id', tenantId)
+            .eq('phone_hash', phoneHash)
+            .maybeSingle();
 
         if (error) {
             console.error("Supabase getLeadByPhone error:", error.message);
             return null;
         }
 
-        const found = (leads as Lead[]).find(l => {
-            const decryptedPhone = l.phone.includes(':') ? decrypt(l.phone) : l.phone;
-            return decryptedPhone === phone;
-        });
-
         if (found) {
             return {
-                ...found,
+                ...(found as Lead),
                 name: found.name.includes(':') ? decrypt(found.name) : found.name,
                 phone: found.phone.includes(':') ? decrypt(found.phone) : found.phone
             };
@@ -76,16 +71,31 @@ export const addLead = async (lead: Lead) => {
         }
     }
 
-    // Generate score if missing or if message content is fresh
+    // 🧠 NEURAL CORE v2.0: Strategic Memory Integration
     if (!lead.score || lead.last_message) {
+        // Fetch previous psychological state from memory
+        const previousState = lead.id ? await getLeadNeuralState(lead.id) : null;
+
         const scoring = calculateLeadScore({
             treatment: lead.treatment,
             culture: lead.culture,
             message: lead.last_message || undefined,
-            isReferral: lead.is_referral
-        });
+            isReferral: lead.is_referral,
+            lastActivityTimestamp: Date.now()
+        }, previousState || undefined);
+
+        // Map Neutral Core results to Lead object
         lead.score = scoring.score;
         lead.score_rank = scoring.rank;
+        lead.rank = scoring.rank; // Sync both for compatibility
+        lead.pain_point_vault = scoring.pain_point_vault;
+        lead.anchor_value = scoring.anchor_value;
+        lead.bias_analysis = scoring.bias_analysis;
+        lead.cialdini_matrix = scoring.cialdini_matrix;
+        lead.suggested_strategy = scoring.suggested_strategy;
+        lead.next_diagnostic_question = scoring.next_diagnostic_question;
+        lead.closing_probability = scoring.closing_probability;
+        lead.neural_status = scoring.status;
     }
 
     // Generate rank from score
@@ -100,6 +110,7 @@ export const addLead = async (lead: Lead) => {
             ...lead,
             name: encrypt(lead.name),
             phone: encrypt(lead.phone),
+            phone_hash: generateSearchHash(lead.phone),
             last_message: lead.last_message ? encrypt(lead.last_message) : lead.last_message,
             // Scrub History for extra security before persistent storage
             history: lead.history ? lead.history.map(h => ({
