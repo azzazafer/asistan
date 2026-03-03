@@ -200,55 +200,55 @@ export default function HeroSection() {
                     </h1>
 
                     {/* DESKTOP & MOBILE MARQUEE (Kayan Yazılar) */}
-                    <div className="mt-16 w-full max-w-4xl mx-auto overflow-hidden relative">
+                    <div className="mt-16 w-full max-w-5xl mx-auto overflow-hidden relative">
                         {/* Sol ve Sağ gradient maskeli karartma */}
-                        <div className="absolute top-0 bottom-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#020202] to-transparent z-10" />
-                        <div className="absolute top-0 bottom-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#020202] to-transparent z-10" />
+                        <div className="absolute top-0 bottom-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#020202] to-transparent z-10 pointer-events-none" />
+                        <div className="absolute top-0 bottom-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#020202] to-transparent z-10 pointer-events-none" />
 
-                        <div className="flex gap-6 animate-marquee py-4 whitespace-nowrap">
+                        <div className="flex gap-6 animate-marquee py-6 whitespace-nowrap hover:hover-pause cursor-default">
                             {/* 1. Grup */}
-                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
-                                <span className="text-xl">🧠</span>
+                            <div className="shrink-0 flex items-center gap-4 bg-[#050505] border border-white/10 px-8 py-4 rounded-2xl mx-2 shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+                                <span className="text-3xl drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]">🧠</span>
                                 <div className="text-left">
-                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Aura / Core</div>
-                                    <div className="text-sm font-black text-purple-500">Otonom Ajan</div>
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">Aura / Core</div>
+                                    <div className="text-sm md:text-base font-black text-purple-400">Otonom Ajan</div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
-                                <span className="text-xl">⚡</span>
+                            <div className="shrink-0 flex items-center gap-4 bg-[#050505] border border-white/10 px-8 py-4 rounded-2xl mx-2 shadow-[0_0_30px_rgba(34,197,94,0.15)]">
+                                <span className="text-3xl drop-shadow-[0_0_15px_rgba(34,197,94,0.8)]">⚡</span>
                                 <div className="text-left">
-                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">next_static_export</div>
-                                    <div className="text-sm font-black text-green-500">Sıfır Gecikme</div>
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">next_static_export</div>
+                                    <div className="text-sm md:text-base font-black text-green-400">Sıfır Gecikme</div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
-                                <span className="text-xl">🔒</span>
+                            <div className="shrink-0 flex items-center gap-4 bg-[#050505] border border-white/10 px-8 py-4 rounded-2xl mx-2 shadow-[0_0_30px_rgba(59,130,246,0.15)]">
+                                <span className="text-3xl drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]">🔒</span>
                                 <div className="text-left">
-                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">jwe_rs256</div>
-                                    <div className="text-sm font-black text-blue-500">Tam Güvenlik</div>
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">jwe_rs256</div>
+                                    <div className="text-sm md:text-base font-black text-blue-400">Tam Güvenlik</div>
                                 </div>
                             </div>
 
                             {/* 2. Grup */}
-                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
-                                <span className="text-xl">🧠</span>
+                            <div className="shrink-0 flex items-center gap-4 bg-[#050505] border border-white/10 px-8 py-4 rounded-2xl mx-2 shadow-[0_0_30px_rgba(168,85,247,0.15)]">
+                                <span className="text-3xl drop-shadow-[0_0_15px_rgba(168,85,247,0.8)]">🧠</span>
                                 <div className="text-left">
-                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Aura / Core</div>
-                                    <div className="text-sm font-black text-purple-500">Otonom Ajan</div>
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">Aura / Core</div>
+                                    <div className="text-sm md:text-base font-black text-purple-400">Otonom Ajan</div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
-                                <span className="text-xl">⚡</span>
+                            <div className="shrink-0 flex items-center gap-4 bg-[#050505] border border-white/10 px-8 py-4 rounded-2xl mx-2 shadow-[0_0_30px_rgba(34,197,94,0.15)]">
+                                <span className="text-3xl drop-shadow-[0_0_15px_rgba(34,197,94,0.8)]">⚡</span>
                                 <div className="text-left">
-                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">next_static_export</div>
-                                    <div className="text-sm font-black text-green-500">Sıfır Gecikme</div>
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">next_static_export</div>
+                                    <div className="text-sm md:text-base font-black text-green-400">Sıfır Gecikme</div>
                                 </div>
                             </div>
-                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
-                                <span className="text-xl">🔒</span>
+                            <div className="shrink-0 flex items-center gap-4 bg-[#050505] border border-white/10 px-8 py-4 rounded-2xl mx-2 shadow-[0_0_30px_rgba(59,130,246,0.15)]">
+                                <span className="text-3xl drop-shadow-[0_0_15px_rgba(59,130,246,0.8)]">🔒</span>
                                 <div className="text-left">
-                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">jwe_rs256</div>
-                                    <div className="text-sm font-black text-blue-500">Tam Güvenlik</div>
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">jwe_rs256</div>
+                                    <div className="text-sm md:text-base font-black text-blue-400">Tam Güvenlik</div>
                                 </div>
                             </div>
                         </div>
@@ -327,54 +327,54 @@ export default function HeroSection() {
             </div>
 
             {/* MARQUEE YAZILARI (TÜM EKRANLARDA AKTİF) */}
-            <div className="mt-16 w-full max-w-4xl mx-auto overflow-hidden relative z-10 block">
-                <div className="absolute top-0 bottom-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#020202] to-transparent z-10" />
-                <div className="absolute top-0 bottom-0 right-0 w-8 md:w-32 bg-gradient-to-l from-[#020202] to-transparent z-10" />
+            <div className="mt-16 w-full max-w-5xl mx-auto overflow-hidden relative z-10 block">
+                <div className="absolute top-0 bottom-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#020202] to-transparent z-10 pointer-events-none" />
+                <div className="absolute top-0 bottom-0 right-0 w-8 md:w-32 bg-gradient-to-l from-[#020202] to-transparent z-10 pointer-events-none" />
 
-                <div className="flex gap-4 md:gap-6 animate-marquee py-4 whitespace-nowrap">
+                <div className="flex gap-4 md:gap-6 animate-marquee py-6 whitespace-nowrap hover:hover-pause cursor-default">
                     {/* Grup 1 */}
-                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
-                        <span className="text-lg md:text-xl">💰</span>
+                    <div className="shrink-0 flex items-center gap-3 bg-[#050505] border border-white/10 px-6 md:px-8 py-3 md:py-4 rounded-2xl mx-1 md:mx-2 shadow-lg">
+                        <span className="text-xl md:text-2xl drop-shadow-md">💰</span>
                         <div className="text-left">
-                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Kaçan Ciro</div>
-                            <div className="text-xs md:text-sm font-black text-red-500">Ort. ₺115K / Ay</div>
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">Kaçan Ciro</div>
+                            <div className="text-sm md:text-base font-black text-red-500">Ort. ₺115K / Ay</div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
-                        <span className="text-lg md:text-xl">📞</span>
+                    <div className="shrink-0 flex items-center gap-3 bg-[#050505] border border-white/10 px-6 md:px-8 py-3 md:py-4 rounded-2xl mx-1 md:mx-2 shadow-lg">
+                        <span className="text-xl md:text-2xl drop-shadow-md">📞</span>
                         <div className="text-left">
-                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">No-Show Oranı</div>
-                            <div className="text-xs md:text-sm font-black text-orange-500">%28 TR Ortalama</div>
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">No-Show Oranı</div>
+                            <div className="text-sm md:text-base font-black text-orange-500">%28 TR Ortalama</div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
-                        <span className="text-lg md:text-xl">🤖</span>
+                    <div className="shrink-0 flex items-center gap-3 bg-[#050505] border border-white/10 px-6 md:px-8 py-3 md:py-4 rounded-2xl mx-1 md:mx-2 shadow-lg">
+                        <span className="text-xl md:text-2xl drop-shadow-md">🤖</span>
                         <div className="text-left">
-                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Aura Kurtarma</div>
-                            <div className="text-xs md:text-sm font-black text-green-500">+48 Ek Randevu</div>
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">Aura Kurtarma</div>
+                            <div className="text-sm md:text-base font-black text-green-500">+48 Ek Randevu</div>
                         </div>
                     </div>
 
                     {/* Grup 2 (Kesintisiz döngü) */}
-                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
-                        <span className="text-lg md:text-xl">💰</span>
+                    <div className="shrink-0 flex items-center gap-3 bg-[#050505] border border-white/10 px-6 md:px-8 py-3 md:py-4 rounded-2xl mx-1 md:mx-2 shadow-lg">
+                        <span className="text-xl md:text-2xl drop-shadow-md">💰</span>
                         <div className="text-left">
-                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Kaçan Ciro</div>
-                            <div className="text-xs md:text-sm font-black text-red-500">Ort. ₺115K / Ay</div>
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">Kaçan Ciro</div>
+                            <div className="text-sm md:text-base font-black text-red-500">Ort. ₺115K / Ay</div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
-                        <span className="text-lg md:text-xl">📞</span>
+                    <div className="shrink-0 flex items-center gap-3 bg-[#050505] border border-white/10 px-6 md:px-8 py-3 md:py-4 rounded-2xl mx-1 md:mx-2 shadow-lg">
+                        <span className="text-xl md:text-2xl drop-shadow-md">📞</span>
                         <div className="text-left">
-                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">No-Show Oranı</div>
-                            <div className="text-xs md:text-sm font-black text-orange-500">%28 TR Ortalama</div>
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">No-Show Oranı</div>
+                            <div className="text-sm md:text-base font-black text-orange-500">%28 TR Ortalama</div>
                         </div>
                     </div>
-                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
-                        <span className="text-lg md:text-xl">🤖</span>
+                    <div className="shrink-0 flex items-center gap-3 bg-[#050505] border border-white/10 px-6 md:px-8 py-3 md:py-4 rounded-2xl mx-1 md:mx-2 shadow-lg">
+                        <span className="text-xl md:text-2xl drop-shadow-md">🤖</span>
                         <div className="text-left">
-                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Aura Kurtarma</div>
-                            <div className="text-xs md:text-sm font-black text-green-500">+48 Ek Randevu</div>
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-1">Aura Kurtarma</div>
+                            <div className="text-sm md:text-base font-black text-green-500">+48 Ek Randevu</div>
                         </div>
                     </div>
                 </div>

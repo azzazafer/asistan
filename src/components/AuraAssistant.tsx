@@ -140,7 +140,7 @@ export default function AuraAssistant() {
         return (
             <button
                 onClick={() => setIsOpen(true)}
-                className="fixed bottom-8 right-6 z-[9999] md:top-auto md:bottom-10 w-16 h-16 rounded-full bg-blue-600 border-2 border-white/20 shadow-[0_0_30px_rgba(59,130,246,0.6)] flex items-center justify-center hover:scale-110 active:scale-90 transition-all group"
+                className="fixed bottom-8 right-4 md:bottom-10 md:right-8 z-[99999] w-16 h-16 rounded-full bg-blue-600 border-2 border-white/20 shadow-[0_0_30px_rgba(59,130,246,0.6)] flex items-center justify-center hover:scale-110 active:scale-90 transition-all group"
             >
                 <div className="absolute inset-0 rounded-full bg-blue-400 animate-ping opacity-20" />
                 <span className="text-3xl group-hover:rotate-12 transition-transform">🤖</span>
