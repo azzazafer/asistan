@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 export default function CommandInput() {
     const [input, setInput] = useState("");
     const [response, setResponse] = useState<string | null>(null);
-    const [isProcessing, setIsProcessing] = useState(false);
+    const [, setIsProcessing] = useState(false);
     const [kbText, setKbText] = useState("");
 
     useEffect(() => {

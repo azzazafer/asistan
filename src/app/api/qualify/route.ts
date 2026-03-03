@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 
         let urgency = "LOW";
         let intent = "0.20";
-        let newLogs: string[] = [];
+        const newLogs: string[] = [];
 
         // Matematiksel ağırlık hesaplaması basitçe niyet skoru belirleme
         const urgentWords = ["şimdi", "acil", "fiyat", "hemen", "bugün"];
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
         newLogs.push("STATUS: Transaction Complete. Data Sealed.");
 
         return NextResponse.json({ logs: newLogs, urgency, intent });
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Karar motoru çöküşü", logs: ["[FATAL] Sistem Hatası"] }, { status: 500 });
     }
 }
