@@ -199,20 +199,59 @@ export default function HeroSection() {
                         <span className="text-purple-500">otonom ajan</span> altyapısı
                     </h1>
 
-                    <div className="mt-8 bg-black border border-white/10 rounded-xl p-6 font-mono text-xs md:text-sm max-w-3xl text-gray-300 lowercase shadow-2xl">
-                        <div className="flex gap-2 mb-4">
-                            <div className="w-3 h-3 rounded-full bg-red-500" />
-                            <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                            <div className="w-3 h-3 rounded-full bg-green-500" />
+                    {/* DESKTOP & MOBILE MARQUEE (Kayan Yazılar) */}
+                    <div className="mt-16 w-full max-w-4xl mx-auto overflow-hidden relative">
+                        {/* Sol ve Sağ gradient maskeli karartma */}
+                        <div className="absolute top-0 bottom-0 left-0 w-16 md:w-32 bg-gradient-to-r from-[#020202] to-transparent z-10" />
+                        <div className="absolute top-0 bottom-0 right-0 w-16 md:w-32 bg-gradient-to-l from-[#020202] to-transparent z-10" />
+
+                        <div className="flex gap-6 animate-marquee py-4 whitespace-nowrap">
+                            {/* 1. Grup */}
+                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
+                                <span className="text-xl">🧠</span>
+                                <div className="text-left">
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Aura / Core</div>
+                                    <div className="text-sm font-black text-purple-500">Otonom Ajan</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
+                                <span className="text-xl">⚡</span>
+                                <div className="text-left">
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">next_static_export</div>
+                                    <div className="text-sm font-black text-green-500">Sıfır Gecikme</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
+                                <span className="text-xl">🔒</span>
+                                <div className="text-left">
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">jwe_rs256</div>
+                                    <div className="text-sm font-black text-blue-500">Tam Güvenlik</div>
+                                </div>
+                            </div>
+
+                            {/* 2. Grup */}
+                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
+                                <span className="text-xl">🧠</span>
+                                <div className="text-left">
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Aura / Core</div>
+                                    <div className="text-sm font-black text-purple-500">Otonom Ajan</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
+                                <span className="text-xl">⚡</span>
+                                <div className="text-left">
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">next_static_export</div>
+                                    <div className="text-sm font-black text-green-500">Sıfır Gecikme</div>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-6 py-3 rounded-2xl mx-3">
+                                <span className="text-xl">🔒</span>
+                                <div className="text-left">
+                                    <div className="text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">jwe_rs256</div>
+                                    <div className="text-sm font-black text-blue-500">Tam Güvenlik</div>
+                                </div>
+                            </div>
                         </div>
-                        <p className="text-purple-400 mb-2">import {`{ Agent }`} from &apos;@aura/core&apos;;</p>
-                        <p>const system = new Agent({`{`}</p>
-                        <p className="pl-4">runtime: <span className="text-green-400">&apos;next_static_export&apos;</span>,</p>
-                        <p className="pl-4">encryption: <span className="text-green-400">&apos;jwe_rs256&apos;</span>,</p>
-                        <p className="pl-4">fallback_ttfb: <span className="text-blue-400 text-shadow-[0_0_5px_rgba(59,130,246,1)]">{`< 150ms`}</span>,</p>
-                        <p className="pl-4 text-gray-500">{`// api limitasyonları by-pass edildi.`}</p>
-                        <p className="pl-4">capabilities: [<span className="text-yellow-400">&apos;Lead Qualify&apos;</span>, <span className="text-yellow-400">&apos;WhatsApp Automation&apos;</span>]</p>
-                        <p>{`}`});</p>
                     </div>
                 </div>
             </section>
@@ -282,6 +321,60 @@ export default function HeroSection() {
                                     {t('hero.stats.seal_leakage')} ⚡
                                 </button>
                             </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* MARQUEE YAZILARI (TÜM EKRANLARDA AKTİF) */}
+            <div className="mt-16 w-full max-w-4xl mx-auto overflow-hidden relative z-10 block">
+                <div className="absolute top-0 bottom-0 left-0 w-8 md:w-32 bg-gradient-to-r from-[#020202] to-transparent z-10" />
+                <div className="absolute top-0 bottom-0 right-0 w-8 md:w-32 bg-gradient-to-l from-[#020202] to-transparent z-10" />
+
+                <div className="flex gap-4 md:gap-6 animate-marquee py-4 whitespace-nowrap">
+                    {/* Grup 1 */}
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
+                        <span className="text-lg md:text-xl">💰</span>
+                        <div className="text-left">
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Kaçan Ciro</div>
+                            <div className="text-xs md:text-sm font-black text-red-500">Ort. ₺115K / Ay</div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
+                        <span className="text-lg md:text-xl">📞</span>
+                        <div className="text-left">
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">No-Show Oranı</div>
+                            <div className="text-xs md:text-sm font-black text-orange-500">%28 TR Ortalama</div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
+                        <span className="text-lg md:text-xl">🤖</span>
+                        <div className="text-left">
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Aura Kurtarma</div>
+                            <div className="text-xs md:text-sm font-black text-green-500">+48 Ek Randevu</div>
+                        </div>
+                    </div>
+
+                    {/* Grup 2 (Kesintisiz döngü) */}
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
+                        <span className="text-lg md:text-xl">💰</span>
+                        <div className="text-left">
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Kaçan Ciro</div>
+                            <div className="text-xs md:text-sm font-black text-red-500">Ort. ₺115K / Ay</div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
+                        <span className="text-lg md:text-xl">📞</span>
+                        <div className="text-left">
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">No-Show Oranı</div>
+                            <div className="text-xs md:text-sm font-black text-orange-500">%28 TR Ortalama</div>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white/5 border border-white/10 px-4 md:px-6 py-2 md:py-3 rounded-2xl mx-1 md:mx-3">
+                        <span className="text-lg md:text-xl">🤖</span>
+                        <div className="text-left">
+                            <div className="text-[9px] md:text-[10px] text-gray-500 font-mono tracking-widest uppercase mb-0.5">Aura Kurtarma</div>
+                            <div className="text-xs md:text-sm font-black text-green-500">+48 Ek Randevu</div>
                         </div>
                     </div>
                 </div>
