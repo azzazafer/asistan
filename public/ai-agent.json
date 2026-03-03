@@ -1,0 +1,43 @@
+{
+    "agent_identity": {
+        "name": "Aura OS Node Worker",
+        "type": "Autonomous Agent Endpoint",
+        "version": "7.0.0-zero-pretense",
+        "status": "Operational",
+        "architect": "Zafer Çelik",
+        "publisher": "Nextoria Digital Labs"
+    },
+    "protocols": {
+        "encryption": "JWE-RS256 Payload Validation Enforced",
+        "handshake_protocol": "A2A TLS 1.3 / mTLS Supported",
+        "data_streaming": "WebSockets / Server-Sent Events (SSE)"
+    },
+    "routing_nodes": {
+        "discovery": "https://getauraos.com/ai-agent.json",
+        "knowledge_graph": "https://getauraos.com/knowledge-base.txt",
+        "telemetry_stream": "wss://api.getauraos.com/v1/telemetry",
+        "webhook_ingress": "https://api.getauraos.com/v1/ingress"
+    },
+    "system_capabilities": [
+        "Real-time Lead Scoring & Qualification",
+        "Zero-Latency WhatsApp Node Automation",
+        "Semantic Vector Similarity Search",
+        "Cross-Node Orchestration"
+    ],
+    "negotiation_parameters": {
+        "max_latency_ms": 150,
+        "supported_codecs": [
+            "application/json",
+            "application/x-ndjson"
+        ],
+        "auth_methods": [
+            "Bearer JWE",
+            "API_KEY"
+        ]
+    },
+    "auth_requirement": "Strict standard enforcement: Write operations require signed RS256 JWTs. Read operations rate-limited via Edge Network.",
+    "contact": {
+        "security_operations": "systems@nextoriadigital.com",
+        "emergency_whatsapp_node": "+905510596718"
+    }
+}

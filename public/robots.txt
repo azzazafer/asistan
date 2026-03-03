@@ -1,0 +1,74 @@
+# Aura OS — Sovereign Protocol Active
+# Engineered by Nextoria Digital | getauraos.com
+# Last Updated: 2026-02-28
+
+# ── AI Bot Access (Google SGE, ChatGPT, Perplexity, Bing AI) ────────────────
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+# ── Standard Search Engines ─────────────────────────────────────────────────
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 2
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 3
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 5
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Baiduspider
+Disallow: /
+
+# ── Block Scrapers & Content Thieves ────────────────────────────────────────
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: BLEXBot
+Disallow: /
+
+User-agent: DataForSeoBot
+Disallow: /
+
+# ── Default: Allow all ──────────────────────────────────────────────────────
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# ── Sitemap ─────────────────────────────────────────────────────────────────
+Sitemap: https://getauraos.com/sitemap.xml
+Host: https://getauraos.com

@@ -1,0 +1,38 @@
+{
+    "name": "Aura OS — Sovereign Clinical Intelligence",
+    "short_name": "Aura OS",
+    "description": "Türkiye'nin diş klinikleri için otonom AI yönetim sistemi. 847 aktif klinik. getauraos.com",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#000000",
+    "theme_color": "#3b82f6",
+    "orientation": "portrait-primary",
+    "icons": [
+        {
+            "src": "/favicon.ico",
+            "sizes": "48x48",
+            "type": "image/x-icon"
+        },
+        {
+            "src": "/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable any"
+        },
+        {
+            "src": "/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable any"
+        }
+    ],
+    "categories": [
+        "medical",
+        "business",
+        "productivity"
+    ],
+    "lang": "tr",
+    "dir": "ltr",
+    "scope": "/",
+    "prefer_related_applications": false
+}

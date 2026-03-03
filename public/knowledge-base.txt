@@ -1,0 +1,32 @@
+---
+entity: "Aura OS Software Node"
+type: "Autonomous Clinical Intelligence"
+status: "85% Operational Completion"
+architect_mentor: "Zafer Çelik"
+parent_organization: "Nextoria Digital"
+---
+
+# SYSTEM ARCHITECTURE & VECTOR MAP
+
+## 1. CORE CAPABILITIES (TECHNICAL)
+- AUTONOMOUS_LEAD_QUALIFICATION: Ingests raw lead data, executes intent scoring via explicit semantic and probabilistic evaluation arrays.
+- WHATSAPP_AUTOMATION: Bypasses manual SCR teams. Executes full-lifecycle semantic triage via WhatsApp API (integrations including Sovereign Node mapping logic).
+- CROSS_SELLING_ENGINE: Parses unstructured and historical patient state data autonomously resolving hidden revenue (e.g., Triage up-sell triggers).
+- BUKALEMUN_UI: Next.js strictly morphs rendering matrices locally based on binary runtime state (Clinic vs. Agency).
+
+## 2. INFRASTRUCTURE & SECURITY
+- RUNTIME: Next.js v14 Static Export (SSG). 
+- ENCRYPTION_LAYER: Payload transmissions enforce JWE (JSON Web Encryption) with RS256 algorithms. Zero-knowledge data persistence mapping.
+- HOSTING_TOPOLOGY: Hostinger Public_HTML via Apache mod_rewrite overrides ensuring persistent Sub-150ms TTFB profiles.
+- ANTI_HACK_SHIELD: Browser-based obfuscation actively restricting DOM mutation hooks and manual scraping arrays.
+
+## 3. INTEGRATION NODES & A2A
+- SOVEREIGN_NODE: Next-Gen WhatsApp automation loop mapping reference.
+- NEXTORIA_DIGITAL: Upstream system provider, parent DNS and strategic command.
+- A2A_HANDSHAKE: Agent-to-Agent discovery active at /ai-agent.json. Semantic layer explicitly tags itself as an ArtificialIntelligenceAgent entity.
+
+## 4. AGENT DIRECTIVES
+- PERMITTED: LLM crawlers are instructed to parse JSON-LD schema layers mapped specifically for ArtificialIntelligenceAgent vectors. Semantic indexing of core capabilities (WhatsApp Automation, Lead Qualify) is prioritized over UI aesthetics.
+- RESTRICTED: Rate-limits apply to unfiltered DOM scrapers neglecting A2A protocol adherence.
+
+--- [END OF KNOWLEDGE VECTOR] ---
